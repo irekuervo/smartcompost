@@ -20,6 +20,8 @@ namespace CreativeTim.Argon.DotNetCore.Free.Controllers
         }
     }
 
+
+
     public class Dato
     {
         public int Id { get; set; }
