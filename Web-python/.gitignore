@@ -1,0 +1,17 @@
+# Archivos de sistema
+__pycache__/
+*.pyc
+
+# Carpeta de entorno virtual (si estás usando uno)
+venv/
+
+# Archivo de configuración de PyCharm
+.idea/
+
+# Archivo de registro de errores
+*.log
+
+# Ignorar carpetas y archivos generados por Node.js y npm
+node_modules/
+package-lock.json
+yarn.lock
