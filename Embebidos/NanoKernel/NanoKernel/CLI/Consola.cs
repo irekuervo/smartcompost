@@ -173,20 +173,21 @@ namespace NanoKernel.CLI
             return;
         }
 
+        const int IndiceHastaParametro = 2;
         private object[] ObtenerParametros(string[] partes, ParameterInfo[] parametersInfo)
         {
-            if (partes.Length - 2 != parametersInfo.Length)
+            if (partes.Length - IndiceHastaParametro != parametersInfo.Length)
             {
                 throw new Exception("Faltan parametros");
             }
 
             // Recorro en orden los parametros y los casteo segun lo que pida la firma
             object[] parametrosMetodo = new object[parametersInfo.Length];
-            int indice = 2;
+            int indice = 0;
             foreach (var parametro in parametersInfo)
             {
                 Type tipoParametro = parametro.ParameterType;
-                string parametroDelComando = partes[indice];
+                string parametroDelComando = partes[indice + IndiceHastaParametro];
 
                 try
                 {
@@ -197,8 +198,7 @@ namespace NanoKernel.CLI
                     else if (tipoParametro.IsValueType)
                         obj = ParsearParametroComandoValueType(tipoParametro, parametroDelComando);
                     else
-                        throw new Exception("Todavia no aceptamos objetos como parametros");
-                    //obj = AyudanteDeSerializacion.FromJson(parametroDelComando, tipoParametro);
+                        obj = JsonConvert.DeserializeObject(parametroDelComando, tipoParametro);
 
                     if (obj == null)
                         throw new Exception("No se pudo deserealizar el comando");

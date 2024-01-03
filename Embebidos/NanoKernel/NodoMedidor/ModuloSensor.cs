@@ -1,5 +1,6 @@
 ﻿using NanoKernel.Modulos;
 using System;
+using System.Device.Adc;
 
 namespace NodoMedidor
 {
@@ -7,6 +8,15 @@ namespace NodoMedidor
     public class ModuloSensor
     {
         private static Random random = new Random();
+
+        AdcController adc = new AdcController();
+
+        [Servicio("ValorPin")]
+        public int ValorPin(int pin)
+        {
+            AdcChannel channel = adc.OpenChannel(pin);
+            return channel.ReadValue();
+        }
 
         [Servicio("Temperatura")]
         public double Temperatura()
