@@ -21,3 +21,24 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 - Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si
 - Con el cp210x va como piña todo
 
+*** Comunicacion Serie ***
+- Al parecer se simulan los COM, todavia no entiendo si son fisicos o virtuales, pero puedo preguntar cuales estan disponibles
+
+// get available ports
+ var ports = SerialPort.GetPortNames();
+ Debug.WriteLine("Puertos COM disponibles: ");
+ foreach (string port in ports)
+ {
+     Debug.WriteLine($" {port}");
+ }
+
+ // Here setting pin 32 for RX and pin 33 for TX both on COM2
+ Configuration.SetPinFunction(32, DeviceFunction.COM2_RX);
+ Configuration.SetPinFunction(33, DeviceFunction.COM2_TX);
+
+ SerialPort sp = new SerialPort("COM2");
+ sp.ReadBufferSize = 1024;
+ sp.DataReceived += Sp_DataReceived;
+ sp.Open();
+
+ Thread.Sleep(Timeout.Infinite);
