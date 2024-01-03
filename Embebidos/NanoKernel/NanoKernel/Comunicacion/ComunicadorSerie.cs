@@ -1,33 +1,38 @@
 ﻿using nanoFramework.Hardware.Esp32;
 using NanoKernel.Loggin;
-using System.Diagnostics;
+using NanoKernel.Modulos;
+using System;
 using System.IO.Ports;
+using System.Threading;
 
 namespace NanoKernel.Comunicacion
 {
 
     public class ComunicadorSerie : Comunicador
     {
+        public override event OnDataRecieved DataRecieved;
+
+        private const string PORT = "COM2";
         private const int RX_PORT = 32;
         private const int TX_PORT = 33;
         private const char SERIAL_BUFFER_WATCHAR = '\r';
         private const int SERIAL_BUFFER_SIZE = 256;
         private const int SERIAL_READ_TIMEOUT = 4000;
         private const int SERIAL_WRITE_TIMEOUT = 4000;
-        private const string PORT = "COM2";
         private const int BAUDRATE = 9600;
-
-        public override event OnDataRecieved DataRecieved;
 
         private SerialPort serial;
         private byte[] SERIAL_BUFFER = new byte[SERIAL_BUFFER_SIZE];
-        private int bytes_read = 0;
 
         public ComunicadorSerie()
         {
             // Here setting pin 32 for RX and pin 33 for TX both on COM2
             Configuration.SetPinFunction(RX_PORT, DeviceFunction.COM2_RX);
             Configuration.SetPinFunction(TX_PORT, DeviceFunction.COM2_TX);
+
+            string[] portsAvailable = SerialPort.GetPortNames();
+            if (portsAvailable.Length == 0)
+                throw new Exception("No hay ningun puerto disponible");
 
             serial = new SerialPort(PORT, BAUDRATE);
             serial.ReadBufferSize = SERIAL_BUFFER_SIZE;
@@ -47,7 +52,7 @@ namespace NanoKernel.Comunicacion
             serial.Open();
         }
 
-
+        [Servicio("puertos")]
         public void ObtenerPuertosCom()
         {
             // get available ports
@@ -61,12 +66,22 @@ namespace NanoKernel.Comunicacion
 
         public override byte[] Send(byte[] data, int offset, int count)
         {
-            throw new System.NotImplementedException();
+            SendAsync(data, offset, count);
+
+            while (serial.BytesToRead == 0)
+                Thread.Sleep(0);
+
+            byte[] res = new byte[ReadData(serial)];
+
+            Array.Copy(SERIAL_BUFFER, 0, res, 0, res.Length);
+
+            return res;
         }
 
         public override void SendAsync(byte[] data, int offset, int count)
         {
             serial.Write(data, offset, count);
+            Logger.Log($"{serial.PortName}: {count} bytes sent");
         }
 
         private void Serial_OnDataRecieved(object sender, SerialDataReceivedEventArgs e)
@@ -78,19 +93,31 @@ namespace NanoKernel.Comunicacion
 
             SerialPort serialDevice = (SerialPort)sender;
 
+            DataRecieved?.Invoke(SERIAL_BUFFER, 0, ReadData(serialDevice));
+        }
+
+        private int ReadData(SerialPort serialDevice)
+        {
             if (serialDevice.BytesToRead > SERIAL_BUFFER_SIZE)
             {
                 Logger.Log("No puedo leer tanto tamanio: " + serialDevice.BytesToRead);
-                return;
+                return 0;
             }
 
-            if (serialDevice.BytesToRead > 0)
+            if (serialDevice.BytesToRead == 0)
+                return 0;
+
+            int bytes_read = serialDevice.Read(SERIAL_BUFFER, 0, serialDevice.BytesToRead);
+            Logger.Log($"{serialDevice.PortName}: {bytes_read} bytes recieved");
+            return bytes_read;
+        }
+
+        public override void Dispose()
+        {
+            if (serial != null && serial.IsOpen)
             {
-                bytes_read = serialDevice.Read(SERIAL_BUFFER, 0, serialDevice.BytesToRead);
-
-                Logger.Log($"{serialDevice.PortName}: {bytes_read} bytes recieved");
-
-                DataRecieved?.Invoke(SERIAL_BUFFER, 0, bytes_read);
+                serial.Close();
+                serial.Dispose();
             }
         }
     }

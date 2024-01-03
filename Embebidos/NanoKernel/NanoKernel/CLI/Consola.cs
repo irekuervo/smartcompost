@@ -33,6 +33,12 @@ namespace NanoKernel.CLI
             string[] partes = comando.Split(' ');
             string idModulo = partes[0].ToLower();
 
+            if (idModulo == "?")
+            {
+                AyudaGeneral();
+                return;
+            }
+
             if (modulos.Contains(idModulo) == false)
             {
                 ResponderComando("No se reconoce el modulo: " + idModulo);
@@ -47,6 +53,13 @@ namespace NanoKernel.CLI
 
             Modulo modulo = modulos[idModulo] as Modulo;
             var idServicio = partes[1].ToLower();
+
+            if (idServicio == "?")
+            {
+                AyudaModulo(modulo);
+                return;
+            }
+
             if (modulo.Servicios.Contains(idServicio) == false)
             {
                 ResponderComando("No se reconoce el servicio: " + idServicio);
@@ -57,7 +70,7 @@ namespace NanoKernel.CLI
             try
             {
                 var res = modulo.InvocarServicio(idServicio, ObtenerParametros(partes, metodo.GetParameters()));
-                ImprimirRespuestaServicio(res.GetType(), res);
+                ImprimirRespuestaServicio(metodo.ReturnType, res);
             }
             catch (Exception ex)
             {
@@ -65,31 +78,80 @@ namespace NanoKernel.CLI
             }
         }
 
+        private void AyudaModulo(Modulo modulo)
+        {
+            string res = "Servicios disponibles: \r\n";
+            foreach (var item in modulo.Servicios.Keys)
+            {
+                res += $"-{item}:";
+                MethodInfo info = (MethodInfo)modulo.Servicios[item];
+                foreach (ParameterInfo param in info.GetParameters())
+                {
+                    res = res + $" <{param.ParameterType.Name}>";
+                }
+                res += "\r\n";
+            }
+
+            ResponderComando(res);
+        }
+
+        private void AyudaGeneral()
+        {
+            string res = "Modulos disponibles: \r\n";
+            foreach (var item in this.modulos.Keys)
+            {
+                res += $"[{item}]" + "\r\n";
+            }
+
+            ResponderComando(res);
+        }
+
         private void ImprimirRespuestaServicio(Type returnType, object methodResponse)
         {
-            string res = "OK";
-
             /// Respuesta OK void
             if (returnType == typeof(void))
-                res = null;
-            /// Respuesta vacia invalida
-            else if (methodResponse == null && returnType != typeof(string))
-                res = "Error: respuesta vacia invalida";
-            /// Respuesta OK vacia valida
-            else if (methodResponse == null && returnType == typeof(string))
-                res = null;
-            /// Respuesta no vacia
-            else if (returnType == typeof(string))
-                res = methodResponse.ToString();
-            else if (returnType == typeof(DateTime))
-                res = ((DateTime)methodResponse).ToUnixTimeSeconds().ToString();
-            if (returnType.IsValueType)
-                res = methodResponse.ToString();
-            else
-                res = JsonConvert.SerializeObject(methodResponse);
+            {
+                ResponderComando("OK");
+                return;
+            }
 
-            if (res != null)
-                ResponderComando(res);
+            /// Respuesta vacia invalida
+            if (methodResponse == null && returnType != typeof(string))
+            {
+                ResponderComando("Error: respuesta vacia invalida");
+                return;
+            }
+
+            /// Respuesta OK vacia valida
+            if (methodResponse == null && returnType == typeof(string))
+            {
+                ResponderComando("");
+                return;
+            }
+
+            /// Respuesta no vacia
+             if (returnType == typeof(string))
+            {
+                ResponderComando(methodResponse.ToString());
+                return;
+            }
+
+            if (returnType == typeof(DateTime))
+            {
+                ResponderComando(((DateTime)methodResponse).ToUnixTimeSeconds().ToString());
+                return;
+            }
+
+            if (returnType.IsValueType)
+            {
+                ResponderComando(methodResponse.ToString());
+                return;
+            }
+            else
+            {
+                ResponderComando(JsonConvert.SerializeObject(methodResponse));
+                return;
+            }
         }
 
         private byte[] bufferResponse = new byte[1024];
@@ -136,7 +198,7 @@ namespace NanoKernel.CLI
                         obj = ParsearParametroComandoValueType(tipoParametro, parametroDelComando);
                     else
                         throw new Exception("Todavia no aceptamos objetos como parametros");
-                        //obj = AyudanteDeSerializacion.FromJson(parametroDelComando, tipoParametro);
+                    //obj = AyudanteDeSerializacion.FromJson(parametroDelComando, tipoParametro);
 
                     if (obj == null)
                         throw new Exception("No se pudo deserealizar el comando");
