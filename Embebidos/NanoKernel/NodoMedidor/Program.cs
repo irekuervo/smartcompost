@@ -1,6 +1,7 @@
 using NanoKernel;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 
 namespace NodoMedidor
@@ -9,7 +10,9 @@ namespace NodoMedidor
     {
         public static void Main()
         {
-            App.Start();
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            App.Start(assembly);
         }
     }
 }

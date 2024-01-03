@@ -13,5 +13,11 @@ namespace NodoMedidor
         {
             return random.NextDouble() * 100;
         }
+
+        [Servicio("Humedad")]
+        public double Humedad()
+        {
+            return random.NextDouble() * 20;
+        }
     }
 }

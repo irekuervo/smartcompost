@@ -11,12 +11,12 @@ namespace NanoKernel
 {
     public static class App
     {
-        public static void Start()
+        public static void Start(Assembly baseAssembly)
         {
             Debug.WriteLine("\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n");
             Debug.WriteLine("Starting...");
 
-            ConstruirModulos();
+            ConstruirModulos(baseAssembly);
 
             Debug.WriteLine("Started OK");
 
@@ -24,7 +24,7 @@ namespace NanoKernel
         }
 
         static Hashtable Modulos = new Hashtable();
-        private static void ConstruirModulos()
+        private static void ConstruirModulos(Assembly baseAssembly)
         {
             // Esta sintaxis fea va a quedar linda con Dependency injection
             var com = new ComunicadorSerie();
@@ -32,13 +32,11 @@ namespace NanoKernel
 
             RegistrarModulo("consola", new Consola(com, Modulos), typeof(Consola));
 
-            RegistrarModulosGenericos();
+            RegistrarModulosGenericos(baseAssembly);
         }
 
-        private static void RegistrarModulosGenericos()
+        private static void RegistrarModulosGenericos(Assembly assembly)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-
             Type[] classesWithModuloAttribute = assembly.GetTypes();
 
             foreach (Type classType in classesWithModuloAttribute)

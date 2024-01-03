@@ -10,7 +10,7 @@ namespace NanoKernel.Comunicacion
         private const int RX_PORT = 32;
         private const int TX_PORT = 33;
         private const char SERIAL_BUFFER_WATCHAR = '\r';
-        private const int SERIAL_BUFFER_SIZE = 1024;
+        private const int SERIAL_BUFFER_SIZE = 256;
         private const int SERIAL_READ_TIMEOUT = 4000;
         private const int SERIAL_WRITE_TIMEOUT = 4000;
         private const string PORT = "COM2";
@@ -32,7 +32,7 @@ namespace NanoKernel.Comunicacion
             serial.ReadBufferSize = SERIAL_BUFFER_SIZE;
             serial.ReadTimeout = SERIAL_READ_TIMEOUT;
             serial.WriteTimeout = SERIAL_WRITE_TIMEOUT;
-            //sp.WatchChar = SERIAL_BUFFER_WATCHAR;
+            serial.WatchChar = SERIAL_BUFFER_WATCHAR;
             serial.DataReceived += Serial_OnDataRecieved;
 
             Debug.WriteLine($"Creando comunicador serie {PORT}\r\n" +
@@ -45,7 +45,6 @@ namespace NanoKernel.Comunicacion
                 $"buffer_size={SERIAL_BUFFER_SIZE}");
             serial.Open();
         }
-
 
 
         public void ObtenerPuertosCom()
@@ -71,6 +70,11 @@ namespace NanoKernel.Comunicacion
 
         private void Serial_OnDataRecieved(object sender, SerialDataReceivedEventArgs e)
         {
+            if (e.EventType != SerialData.WatchChar)
+            {
+                return;
+            }
+
             SerialPort serialDevice = (SerialPort)sender;
 
             if (serialDevice.BytesToRead > SERIAL_BUFFER_SIZE)
@@ -81,7 +85,7 @@ namespace NanoKernel.Comunicacion
 
             if (serialDevice.BytesToRead > 0)
             {
-                bytes_read += serialDevice.Read(SERIAL_BUFFER, 0, serialDevice.BytesToRead);
+                bytes_read = serialDevice.Read(SERIAL_BUFFER, 0, serialDevice.BytesToRead);
 
                 Debug.WriteLine($"{serialDevice.PortName}: {bytes_read} bytes recieved");
 

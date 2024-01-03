@@ -28,7 +28,8 @@ namespace NanoKernel.Modulos
                 {
                     if (attr is ServicioAttribute)
                     {
-                        Servicios.Add(((ServicioAttribute)attr).Nombre, metodo);
+                        var servicio = (ServicioAttribute)attr;
+                        Servicios.Add(servicio.Nombre.ToLower(), metodo);
                         break;
                     }
                 }

@@ -45,7 +45,7 @@ namespace NanoKernel.CLI
             }
 
             Modulo modulo = modulos[idModulo] as Modulo;
-            var idServicio = partes[1];
+            var idServicio = partes[1].ToLower();
             if (modulo.Servicios.Contains(idServicio) == false)
             {
                 ResponderComando("No se reconoce el servicio: " + idServicio);
@@ -55,7 +55,7 @@ namespace NanoKernel.CLI
             MethodInfo metodo = modulo.Servicios[idServicio] as MethodInfo;
             try
             {
-                var res = modulo.InvocarServicio(partes[1].ToLower(), ObtenerParametros(partes, metodo.GetParameters()));
+                var res = modulo.InvocarServicio(idServicio, ObtenerParametros(partes, metodo.GetParameters()));
                 ImprimirRespuestaServicio(res.GetType(), res);
             }
             catch (Exception ex)
