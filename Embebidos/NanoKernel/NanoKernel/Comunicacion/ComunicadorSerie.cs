@@ -1,4 +1,5 @@
 ﻿using nanoFramework.Hardware.Esp32;
+using NanoKernel.Loggin;
 using System.Diagnostics;
 using System.IO.Ports;
 
@@ -35,7 +36,7 @@ namespace NanoKernel.Comunicacion
             serial.WatchChar = SERIAL_BUFFER_WATCHAR;
             serial.DataReceived += Serial_OnDataRecieved;
 
-            Debug.WriteLine($"Creando comunicador serie {PORT}\r\n" +
+            Logger.Log($"Creando comunicador serie {PORT}\r\n" +
                 $"baudrate={BAUDRATE}\r\n" +
                 $"parity=None\r\n" +
                 $"databits=8\r\n" +
@@ -51,10 +52,10 @@ namespace NanoKernel.Comunicacion
         {
             // get available ports
             var ports = SerialPort.GetPortNames();
-            Debug.WriteLine("Puertos COM disponibles: ");
+            Logger.Log("Puertos COM disponibles: ");
             foreach (string port in ports)
             {
-                Debug.WriteLine($" {port}");
+                Logger.Log($" {port}");
             }
         }
 
@@ -79,7 +80,7 @@ namespace NanoKernel.Comunicacion
 
             if (serialDevice.BytesToRead > SERIAL_BUFFER_SIZE)
             {
-                Debug.WriteLine("No puedo leer tanto tamanio: " + serialDevice.BytesToRead);
+                Logger.Log("No puedo leer tanto tamanio: " + serialDevice.BytesToRead);
                 return;
             }
 
@@ -87,7 +88,7 @@ namespace NanoKernel.Comunicacion
             {
                 bytes_read = serialDevice.Read(SERIAL_BUFFER, 0, serialDevice.BytesToRead);
 
-                Debug.WriteLine($"{serialDevice.PortName}: {bytes_read} bytes recieved");
+                Logger.Log($"{serialDevice.PortName}: {bytes_read} bytes recieved");
 
                 DataRecieved?.Invoke(SERIAL_BUFFER, 0, bytes_read);
             }

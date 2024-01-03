@@ -19,5 +19,23 @@ namespace NodoMedidor
         {
             return random.NextDouble() * 20;
         }
+
+        [Servicio("Medir")]
+        public Medicion Medir()
+        {
+            return new Medicion(Temperatura(), Humedad());
+        }
+    }
+
+    public class Medicion
+    {
+        public double Temperatura { get; set; }
+        public double Humedad { get; set; }
+
+        public Medicion(double temperatura, double humedad)
+        {
+            this.Temperatura = temperatura;
+            this.Humedad = humedad;
+        }
     }
 }

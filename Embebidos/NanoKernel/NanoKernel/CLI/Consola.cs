@@ -1,4 +1,5 @@
-﻿using NanoKernel.Comunicacion;
+﻿using nanoFramework.Json;
+using NanoKernel.Comunicacion;
 using NanoKernel.Modulos;
 using System;
 using System.Collections;
@@ -84,8 +85,8 @@ namespace NanoKernel.CLI
                 res = ((DateTime)methodResponse).ToUnixTimeSeconds().ToString();
             if (returnType.IsValueType)
                 res = methodResponse.ToString();
-            //else
-            //    res = methodResponse.ToJson();
+            else
+                res = JsonConvert.SerializeObject(methodResponse);
 
             if (res != null)
                 ResponderComando(res);
@@ -133,8 +134,9 @@ namespace NanoKernel.CLI
                         obj = parametroDelComando;
                     else if (tipoParametro.IsValueType)
                         obj = ParsearParametroComandoValueType(tipoParametro, parametroDelComando);
-                    //else
-                    //    obj = AyudanteDeSerializacion.FromJson(parametroDelComando, tipoParametro);
+                    else
+                        throw new Exception("Todavia no aceptamos objetos como parametros");
+                        //obj = AyudanteDeSerializacion.FromJson(parametroDelComando, tipoParametro);
 
                     if (obj == null)
                         throw new Exception("No se pudo deserealizar el comando");

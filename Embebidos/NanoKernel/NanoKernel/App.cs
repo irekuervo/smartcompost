@@ -1,5 +1,6 @@
 ﻿using NanoKernel.CLI;
 using NanoKernel.Comunicacion;
+using NanoKernel.Loggin;
 using NanoKernel.Modulos;
 using System;
 using System.Collections;
@@ -13,12 +14,12 @@ namespace NanoKernel
     {
         public static void Start(Assembly baseAssembly)
         {
-            Debug.WriteLine("\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n");
-            Debug.WriteLine("Starting...");
+            Logger.Log("\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n");
+            Logger.Log("Starting...");
 
             ConstruirModulos(baseAssembly);
 
-            Debug.WriteLine("Started OK");
+            Logger.Log("Started OK");
 
             Thread.Sleep(Timeout.Infinite);
         }
@@ -52,7 +53,7 @@ namespace NanoKernel
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine("Error: no se pudo registrar: " + ((ModuloAttribute)item).Nombre);
+                            Logger.Log("Error: no se pudo registrar: " + ((ModuloAttribute)item).Nombre);
                         }
 
                         break;
@@ -82,7 +83,7 @@ namespace NanoKernel
             var modulo = new Modulo(id, instancia, classType);
             Modulos.Add(id, modulo);
 
-            Debug.WriteLine("Modulo degistrado: " + id);
+            Logger.Log("Modulo degistrado: " + id);
 
             return modulo;
         }
