@@ -4,7 +4,6 @@ using NanoKernel.Loggin;
 using NanoKernel.Modulos;
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
 
@@ -27,16 +26,20 @@ namespace NanoKernel
         static Hashtable Modulos = new Hashtable();
         private static void ConstruirModulos(Assembly baseAssembly)
         {
-            // Esta sintaxis fea va a quedar linda con Dependency injection
-            var com = new ComunicadorSerie();
-            RegistrarModulo("comunicador", com, typeof(ComunicadorSerie));
+            // Esta sintaxis fea va a quedar linda con Dependency Injection
 
-            RegistrarModulo("consola", new Consola(com, Modulos), typeof(Consola));
+            var com2 = new ComunicadorSerie("COM2", 32, 33);
+            var com3 = new ComunicadorSerie("COM3", 16, 17);
 
-            RegistrarModulosGenericos(baseAssembly);
+            RegistrarModulo("sim", new ComunicadorSIM800L(com2), typeof(ComunicadorSIM800L));
+
+            RegistrarModulo("consola", new Consola(com3, Modulos), typeof(Consola));
+
+            RegistrarModulos(Assembly.GetExecutingAssembly());
+            RegistrarModulos(baseAssembly);
         }
 
-        private static void RegistrarModulosGenericos(Assembly assembly)
+        private static void RegistrarModulos(Assembly assembly)
         {
             Type[] classesWithModuloAttribute = assembly.GetTypes();
 
@@ -83,7 +86,7 @@ namespace NanoKernel
             var modulo = new Modulo(id, instancia, classType);
             Modulos.Add(id, modulo);
 
-            Logger.Log("Modulo degistrado: " + id);
+            Logger.Log("Modulo registrado: " + id);
 
             return modulo;
         }

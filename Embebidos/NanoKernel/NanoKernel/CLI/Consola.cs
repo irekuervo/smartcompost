@@ -1,14 +1,16 @@
 ﻿using nanoFramework.Json;
 using NanoKernel.Comunicacion;
+using NanoKernel.Loggin;
 using NanoKernel.Modulos;
 using System;
 using System.Collections;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace NanoKernel.CLI
 {
-    public class Consola
+    public class Consola : IDisposable
     {
         private Comunicador comunicador;
         private Hashtable modulos;
@@ -81,10 +83,10 @@ namespace NanoKernel.CLI
         private void AyudaModulo(Modulo modulo)
         {
             string res = "Servicios disponibles: \r\n";
-            foreach (var item in modulo.Servicios.Keys)
+            foreach (var idServicio in modulo.Servicios.Keys)
             {
-                res += $"-{item}:";
-                MethodInfo info = (MethodInfo)modulo.Servicios[item];
+                res += $"-{idServicio}:";
+                MethodInfo info = (MethodInfo)modulo.Servicios[idServicio];
                 foreach (ParameterInfo param in info.GetParameters())
                 {
                     res = res + $" <{param.ParameterType.Name}>";
@@ -256,11 +258,19 @@ namespace NanoKernel.CLI
             {
                 objetoParametro = Convert.ToDouble(parametroComando);
             }
+            else if (tipoParametro == typeof(bool))
+            {
+                objetoParametro = parametroComando.ToLower() == bool.TrueString.ToLower() ? true : false;
+            }
 
             if (objetoParametro == null)
                 throw new Exception($"No se puede parsear el parametro '{parametroComando}' del tipo '{tipoParametro.Name}'");
 
             return objetoParametro;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

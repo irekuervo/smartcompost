@@ -29,7 +29,12 @@ namespace NanoKernel.Modulos
                     if (attr is ServicioAttribute)
                     {
                         var servicio = (ServicioAttribute)attr;
-                        Servicios.Add(servicio.Nombre.ToLower(), metodo);
+                        string servicioId = servicio.Nombre.ToLower();
+
+                        if (Servicios.Contains(servicioId))
+                            throw new Exception("Ya hay un servicio registrado con el nombre: " + servicioId);
+
+                        Servicios.Add(servicioId, metodo);
                         break;
                     }
                 }

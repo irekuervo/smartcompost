@@ -9,7 +9,7 @@ namespace NodoMedidor
     {
         private static Random random = new Random();
 
-        AdcController adc = new AdcController();
+        private static AdcController adc = new AdcController();
 
         [Servicio("ValorPin")]
         public int ValorPin(int pin)
