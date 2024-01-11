@@ -1,6 +1,7 @@
 ﻿using NanoKernel.Modulos;
 using System;
 using System.Device.Adc;
+using System.Threading;
 
 namespace NodoMedidor
 {
