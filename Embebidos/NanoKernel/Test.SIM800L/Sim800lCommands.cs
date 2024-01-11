@@ -8,6 +8,8 @@ namespace Test.SIM800L
 {
     public static class Sim800lCommands
     {
+        public const string OK = "OK\r\n";
+
         // Método para verificar si el módulo está activo
         public static string ModuloActivo()
         {
