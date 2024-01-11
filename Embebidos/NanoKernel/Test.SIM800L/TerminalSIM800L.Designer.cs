@@ -30,9 +30,9 @@
         {
             button1 = new Button();
             terminal = new RichTextBox();
-            textBox1 = new TextBox();
-            textBox2 = new TextBox();
-            textBox3 = new TextBox();
+            txtAPN = new TextBox();
+            txtUsuario = new TextBox();
+            txtPassword = new TextBox();
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
@@ -41,85 +41,96 @@
             // button1
             // 
             button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            button1.Location = new Point(12, 437);
+            button1.BackColor = SystemColors.ControlDark;
+            button1.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
+            button1.ForeColor = Color.Black;
+            button1.Location = new Point(12, 395);
             button1.Name = "button1";
-            button1.Size = new Size(292, 26);
+            button1.Size = new Size(228, 40);
             button1.TabIndex = 0;
             button1.Text = "Dale gas nene";
-            button1.UseVisualStyleBackColor = true;
+            button1.UseVisualStyleBackColor = false;
             // 
             // terminal
             // 
             terminal.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            terminal.Location = new Point(317, 12);
+            terminal.Location = new Point(246, 12);
             terminal.Name = "terminal";
-            terminal.Size = new Size(453, 451);
+            terminal.Size = new Size(517, 423);
             terminal.TabIndex = 1;
             terminal.Text = "";
             // 
-            // textBox1
+            // txtAPN
             // 
-            textBox1.Location = new Point(103, 39);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(100, 23);
-            textBox1.TabIndex = 2;
+            txtAPN.Location = new Point(79, 12);
+            txtAPN.Name = "txtAPN";
+            txtAPN.Size = new Size(161, 23);
+            txtAPN.TabIndex = 2;
             // 
-            // textBox2
+            // txtUsuario
             // 
-            textBox2.Location = new Point(99, 112);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(100, 23);
-            textBox2.TabIndex = 3;
+            txtUsuario.Location = new Point(79, 46);
+            txtUsuario.Name = "txtUsuario";
+            txtUsuario.Size = new Size(161, 23);
+            txtUsuario.TabIndex = 3;
             // 
-            // textBox3
+            // txtPassword
             // 
-            textBox3.Location = new Point(91, 194);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(100, 23);
-            textBox3.TabIndex = 4;
+            txtPassword.Location = new Point(79, 79);
+            txtPassword.Name = "txtPassword";
+            txtPassword.Size = new Size(161, 23);
+            txtPassword.TabIndex = 4;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(29, 35);
+            label1.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label1.ForeColor = Color.FromArgb(64, 64, 64);
+            label1.Location = new Point(12, 20);
             label1.Name = "label1";
-            label1.Size = new Size(38, 15);
+            label1.Size = new Size(34, 15);
             label1.TabIndex = 5;
-            label1.Text = "label1";
+            label1.Text = "APN:";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(14, 79);
+            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label2.ForeColor = Color.FromArgb(64, 64, 64);
+            label2.Location = new Point(12, 54);
             label2.Name = "label2";
-            label2.Size = new Size(38, 15);
+            label2.Size = new Size(52, 15);
             label2.TabIndex = 6;
-            label2.Text = "label2";
+            label2.Text = "Usuario:";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(30, 133);
+            label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
+            label3.ForeColor = Color.FromArgb(64, 64, 64);
+            label3.Location = new Point(12, 87);
             label3.Name = "label3";
-            label3.Size = new Size(38, 15);
+            label3.Size = new Size(59, 15);
             label3.TabIndex = 7;
-            label3.Text = "label3";
+            label3.Text = "Password";
             // 
             // TerminalSIM800L
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(775, 475);
+            BackColor = Color.White;
+            ClientSize = new Size(787, 447);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
-            Controls.Add(textBox3);
-            Controls.Add(textBox2);
-            Controls.Add(textBox1);
+            Controls.Add(txtPassword);
+            Controls.Add(txtUsuario);
+            Controls.Add(txtAPN);
             Controls.Add(terminal);
             Controls.Add(button1);
             Name = "TerminalSIM800L";
             Text = "Form1";
+            Load += TerminalSIM800L_Load;
             ResumeLayout(false);
             PerformLayout();
         }
@@ -128,9 +139,9 @@
 
         private Button button1;
         private RichTextBox terminal;
-        private TextBox textBox1;
-        private TextBox textBox2;
-        private TextBox textBox3;
+        private TextBox txtAPN;
+        private TextBox txtUsuario;
+        private TextBox txtPassword;
         private Label label1;
         private Label label2;
         private Label label3;

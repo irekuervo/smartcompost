@@ -10,5 +10,10 @@ namespace Test.SIM800L
         {
             InitializeComponent();
         }
+
+        private void TerminalSIM800L_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
