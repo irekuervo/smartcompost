@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Test.SIM800L
 {
+    /// <summary>
+    /// Comandos de https://www.elecrow.com/wiki/images/2/20/SIM800_Series_AT_Command_Manual_V1.09.pdf
+    /// </summary>
     public static class Sim800lCommands
     {
         public const string OK = "OK\r\n";
@@ -64,16 +67,22 @@ namespace Test.SIM800L
             return "AT+CIFSR";
         }
 
-        // Método para iniciar una conexión TCP
-        public static string IniciarConexionTCP(string host, int puerto)
+        // Método para iniciar una conexión TCP, Pagina 222
+        public static string IniciarConexionTCP(string domainName, int puerto)
         {
-            return $"AT+CIPSTART=\"TCP\",\"{host}\",{puerto}";
+            return $"AT+CIPSTART=\"TCP\",\"{domainName}\",{puerto}";
         }
 
         // Método para enviar datos por la conexión TCP
         public static string EnviarDatosTCP(int longitud)
         {
             return $"AT+CIPSEND={longitud}";
+        }
+
+        // Pagina 227
+        public static string DetenerConexionTCP()
+        {
+            return $"AT+CIPCLOSE=0";
         }
 
         // Método para realizar una solicitud HTTP GET

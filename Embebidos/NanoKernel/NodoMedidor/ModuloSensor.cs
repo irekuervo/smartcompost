@@ -11,6 +11,12 @@ namespace NodoMedidor
         private static Random random = new Random();
 
         private static AdcController adc = new AdcController();
+       
+
+        public ModuloSensor()
+        {
+
+        }
 
         [Servicio("ValorPin")]
         public int ValorPin(int pin)

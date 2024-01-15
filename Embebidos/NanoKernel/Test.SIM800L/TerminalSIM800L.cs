@@ -29,7 +29,7 @@ namespace Test.SIM800L
 
         private void Sim800L_OnEstadoActualizado(string calidad)
         {
-            if(lblCalidadSenial.InvokeRequired)
+            if (lblCalidadSenial.InvokeRequired)
             {
                 lblCalidadSenial.Invoke(() => Sim800L_OnEstadoActualizado(calidad));
                 return;
@@ -66,7 +66,7 @@ namespace Test.SIM800L
             try
             {
                 sim800L.SetAPN(txtAPN.Text, txtUsuario.Text, txtPassword.Text);
-                sim800L.RealizarRequestGET("http://www.brainjar.com/java/host/test.html", "brainjar.com", 80);
+               // sim800L.EnviarPayload("http://www.brainjar.com/java/host/test.html", "brainjar.com", 80);
             }
             catch (Exception ex)
             {
@@ -78,10 +78,12 @@ namespace Test.SIM800L
         {
             if (listaPuertos.SelectedItems.Count == 0)
                 return;
+
             var com = listaPuertos.SelectedItems[0].Text;
             try
             {
                 sim800L.Iniciar(com);
+                lblIP.Text = sim800L.IP;
                 MessageBox.Show("Conectado");
             }
             catch (Exception ex)

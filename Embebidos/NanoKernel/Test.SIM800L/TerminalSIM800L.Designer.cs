@@ -44,6 +44,8 @@
             label5 = new Label();
             label6 = new Label();
             lblCalidadSenial = new Label();
+            label7 = new Label();
+            lblIP = new Label();
             SuspendLayout();
             // 
             // btnEjecutar
@@ -198,12 +200,32 @@
             lblCalidadSenial.TabIndex = 14;
             lblCalidadSenial.Text = "-";
             // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(127, 316);
+            label7.Name = "label7";
+            label7.Size = new Size(12, 15);
+            label7.TabIndex = 15;
+            label7.Text = "-";
+            // 
+            // lblIP
+            // 
+            lblIP.AutoSize = true;
+            lblIP.Location = new Point(127, 344);
+            lblIP.Name = "lblIP";
+            lblIP.Size = new Size(12, 15);
+            lblIP.TabIndex = 16;
+            lblIP.Text = "-";
+            // 
             // TerminalSIM800L
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(787, 447);
+            Controls.Add(lblIP);
+            Controls.Add(label7);
             Controls.Add(lblCalidadSenial);
             Controls.Add(label6);
             Controls.Add(label5);
@@ -244,5 +266,7 @@
         private Label label5;
         private Label label6;
         private Label lblCalidadSenial;
+        private Label label7;
+        private Label lblIP;
     }
 }

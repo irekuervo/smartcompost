@@ -22,13 +22,13 @@ namespace AppDesarrollo
 
             //Thread.Sleep(5000);
 
-            Configuration.SetPinFunction(34, DeviceFunction.COM2_RX);
-            Configuration.SetPinFunction(35, DeviceFunction.COM2_TX);
+           // Configuration.SetPinFunction(34, DeviceFunction.COM2_RX);
+            //Configuration.SetPinFunction(35, DeviceFunction.COM2_TX);
 
-            var serial = new SerialPort("COM2", 9600);
-            serial.Open();
+            //var serial = new SerialPort("COM2", 9600);
+            //serial.Open();
 
-            new Thread(() => { for (; ; ) { serial.WriteLine("Alive"); Thread.Sleep(1000); } }).Start();
+           // new Thread(() => { for (; ; ) { serial.WriteLine("Alive"); Thread.Sleep(1000); } }).Start();
 
             Thread.Sleep(Timeout.Infinite);
         }

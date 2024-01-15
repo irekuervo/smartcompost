@@ -74,8 +74,8 @@ public class Program
                 // Puedes realizar operaciones con los datos recibidos aquí
 
                 // Enviar una respuesta al cliente (opcional)
-                byte[] response = Encoding.UTF8.GetBytes("Mensaje recibido correctamente");
-                clientStream.Write(response, 0, response.Length);
+                //byte[] response = Encoding.UTF8.GetBytes("Mensaje recibido correctamente");
+                //clientStream.Write(response, 0, response.Length);
             }
         }
         catch (Exception ex)
