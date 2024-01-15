@@ -147,8 +147,7 @@ public class ModuloSIM800L : IDisposable
         // Iniciar la conexión GPRS
         EnviarComando(ComandosSIM800L.IniciarConexionGPRS(), timeoutMilis: 30_000);
 
-        // Obtener la dirección IP asignada al módulo
-        this.ip = EnviarComando(ComandosSIM800L.ObtenerDireccionIP(), timeoutMilis: 5_000);
+        ObtenerDireccionIP();
     }
 
     public void IniciarClienteTCP(string host, int port)

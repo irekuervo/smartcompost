@@ -198,13 +198,13 @@
             label6.AutoSize = true;
             label6.Location = new Point(12, 255);
             label6.Name = "label6";
-            label6.Size = new Size(20, 15);
+            label6.Size = new Size(73, 15);
             label6.TabIndex = 13;
-            label6.Text = "IP:";
+            label6.Text = "Dirección IP:";
             // 
             // lblCalidadSenial
             // 
-            lblCalidadSenial.Location = new Point(127, 194);
+            lblCalidadSenial.Location = new Point(127, 201);
             lblCalidadSenial.Name = "lblCalidadSenial";
             lblCalidadSenial.Size = new Size(156, 22);
             lblCalidadSenial.TabIndex = 14;
@@ -375,7 +375,7 @@
             Controls.Add(txtTerminal);
             Controls.Add(btnEjecutar);
             Name = "TerminalSIM800L";
-            Text = "Form1";
+            Text = "Terminal SIM800L";
             Load += TerminalSIM800L_Load;
             ((System.ComponentModel.ISupportInitialize)numIP).EndInit();
             ResumeLayout(false);
