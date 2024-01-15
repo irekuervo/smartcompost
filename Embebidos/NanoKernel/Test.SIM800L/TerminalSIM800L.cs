@@ -3,6 +3,11 @@ using System.Text;
 
 namespace Test.SIM800L
 {
+    /// <summary>
+    /// Esta clase encapsula todo lo necesario para manejar un SIM800L. 
+    /// Nota de aplicacion del fabricante:
+    /// https://www.waveshare.com/w/upload/2/25/SIM800_Series_TCPIP_Application_Note_V1.03.pdf
+    /// </summary>
     public partial class TerminalSIM800L : Form
     {
         public const string APN = "internet.movil";
