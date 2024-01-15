@@ -44,7 +44,7 @@
             label5 = new Label();
             label6 = new Label();
             lblCalidadSenial = new Label();
-            label7 = new Label();
+            lblConectado = new Label();
             lblIP = new Label();
             label8 = new Label();
             txtComando = new TextBox();
@@ -55,6 +55,7 @@
             btnConectarServer = new Button();
             numIP = new NumericUpDown();
             btnRestart = new Button();
+            btnStatus = new Button();
             ((System.ComponentModel.ISupportInitialize)numIP).BeginInit();
             SuspendLayout();
             // 
@@ -64,7 +65,7 @@
             btnEjecutar.BackColor = SystemColors.ControlDark;
             btnEjecutar.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
             btnEjecutar.ForeColor = Color.Black;
-            btnEjecutar.Location = new Point(12, 617);
+            btnEjecutar.Location = new Point(12, 543);
             btnEjecutar.Name = "btnEjecutar";
             btnEjecutar.Size = new Size(271, 40);
             btnEjecutar.TabIndex = 0;
@@ -203,28 +204,25 @@
             // 
             // lblCalidadSenial
             // 
-            lblCalidadSenial.AutoSize = true;
-            lblCalidadSenial.Location = new Point(127, 201);
+            lblCalidadSenial.Location = new Point(127, 194);
             lblCalidadSenial.Name = "lblCalidadSenial";
-            lblCalidadSenial.Size = new Size(12, 15);
+            lblCalidadSenial.Size = new Size(156, 22);
             lblCalidadSenial.TabIndex = 14;
             lblCalidadSenial.Text = "-";
             // 
-            // label7
+            // lblConectado
             // 
-            label7.AutoSize = true;
-            label7.Location = new Point(127, 227);
-            label7.Name = "label7";
-            label7.Size = new Size(12, 15);
-            label7.TabIndex = 15;
-            label7.Text = "-";
+            lblConectado.Location = new Point(127, 227);
+            lblConectado.Name = "lblConectado";
+            lblConectado.Size = new Size(156, 22);
+            lblConectado.TabIndex = 15;
+            lblConectado.Text = "-";
             // 
             // lblIP
             // 
-            lblIP.AutoSize = true;
             lblIP.Location = new Point(127, 255);
             lblIP.Name = "lblIP";
-            lblIP.Size = new Size(12, 15);
+            lblIP.Size = new Size(156, 22);
             lblIP.TabIndex = 16;
             lblIP.Text = "-";
             // 
@@ -267,7 +265,7 @@
             btnConectarAPN.BackColor = SystemColors.ControlDark;
             btnConectarAPN.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
             btnConectarAPN.ForeColor = Color.Black;
-            btnConectarAPN.Location = new Point(12, 525);
+            btnConectarAPN.Location = new Point(12, 451);
             btnConectarAPN.Name = "btnConectarAPN";
             btnConectarAPN.Size = new Size(271, 40);
             btnConectarAPN.TabIndex = 20;
@@ -299,7 +297,7 @@
             btnConectarServer.BackColor = SystemColors.ControlDark;
             btnConectarServer.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
             btnConectarServer.ForeColor = Color.Black;
-            btnConectarServer.Location = new Point(12, 571);
+            btnConectarServer.Location = new Point(12, 497);
             btnConectarServer.Name = "btnConectarServer";
             btnConectarServer.Size = new Size(271, 40);
             btnConectarServer.TabIndex = 23;
@@ -329,12 +327,27 @@
             btnRestart.UseVisualStyleBackColor = false;
             btnRestart.Click += btnRestart_Click;
             // 
+            // btnStatus
+            // 
+            btnStatus.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btnStatus.BackColor = SystemColors.ControlDark;
+            btnStatus.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
+            btnStatus.ForeColor = Color.Black;
+            btnStatus.Location = new Point(12, 617);
+            btnStatus.Name = "btnStatus";
+            btnStatus.Size = new Size(271, 40);
+            btnStatus.TabIndex = 26;
+            btnStatus.Text = "Get Status";
+            btnStatus.UseVisualStyleBackColor = false;
+            btnStatus.Click += btnStatus_Click;
+            // 
             // TerminalSIM800L
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(862, 715);
+            Controls.Add(btnStatus);
             Controls.Add(btnRestart);
             Controls.Add(numIP);
             Controls.Add(btnConectarServer);
@@ -345,7 +358,7 @@
             Controls.Add(txtComando);
             Controls.Add(label8);
             Controls.Add(lblIP);
-            Controls.Add(label7);
+            Controls.Add(lblConectado);
             Controls.Add(lblCalidadSenial);
             Controls.Add(label6);
             Controls.Add(label5);
@@ -387,7 +400,7 @@
         private Label label5;
         private Label label6;
         private Label lblCalidadSenial;
-        private Label label7;
+        private Label lblConectado;
         private Label lblIP;
         private Label label8;
         private TextBox txtComando;
@@ -398,5 +411,6 @@
         private Button btnConectarServer;
         private NumericUpDown numIP;
         private Button btnRestart;
+        private Button btnStatus;
     }
 }

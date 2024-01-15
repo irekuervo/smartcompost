@@ -22,7 +22,7 @@
         // Método para verificar la conexión
         public static string EstaConectado()
         {
-            return "AT+CREG?";
+            return "AT+CGATT?";
         }
 
         // Método para activar la funcionalidad completa del módem
@@ -82,6 +82,11 @@
         public static string RealizarSolicitudGET(string url)
         {
             return $"GET {url} HTTP/1.0";
+        }
+
+        public static string CalidadSenial()
+        {
+            return "AT+CSQ";
         }
     }
 }

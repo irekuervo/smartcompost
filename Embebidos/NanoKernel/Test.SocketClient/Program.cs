@@ -30,10 +30,10 @@ public class Program
                 byte[] buffer = new byte[1024];
 
                 // Leer la respuesta del servidor
-                int bytesRead = clientStream.Read(buffer, 0, buffer.Length);
-                string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                //int bytesRead = clientStream.Read(buffer, 0, buffer.Length);
+                //string response = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
-                Console.WriteLine($"Respuesta del servidor: {response}");
+                //Console.WriteLine($"Respuesta del servidor: {response}");
 
                 Console.ReadLine();
             }

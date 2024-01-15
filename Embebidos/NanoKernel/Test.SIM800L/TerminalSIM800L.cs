@@ -114,6 +114,22 @@ namespace Test.SIM800L
             }
         }
 
+        private void btnStatus_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                sim800L.ActualizarEstado();
+
+                lblCalidadSenial.Text = sim800L.CalidadSenial;
+                lblConectado.Text = sim800L.Conectado.ToString();
+                lblIP.Text = sim800L.IP;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
         private void linkActualizar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             ActualizarListaPuertos();

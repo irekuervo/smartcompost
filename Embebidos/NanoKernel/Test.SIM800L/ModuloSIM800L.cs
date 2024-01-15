@@ -1,4 +1,5 @@
 ﻿using System.IO.Ports;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Test.SIM800L;
 
@@ -9,20 +10,24 @@ public class ModuloSIM800L : IDisposable
     public event Action<string> OnEstadoActualizado;
 
     public string IP => ip;
+    public bool Conectado => conectado;
+    public string CalidadSenial => calidadSenial;
 
     private SerialPort serialPort;
     private System.Threading.Timer watchdog;
 
+    private string puertoCOM;
     private string apn;
     private string apnUsuario;
     private string apnPassword;
 
+    private bool conectado = false;
     private string calidadSenial = "-";
-    private string puertoCOM;
+
 
     // TCP
     private bool hayConexionTCP = false;
-    private string ip;
+    private string ip = "";
     private string host = "";
     private int port = 0;
 
@@ -62,20 +67,60 @@ public class ModuloSIM800L : IDisposable
         if (ok == false)
             throw new Exception("No se pudo establer conexion con el modulo");
 
-        //watchdog?.Dispose();
-        //watchdog = new System.Threading.Timer((object? state) =>
-        //{
-        //    try
-        //    {
-        //        EnviarComandoOK(Sim800lCommands.OK);
-        //        calidadSenial = EnviarComandoOK(Sim800lCommands.IntensidadSenal());
-        //        OnEstadoActualizado?.Invoke(calidadSenial);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Iniciar(puertoCOM);
-        //    }
-        //}, null, 5000, 5000);
+    }
+
+
+    public void ActualizarEstado()
+    {
+        EstaConectadoRedAPN();
+
+        ObtenerDireccionIP();
+
+        ObtenerCalidadSenial();
+    }
+
+    private bool ObtenerCalidadSenial()
+    {
+        try
+        {
+            var res = EnviarComandoOK(ComandosSIM800L.CalidadSenial());
+            this.calidadSenial = LimpiarString(res.Replace("AT+CSQ\r\r\n+CSQ: ", ""));
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private bool EstaConectadoRedAPN()
+    {
+        try
+        {
+            EnviarComandoOK(ComandosSIM800L.EstaConectado());
+            this.conectado = true;
+            return true;
+        }
+        catch (Exception)
+        {
+            this.conectado = false;
+            return false;
+        }
+    }
+
+    private bool ObtenerDireccionIP()
+    {
+        try
+        {
+            var res = EnviarComando(ComandosSIM800L.ObtenerDireccionIP());
+            this.ip = LimpiarString(res.Replace("AT+CIFSR\r\r\n", ""));
+            return true;
+        }
+        catch (Exception)
+        {
+            this.ip = "-";
+            return false;
+        }
     }
 
     public void ConectarAPN(string apn, string apnUsuario, string apnPassword)
@@ -95,6 +140,9 @@ public class ModuloSIM800L : IDisposable
 
         // Paso 3: Configurar el APN, nombre de usuario y contraseña
         EnviarComando(ComandosSIM800L.ConfigurarAPN(apn, apnUsuario, apnPassword), timeoutMilis: 5_000);
+
+        if (EstaConectadoRedAPN() == false)
+            throw new Exception($"No se pudo conectar a la red: {apn}, usr: {apnUsuario}, pass: {apnPassword}");
 
         // Iniciar la conexión GPRS
         EnviarComando(ComandosSIM800L.IniciarConexionGPRS(), timeoutMilis: 30_000);
@@ -152,7 +200,7 @@ public class ModuloSIM800L : IDisposable
     private string EnviarComandoOK(string comando, int timeoutMilisegundos = 5000, int sleepMilis = 1000)
     {
         var res = EnviarComando(comando, timeoutMilisegundos, sleepMilis);
-        if (res.Contains(ComandosSIM800L.OK) == false)
+        if (res.Contains(ComandosSIM800L.OK) == false || res.Contains("ERROR"))
         {
             throw new Exception($"Error con el comando {comando}: " + res);
         }
@@ -261,5 +309,7 @@ public class ModuloSIM800L : IDisposable
             // Best Efford por ahora
         }
     }
+
+    private string LimpiarString(string str) => str.Replace("\r\n", "").Replace("OK","");
 
 }
