@@ -1,5 +1,4 @@
 ﻿using System.IO.Ports;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Test.SIM800L;
 
@@ -31,42 +30,28 @@ public class ModuloSIM800L : IDisposable
     private string host = "";
     private int port = 0;
 
-    public ModuloSIM800L()
-    {
-
-    }
-
-    public ModuloSIM800L(string apn, string apnUsuario, string apnPassword)
-    {
-        ConectarAPN(apn, apnUsuario, apnPassword);
-    }
-
     public void Iniciar(string puertoSerie)
     {
         Detener();
-
-        IniciarComunicacionSerie(puertoSerie);
-
-        int intentos = 0;
-        bool ok = false;
-        // Nos tratamos de comunicar con el modulo, puede tomar algunos intentos para sincronizar el clock
-        while (intentos++ < 5)
+        try
         {
-            try
-            {
-                EnviarComandoOK(ComandosSIM800L.ModuloActivo());
-                ok = true;
-                break;
-            }
-            catch (Exception)
-            {
-                Thread.Sleep(500);
-            }
+
+            IniciarComunicacionSerie(puertoSerie);
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception("No se pudo crear la conexion serie: " + ex.Message);
         }
 
-        if (ok == false)
-            throw new Exception("No se pudo establer conexion con el modulo");
-
+        try
+        {
+            EnviarComandoOK(ComandosSIM800L.ModuloActivo(), maxIntentos: 5);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("No se pudo conectar con el dispositivo luego de 5 intentos: " + ex.Message);
+        }
     }
 
 
@@ -132,19 +117,11 @@ public class ModuloSIM800L : IDisposable
         this.apnUsuario = apnUsuario;
         this.apnPassword = apnPassword;
 
-        // Activar la funcionalidad completa del módem
-        //EnviarComando(ComandosSIM800L.ActivarFuncionalidadCompleta());
-
-        // Verificar el estado del PIN de la tarjeta SIM
-        //EnviarComando(ComandosSIM800L.VerificarEstadoPIN(), timeoutMilis: 5_000);
-
-        // Paso 3: Configurar el APN, nombre de usuario y contraseña
         EnviarComando(ComandosSIM800L.ConfigurarAPN(apn, apnUsuario, apnPassword), timeoutMilis: 5_000);
 
         if (EstaConectadoRedAPN() == false)
             throw new Exception($"No se pudo conectar a la red: {apn}, usr: {apnUsuario}, pass: {apnPassword}");
 
-        // Iniciar la conexión GPRS
         EnviarComando(ComandosSIM800L.IniciarConexionGPRS(), timeoutMilis: 30_000);
 
         ObtenerDireccionIP();
@@ -196,10 +173,22 @@ public class ModuloSIM800L : IDisposable
         serialPort.Open();
     }
 
-    private string EnviarComandoOK(string comando, int timeoutMilisegundos = 5000, int sleepMilis = 1000)
+    private string EnviarComandoOK(string comando, int timeoutMilisegundos = 5000, int sleepMilis = 1000, int maxIntentos = 1)
     {
-        var res = EnviarComando(comando, timeoutMilisegundos, sleepMilis);
-        if (res.Contains(ComandosSIM800L.OK) == false || res.Contains("ERROR"))
+        int intento = 0;
+        bool ok = false;
+        string res = "";
+        while (intento++ < maxIntentos)
+        {
+            res = EnviarComando(comando, timeoutMilisegundos, sleepMilis);
+            if (res.Contains(ComandosSIM800L.OK) && res.Contains("ERROR") == false)
+            {
+                ok = true;
+                break;
+            }
+        }
+
+        if (ok == false)
         {
             throw new Exception($"Error con el comando {comando}: " + res);
         }
@@ -292,7 +281,7 @@ public class ModuloSIM800L : IDisposable
 
     public void Restart()
     {
-        EnviarComando(ComandosSIM800L.Restart());
+        EnviarComandoOK(ComandosSIM800L.Restart(), maxIntentos: 5);
     }
 
     public void Dispose()
@@ -309,6 +298,6 @@ public class ModuloSIM800L : IDisposable
         }
     }
 
-    private string LimpiarString(string str) => str.Replace("\r\n", "").Replace("OK","");
+    private string LimpiarString(string str) => str.Replace("\r\n", "").Replace("OK", "");
 
 }
