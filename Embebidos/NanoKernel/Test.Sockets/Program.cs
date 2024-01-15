@@ -7,6 +7,20 @@ public class Program
 {
     static void Main(string[] args)
     {
+        try
+        {
+            using (WebClient client = new WebClient())
+            {
+                string ip = client.DownloadString("http://api.ipify.org");
+                Console.WriteLine("Tu dirección IP pública es: " + ip);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error al obtener la dirección IP: " + ex.Message);
+        }
+
+
         // Establecer la dirección IP y el puerto en el que el servidor escuchará
         IPAddress ipAddress = IPAddress.Any;
         int port = 37000;

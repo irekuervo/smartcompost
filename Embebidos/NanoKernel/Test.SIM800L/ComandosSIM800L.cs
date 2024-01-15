@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Test.SIM800L
+﻿namespace Test.SIM800L
 {
     /// <summary>
     /// Comandos de https://www.elecrow.com/wiki/images/2/20/SIM800_Series_AT_Command_Manual_V1.09.pdf
     /// </summary>
-    public static class Sim800lCommands
+    public static class ComandosSIM800L
     {
         public const string OK = "OK\r\n";
 
@@ -31,16 +25,15 @@ namespace Test.SIM800L
             return "AT+CREG?";
         }
 
-        // Método para conectar a una red APN
-        public static string ConectarAPN(string apn)
-        {
-            return $"AT+CSTT=\"{apn}\"";
-        }
-
         // Método para activar la funcionalidad completa del módem
         public static string ActivarFuncionalidadCompleta()
         {
             return "AT+CFUN=1";
+        }
+
+        public static string Restart()
+        {
+            return "AT+CFUN=1,1";
         }
 
         // Método para verificar el estado del PIN de la tarjeta SIM
@@ -70,13 +63,13 @@ namespace Test.SIM800L
         // Método para iniciar una conexión TCP, Pagina 222
         public static string IniciarConexionTCP(string domainName, int puerto)
         {
-            return $"AT+CIPSTART=\"TCP\",\"{domainName}\",{puerto}";
+            return $"AT+CIPSTART=\"TCP\",\"{domainName}\",\"{puerto}\"";
         }
 
         // Método para enviar datos por la conexión TCP
         public static string EnviarDatosTCP(int longitud)
         {
-            return $"AT+CIPSEND={longitud}";
+            return $"AT+CIPSEND";
         }
 
         // Pagina 227

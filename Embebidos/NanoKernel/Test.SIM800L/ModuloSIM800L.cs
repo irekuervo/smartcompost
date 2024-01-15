@@ -19,7 +19,7 @@ public class ModuloSIM800L : IDisposable
 
     private string calidadSenial = "-";
     private string puertoCOM;
-   
+
     // TCP
     private bool hayConexionTCP = false;
     private string ip;
@@ -33,17 +33,7 @@ public class ModuloSIM800L : IDisposable
 
     public ModuloSIM800L(string apn, string apnUsuario, string apnPassword)
     {
-        SetAPN(apn, apnUsuario, apnPassword);
-    }
-
-    public void SetAPN(string apn, string apnUsuario, string apnPassword)
-    {
-        if (string.IsNullOrWhiteSpace(apn) || string.IsNullOrWhiteSpace(apnUsuario) || string.IsNullOrWhiteSpace(apnPassword))
-            throw new Exception("Las credenciales no pueden estar vacias");
-
-        this.apn = apn;
-        this.apnUsuario = apnUsuario;
-        this.apnPassword = apnPassword;
+        ConectarAPN(apn, apnUsuario, apnPassword);
     }
 
     public void Iniciar(string puertoSerie)
@@ -52,7 +42,25 @@ public class ModuloSIM800L : IDisposable
 
         IniciarComunicacionSerie(puertoSerie);
 
-        InicializarModulo();
+        int intentos = 0;
+        bool ok = false;
+        // Nos tratamos de comunicar con el modulo, puede tomar algunos intentos para sincronizar el clock
+        while (intentos++ < 5)
+        {
+            try
+            {
+                EnviarComandoOK(ComandosSIM800L.ModuloActivo());
+                ok = true;
+                break;
+            }
+            catch (Exception)
+            {
+                Thread.Sleep(500);
+            }
+        }
+
+        if (ok == false)
+            throw new Exception("No se pudo establer conexion con el modulo");
 
         //watchdog?.Dispose();
         //watchdog = new System.Threading.Timer((object? state) =>
@@ -70,39 +78,29 @@ public class ModuloSIM800L : IDisposable
         //}, null, 5000, 5000);
     }
 
-    private void IniciarComunicacionSerie(string puertoSerie)
+    public void ConectarAPN(string apn, string apnUsuario, string apnPassword)
     {
-        puertoCOM = puertoSerie;
+        if (string.IsNullOrWhiteSpace(apn) || string.IsNullOrWhiteSpace(apnUsuario) || string.IsNullOrWhiteSpace(apnPassword))
+            throw new Exception("Las credenciales no pueden estar vacias");
 
-        serialPort = new SerialPort(puertoCOM);
-        // Configura el puerto serie según tus necesidades
-        serialPort.BaudRate = 9600;
-        serialPort.Parity = Parity.None;
-        serialPort.StopBits = StopBits.One;
-        serialPort.DataBits = 8;
-        serialPort.Handshake = Handshake.None;
-        serialPort.Open();
-    }
-
-    private void InicializarModulo()
-    {
-        // Vemos que esté OK
-        EnviarComandoOK(Sim800lCommands.ModuloActivo());
+        this.apn = apn;
+        this.apnUsuario = apnUsuario;
+        this.apnPassword = apnPassword;
 
         // Activar la funcionalidad completa del módem
-        EnviarComandoOK(Sim800lCommands.ActivarFuncionalidadCompleta());
+        //EnviarComando(ComandosSIM800L.ActivarFuncionalidadCompleta());
 
         // Verificar el estado del PIN de la tarjeta SIM
-        EnviarComandoOK(Sim800lCommands.VerificarEstadoPIN());
+        //EnviarComando(ComandosSIM800L.VerificarEstadoPIN(), timeoutMilis: 5_000);
 
         // Paso 3: Configurar el APN, nombre de usuario y contraseña
-        EnviarComandoOK(Sim800lCommands.ConfigurarAPN(apn, apnUsuario, apnPassword));
+        EnviarComando(ComandosSIM800L.ConfigurarAPN(apn, apnUsuario, apnPassword), timeoutMilis: 5_000);
 
         // Iniciar la conexión GPRS
-        EnviarComandoOK(Sim800lCommands.IniciarConexionGPRS());
+        EnviarComando(ComandosSIM800L.IniciarConexionGPRS(), timeoutMilis: 30_000);
 
         // Obtener la dirección IP asignada al módulo
-        this.ip = EnviarComando(Sim800lCommands.ObtenerDireccionIP());
+        this.ip = EnviarComando(ComandosSIM800L.ObtenerDireccionIP(), timeoutMilis: 5_000);
     }
 
     public void IniciarClienteTCP(string host, int port)
@@ -111,7 +109,7 @@ public class ModuloSIM800L : IDisposable
         {
             this.host = host;
             this.port = port;
-            EnviarComando(Sim800lCommands.IniciarConexionTCP(host, port));
+            EnviarComando(ComandosSIM800L.IniciarConexionTCP(host, port), timeoutMilis: 30_000);
             hayConexionTCP = true;
         }
         catch (Exception ex)
@@ -128,7 +126,7 @@ public class ModuloSIM800L : IDisposable
 
         try
         {
-            EnviarComando(Sim800lCommands.DetenerConexionTCP());
+            EnviarComando(ComandosSIM800L.DetenerConexionTCP());
             hayConexionTCP = false;
         }
         catch (Exception ex)
@@ -137,26 +135,24 @@ public class ModuloSIM800L : IDisposable
         }
     }
 
-    public string EnviarPayload(byte[] payload)
+    private void IniciarComunicacionSerie(string puertoSerie)
     {
-        if (hayConexionTCP == false)
-            throw new Exception("No hay ninguna conexion TCP activa");
+        puertoCOM = puertoSerie;
 
-        EnviarComando(Sim800lCommands.EnviarDatosTCP(payload.Length));
-
-        // Paso 8: Realizar una solicitud HTTP GET
-        respuesta = EnviarComando(Sim800lCommands.EnviarDatosTCP(url));
-
-        // Cerrar la conexión serial cuando hayas terminado
-        Detener();
-
-        return respuesta;
+        serialPort = new SerialPort(puertoCOM);
+        // Configura el puerto serie según tus necesidades
+        serialPort.BaudRate = 9600;
+        serialPort.Parity = Parity.None;
+        serialPort.StopBits = StopBits.One;
+        serialPort.DataBits = 8;
+        serialPort.Handshake = Handshake.None;
+        serialPort.Open();
     }
 
-    private string EnviarComandoOK(string comando, int timeoutMilisegundos = 5000)
+    private string EnviarComandoOK(string comando, int timeoutMilisegundos = 5000, int sleepMilis = 1000)
     {
-        var res = EnviarComando(comando, timeoutMilisegundos);
-        if (res.Contains(Sim800lCommands.OK) == false)
+        var res = EnviarComando(comando, timeoutMilisegundos, sleepMilis);
+        if (res.Contains(ComandosSIM800L.OK) == false)
         {
             throw new Exception($"Error con el comando {comando}: " + res);
         }
@@ -165,7 +161,7 @@ public class ModuloSIM800L : IDisposable
     }
 
     private object lockObject = new object();
-    private string EnviarComando(string comando, int timeoutMilisegundos = 5000)
+    public string EnviarComando(string comando, int timeoutMilis = 5000, int sleepMilis = 2000)
     {
         lock (lockObject)
         {
@@ -176,7 +172,9 @@ public class ModuloSIM800L : IDisposable
             DateTime inicio = DateTime.Now;
             byte[] buffer = new byte[1024 * 2]; // Ajusta el tamaño según sea necesario
 
-            while ((DateTime.Now - inicio).TotalMilliseconds < timeoutMilisegundos)
+            Thread.Sleep(sleepMilis);
+
+            while ((DateTime.Now - inicio).TotalMilliseconds < timeoutMilis)
             {
                 int bytesDisponibles = serialPort.BytesToRead;
 
@@ -185,7 +183,47 @@ public class ModuloSIM800L : IDisposable
                     int bytesRead = serialPort.Read(buffer, 0, Math.Min(bytesDisponibles, buffer.Length));
                     string res = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     RespuestaRecibida?.Invoke(res);
+
                     return res;
+                }
+
+                Thread.Sleep(100); // Pequeño tiempo de espera antes de volver a verificar
+            }
+
+            throw new Exception("Timeout");
+        }
+    }
+
+    public void EnviarPayload(byte[] payload, int timeoutMilisegundos = 5000, int sleepMilis = 1000)
+    {
+        if (hayConexionTCP == false)
+            throw new Exception("No hay ninguna conexion TCP activa");
+
+        lock (lockObject)
+        {
+            EnviarComandoOK(ComandosSIM800L.EnviarDatosTCP(payload.Length), timeoutMilisegundos, sleepMilis);
+
+            serialPort.Write(payload, 0, payload.Length);
+            ComandoEnviado?.Invoke(Encoding.UTF8.GetString(payload));
+
+            Thread.Sleep(sleepMilis);
+
+            byte[] buffer = new byte[1];
+            buffer[0] = 26; // ^Z
+            serialPort.Write(buffer, 0, 1);
+
+            DateTime inicio = DateTime.Now;
+            buffer = new byte[1024 * 2]; // Ajusta el tamaño según sea necesario
+
+            while ((DateTime.Now - inicio).TotalMilliseconds < timeoutMilisegundos)
+            {
+                int bytesDisponibles = serialPort.BytesToRead;
+
+                if (bytesDisponibles > 0)
+                {
+                    int bytesRead = serialPort.Read(buffer, 0, Math.Min(bytesDisponibles, buffer.Length));
+                    var res = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    RespuestaRecibida?.Invoke(res);
                 }
 
                 Thread.Sleep(100); // Pequeño tiempo de espera antes de volver a verificar
@@ -197,15 +235,31 @@ public class ModuloSIM800L : IDisposable
 
     private void Detener()
     {
+        DetenerClienteTCP();
+
         if (serialPort != null && serialPort.IsOpen)
         {
             serialPort.Close();
         }
     }
 
+    public void Restart()
+    {
+        EnviarComando(ComandosSIM800L.Restart());
+    }
+
     public void Dispose()
     {
         watchdog?.Dispose();
-        Detener();
+
+        try
+        {
+            Detener();
+        }
+        catch (Exception)
+        {
+            // Best Efford por ahora
+        }
     }
+
 }

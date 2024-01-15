@@ -1,12 +1,15 @@
 using System.IO.Ports;
+using System.Text;
 
 namespace Test.SIM800L
 {
     public partial class TerminalSIM800L : Form
     {
-        public static string APN = "internet.movil";
-        public static string APN_USER = "internet";
-        public static string APN_PASSWORD = "internet";
+        public const string APN = "internet.movil";
+        public const string APN_USER = "internet";
+        public const string APN_PASSWORD = "internet";
+        public const string TCP_Server_URL = "190.229.242.238";
+        public const int TCP_Server_IP = 37000;
 
         public static ModuloSIM800L sim800L = new ModuloSIM800L();
 
@@ -20,6 +23,8 @@ namespace Test.SIM800L
             txtAPN.Text = APN;
             txtUsuario.Text = APN_USER;
             txtPassword.Text = APN_PASSWORD;
+            txtServerURL.Text = TCP_Server_URL;
+            numIP.Value = TCP_Server_IP;
 
             sim800L.ComandoEnviado += Sim800L_ComandoEnviado;
             sim800L.RespuestaRecibida += Sim800L_RespuestaRecibida;
@@ -65,12 +70,63 @@ namespace Test.SIM800L
         {
             try
             {
-                sim800L.SetAPN(txtAPN.Text, txtUsuario.Text, txtPassword.Text);
-               // sim800L.EnviarPayload("http://www.brainjar.com/java/host/test.html", "brainjar.com", 80);
+                sim800L.EnviarPayload(Encoding.UTF8.GetBytes("hola carola!"), timeoutMilisegundos: 30_000);
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void btnRestart_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                sim800L.Restart();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void btnConectarServer_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                sim800L.IniciarClienteTCP(txtServerURL.Text, (int)numIP.Value);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void btnConectarAPN_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                sim800L.ConectarAPN(txtAPN.Text, txtUsuario.Text, txtPassword.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void linkActualizar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            ActualizarListaPuertos();
+        }
+
+        private void ActualizarListaPuertos()
+        {
+            string[] puertos = SerialPort.GetPortNames();
+
+            listaPuertos.Clear();
+            foreach (var puerto in puertos)
+            {
+                listaPuertos.Items.Add(puerto);
             }
         }
 
@@ -92,19 +148,15 @@ namespace Test.SIM800L
             }
         }
 
-        private void linkActualizar_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void btnEnviar_Click(object sender, EventArgs e)
         {
-            ActualizarListaPuertos();
-        }
-
-        private void ActualizarListaPuertos()
-        {
-            string[] puertos = SerialPort.GetPortNames();
-
-            listaPuertos.Clear();
-            foreach (var puerto in puertos)
+            try
             {
-                listaPuertos.Items.Add(puerto);
+                sim800L.EnviarComando(txtComando.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
     }

@@ -1,13 +1,16 @@
 *** Paso 0: instalar vs2022 o dotnet 6***
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
-*** Paso 1: instalar tools ***
+*** Paso 1: instalar en visual studio la extension: .Net Nanoframework Extension***
+https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+
+*** Paso 2: instalar tools ***
 dotnet tool install -g nanoff
 
-*** Paso 2: Para actualizar el firmaware ***
+*** Paso 3: Para actualizar el firmaware ***
 nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
 
-*** Paso 2 bis (opcional): Depploy manual de .bin *** 
+*** Paso 3 bis (opcional): Depploy manual de .bin *** 
 nanoff --target ESP32_PSRAM_REV0 --serialport COM12 --deploy --image "E:\GitHub\nf-Samples\samples\Blinky\Blinky\bin\Debug\Blinky.bin"
 
 *** Paso 4: Manejo proyecto .Net *** 
@@ -22,8 +25,18 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 - Con el cp210x va como piña todo
 
 *** Comunicacion Serie ***
-- Al parecer se simulan los COM, todavia no entiendo si son fisicos o virtuales, pero puedo preguntar cuales estan disponibles
+- COM1 no se puede usar para debugear. Todavia no se si en modo release se puede usar!
 
+*** SIM800L ***
+- SIM800L anda con 2 capas de 2200nF (2,2uF) sobre el proto pegado al modulo (bien cerca) y con 4V en la fuente de alimentacion
+- Para hablarle en crudo, uso un ESP32 con el pin EN conectado a GND (lo puentea y hablo directo con el conversor serie)
+- La papa para TCP esta en: https://www.waveshare.com/w/upload/2/25/SIM800_Series_TCPIP_Application_Note_V1.03.pdf
+
+
+
+
+
+*** c# ***
 // get available ports
  var ports = SerialPort.GetPortNames();
  Debug.WriteLine("Puertos COM disponibles: ");
