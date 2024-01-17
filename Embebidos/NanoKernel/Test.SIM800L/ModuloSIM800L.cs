@@ -237,7 +237,9 @@ public class ModuloSIM800L : IDisposable
 
         lock (lockObject)
         {
-            EnviarComandoOK(ComandosSIM800L.EnviarDatosTCP(payload.Length), timeoutMilisegundos, sleepMilis);
+            var resTCP = EnviarComando(ComandosSIM800L.EnviarDatosTCP(payload.Length), timeoutMilisegundos, sleepMilis);
+            if (resTCP.ToLower().Contains("error"))
+                throw new Exception("No se pueden enviar datos TCP");
 
             serialPort.Write(payload, 0, payload.Length);
             ComandoEnviado?.Invoke(Encoding.UTF8.GetString(payload));

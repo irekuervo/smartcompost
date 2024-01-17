@@ -1,5 +1,8 @@
+using Newtonsoft.Json;
 using System.IO.Ports;
 using System.Text;
+using System.Text.Json.Serialization;
+using static Test.SIM800L.TerminalSIM800L.Medicion;
 
 namespace Test.SIM800L
 {
@@ -71,11 +74,40 @@ namespace Test.SIM800L
             txtTerminal.Text += comando;
         }
 
+        
+        public class Medicion
+        {
+            public enum Unidad
+            { 
+                GradoCelcius,
+                Volt,
+            }
+
+            public Guid id;
+            public DateTime fecha;
+            public Unidad unidad;
+            public int valor;
+
+            public Medicion(int valor, Unidad unidad)
+            {
+                this.id = Guid.NewGuid();
+                this.fecha = DateTime.Now;
+                this.valor = valor;
+                this.unidad = unidad;
+            }
+        }
+
+
         private void btnEjecutar_Click(object sender, EventArgs e)
         {
             try
             {
-                sim800L.EnviarPayload(Encoding.UTF8.GetBytes("hola carola!"), timeoutMilisegundos: 30_000);
+
+                var medicion = new Medicion(25, Unidad.Volt);
+
+                var str = JsonConvert.SerializeObject(medicion);
+
+                sim800L.EnviarPayload(Encoding.UTF8.GetBytes(str), timeoutMilisegundos: 30_000);
             }
             catch (Exception ex)
             {
