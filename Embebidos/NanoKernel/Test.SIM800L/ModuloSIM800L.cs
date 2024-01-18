@@ -165,7 +165,7 @@ public class ModuloSIM800L : IDisposable
 
         serialPort = new SerialPort(puertoCOM);
         // Configura el puerto serie según tus necesidades
-        serialPort.BaudRate = 9600;
+        serialPort.BaudRate = 115200;
         serialPort.Parity = Parity.None;
         serialPort.StopBits = StopBits.One;
         serialPort.DataBits = 8;
@@ -196,10 +196,10 @@ public class ModuloSIM800L : IDisposable
         return res;
     }
 
-    private object lockObject = new object();
+    private object lockWriteBuffer = new object();
     public string EnviarComando(string comando, int timeoutMilis = 5000, int sleepMilis = 2000)
     {
-        lock (lockObject)
+        lock (lockWriteBuffer)
         {
             var linea = comando + "\r";
             serialPort.Write(linea);
@@ -235,10 +235,10 @@ public class ModuloSIM800L : IDisposable
         if (hayConexionTCP == false)
             throw new Exception("No hay ninguna conexion TCP activa");
 
-        lock (lockObject)
+        lock (lockWriteBuffer)
         {
             var resTCP = EnviarComando(ComandosSIM800L.EnviarDatosTCP(payload.Length), timeoutMilisegundos, sleepMilis);
-            if (resTCP.ToLower().Contains("error"))
+            if (resTCP.ToLower().Contains("error") || resTCP.Contains(">") == false)
                 throw new Exception("No se pueden enviar datos TCP");
 
             serialPort.Write(payload, 0, payload.Length);
@@ -246,12 +246,10 @@ public class ModuloSIM800L : IDisposable
 
             Thread.Sleep(sleepMilis);
 
-            byte[] buffer = new byte[1];
-            buffer[0] = 26; // ^Z
-            serialPort.Write(buffer, 0, 1);
+             EnviarCTRL_Z(sleepMilis);
 
             DateTime inicio = DateTime.Now;
-            buffer = new byte[1024 * 2]; // Ajusta el tamaño según sea necesario
+            byte[] buffer = new byte[1024 * 2]; // Ajusta el tamaño según sea necesario
 
             while ((DateTime.Now - inicio).TotalMilliseconds < timeoutMilisegundos)
             {
@@ -268,6 +266,19 @@ public class ModuloSIM800L : IDisposable
             }
 
             throw new Exception("Timeout");
+        }
+    }
+
+    private object lock_ctrlz = new object();
+    public void EnviarCTRL_Z(int sleepMilis = 1000)
+    {
+        lock (lock_ctrlz)
+        {
+            byte[] buffer = new byte[1];
+            buffer[0] = 26; // ^Z
+            serialPort.Write(buffer, 0, 1);
+
+            Thread.Sleep(sleepMilis);
         }
     }
 

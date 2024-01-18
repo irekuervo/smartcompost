@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using System.IO.Ports;
 using System.Text;
-using System.Text.Json.Serialization;
 using static Test.SIM800L.TerminalSIM800L.Medicion;
 
 namespace Test.SIM800L
@@ -59,8 +58,7 @@ namespace Test.SIM800L
                 return;
             }
 
-
-            txtTerminal.Text += "\r\n" + respuesta;
+            EscribirLinea(respuesta, request: false);
         }
 
         private void Sim800L_ComandoEnviado(string comando)
@@ -71,14 +69,19 @@ namespace Test.SIM800L
                 return;
             }
 
-            txtTerminal.Text += comando;
+            EscribirLinea(comando, request: true);
         }
 
-        
+        private void EscribirLinea(string respuesta, bool request)
+        {
+            string tipoLinea = request ? "request" : "response";
+            txtTerminal.Text += $"[{DateTime.Now}] [{tipoLinea}]: {respuesta}";
+        }
+
         public class Medicion
         {
             public enum Unidad
-            { 
+            {
                 GradoCelcius,
                 Volt,
             }
@@ -206,6 +209,18 @@ namespace Test.SIM800L
             try
             {
                 sim800L.EnviarComando(txtComando.Text);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void btnCTRL_Z_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                sim800L.EnviarCTRL_Z();
             }
             catch (Exception ex)
             {

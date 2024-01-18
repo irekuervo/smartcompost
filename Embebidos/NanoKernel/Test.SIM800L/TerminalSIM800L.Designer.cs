@@ -56,6 +56,7 @@
             numIP = new NumericUpDown();
             btnRestart = new Button();
             btnStatus = new Button();
+            btnCTRL_Z = new Button();
             ((System.ComponentModel.ISupportInitialize)numIP).BeginInit();
             SuspendLayout();
             // 
@@ -78,7 +79,7 @@
             txtTerminal.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             txtTerminal.Location = new Point(289, 46);
             txtTerminal.Name = "txtTerminal";
-            txtTerminal.Size = new Size(561, 657);
+            txtTerminal.Size = new Size(827, 657);
             txtTerminal.TabIndex = 1;
             txtTerminal.Text = "";
             // 
@@ -242,7 +243,7 @@
             txtComando.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtComando.Location = new Point(357, 17);
             txtComando.Name = "txtComando";
-            txtComando.Size = new Size(370, 23);
+            txtComando.Size = new Size(562, 23);
             txtComando.TabIndex = 18;
             // 
             // btnEnviar
@@ -251,7 +252,7 @@
             btnEnviar.BackColor = SystemColors.ControlDark;
             btnEnviar.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
             btnEnviar.ForeColor = Color.Black;
-            btnEnviar.Location = new Point(733, 11);
+            btnEnviar.Location = new Point(925, 12);
             btnEnviar.Name = "btnEnviar";
             btnEnviar.Size = new Size(117, 29);
             btnEnviar.TabIndex = 19;
@@ -341,12 +342,27 @@
             btnStatus.UseVisualStyleBackColor = false;
             btnStatus.Click += btnStatus_Click;
             // 
+            // btnCTRL_Z
+            // 
+            btnCTRL_Z.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnCTRL_Z.BackColor = SystemColors.ControlDark;
+            btnCTRL_Z.Font = new Font("Segoe UI", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
+            btnCTRL_Z.ForeColor = Color.Black;
+            btnCTRL_Z.Location = new Point(1043, 12);
+            btnCTRL_Z.Name = "btnCTRL_Z";
+            btnCTRL_Z.Size = new Size(73, 29);
+            btnCTRL_Z.TabIndex = 27;
+            btnCTRL_Z.Text = "Ctrl+Z";
+            btnCTRL_Z.UseVisualStyleBackColor = false;
+            btnCTRL_Z.Click += btnCTRL_Z_Click;
+            // 
             // TerminalSIM800L
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(862, 715);
+            ClientSize = new Size(1128, 715);
+            Controls.Add(btnCTRL_Z);
             Controls.Add(btnStatus);
             Controls.Add(btnRestart);
             Controls.Add(numIP);
@@ -412,5 +428,6 @@
         private NumericUpDown numIP;
         private Button btnRestart;
         private Button btnStatus;
+        private Button btnCTRL_Z;
     }
 }
