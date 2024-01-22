@@ -13,11 +13,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{8875
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SIM800L", "Test.SIM800L\Test.SIM800L.csproj", "{E8C27B6A-0461-4604-AD7D-D77F43D0BDE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.SocketServer", "Test.Sockets\Test.SocketServer.csproj", "{39092053-C3CE-4199-9207-63A6401B5EA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SocketServer", "Test.Sockets\Test.SocketServer.csproj", "{39092053-C3CE-4199-9207-63A6401B5EA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.SocketClient", "Test.SocketClient\Test.SocketClient.csproj", "{3671368B-12DB-477B-B909-3F7F81594101}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.SocketClient", "Test.SocketClient\Test.SocketClient.csproj", "{3671368B-12DB-477B-B909-3F7F81594101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.WebApi", "Test.WebApi\Test.WebApi.csproj", "{89141D9D-0260-44D9-A40F-55301B525903}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.WebApi", "Test.WebApi\Test.WebApi.csproj", "{89141D9D-0260-44D9-A40F-55301B525903}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Modulo.SIM800L", "Modulo.SIM800L\Modulo.SIM800L.nfproj", "{1E938871-F3B0-47AA-AACA-928F487C6D64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,12 @@ Global
 		{89141D9D-0260-44D9-A40F-55301B525903}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{89141D9D-0260-44D9-A40F-55301B525903}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{89141D9D-0260-44D9-A40F-55301B525903}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E938871-F3B0-47AA-AACA-928F487C6D64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E938871-F3B0-47AA-AACA-928F487C6D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E938871-F3B0-47AA-AACA-928F487C6D64}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1E938871-F3B0-47AA-AACA-928F487C6D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E938871-F3B0-47AA-AACA-928F487C6D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E938871-F3B0-47AA-AACA-928F487C6D64}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

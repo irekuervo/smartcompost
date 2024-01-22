@@ -14,5 +14,13 @@ namespace NanoKernel.Loggin
                 Debug.WriteLine($"{DateTime.UtcNow} | {mensaje}");
             }
         }
+
+        public static void Log(Exception ex)
+        {
+            if (LogDebug)
+            {
+                Debug.WriteLine($"{DateTime.UtcNow} | {ex.Message}");
+            }
+        }
     }
 }

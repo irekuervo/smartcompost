@@ -246,7 +246,7 @@ public class ModuloSIM800L : IDisposable
 
             Thread.Sleep(sleepMilis);
 
-             EnviarCTRL_Z(sleepMilis);
+            EnviarCTRL_Z(sleepMilis);
 
             DateTime inicio = DateTime.Now;
             byte[] buffer = new byte[1024 * 2]; // Ajusta el tamaño según sea necesario
@@ -260,6 +260,7 @@ public class ModuloSIM800L : IDisposable
                     int bytesRead = serialPort.Read(buffer, 0, Math.Min(bytesDisponibles, buffer.Length));
                     var res = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     RespuestaRecibida?.Invoke(res);
+                    return;
                 }
 
                 Thread.Sleep(100); // Pequeño tiempo de espera antes de volver a verificar

@@ -28,12 +28,12 @@ namespace NanoKernel
         {
             // Esta sintaxis fea va a quedar linda con Dependency Injection
 
-            var com2 = new ComunicadorSerie("COM2", 32, 33);
-            var com3 = new ComunicadorSerie("COM3", 16, 17);
+            //var com2 = new ComunicadorSerie("COM2", 32, 33);
+            //var com3 = new ComunicadorSerie("COM3", 16, 17);
 
-            RegistrarModulo("sim", new ComunicadorSIM800L(com2), typeof(ComunicadorSIM800L));
+            //RegistrarModulo("sim", new ComunicadorSIM800L(com2), typeof(ComunicadorSIM800L));
 
-            RegistrarModulo("consola", new Consola(com3, Modulos), typeof(Consola));
+            //RegistrarModulo("consola", new Consola(com3, Modulos), typeof(Consola));
 
             RegistrarModulos(Assembly.GetExecutingAssembly());
             RegistrarModulos(baseAssembly);
