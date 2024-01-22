@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace System
+namespace Test.SIM800L
 {
     public static class ayString
     {

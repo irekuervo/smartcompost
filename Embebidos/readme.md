@@ -1,3 +1,6 @@
+NANOFRAMEWORK (C# framework): https://www.nanoframework.net/ , https://github.com/nanoframework
+NANOFF (Firmware flasher): https://github.com/nanoframework/nanoFirmwareFlasher
+
 *** Paso 0: instalar vs2022 o dotnet 6***
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
@@ -10,8 +13,9 @@ dotnet tool install -g nanoff
 *** Paso 3: Para actualizar el firmaware ***
 
 Importante:
-*1) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO!! Paciencia, pueden ser como 60 segs*
-*2) NO CONECTAR NADA EN LOS PINES TX/RX, ya que el debugger los usa*
+* 1) Elegir target y puerto COM. "ESP32_PSRAM_REV0" es el mas generico, por ahora anda
+* 2) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO!! Paciencia, pueden ser como 60 segs *
+* 3) NO CONECTAR NADA EN LOS PINES TX/RX, ya que el debugger los usa *
 
 nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
 
@@ -28,17 +32,16 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 *** BITACORA ***
 - Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si
 - Con el cp210x va como piña todo
+- Aveces deployeo algo que rompe todo y se autoreseta, y dejo de poder deployar. Ahi tengo que volver a instalar el firmware y probar de 0 (o deployar a mano cambiando algo que probablemente arregle el error)
+- 22/01/24: me esta cagando a palos usar una app con otras referencias, se resetea todo el sistema. Este comportamiento tambien lo vi cuando yo cagaba a palos la app corriendo en caliente, ni tira exception, directamente entra en un loop muerto.
 
 *** Comunicacion Serie ***
-- COM1 no se puede usar para debugear. Todavia no se si en modo release se puede usar!
+- COM1 (RT, TX) no se puede usar para debugear. Todavia no se si en modo release se puede usar!
 
 *** SIM800L ***
-- SIM800L anda con 2 capas de 2200nF (2,2uF) sobre el proto pegado al modulo (bien cerca) y con 4V en la fuente de alimentacion
+- SIM800L anda con 1 capa de 2200nF (2,2uF) sobre el proto pegado al modulo (bien cerca) y con 4V en la fuente de alimentacion de al menos 2A
 - Para hablarle en crudo, uso un ESP32 con el pin EN conectado a GND (lo puentea y hablo directo con el conversor serie)
 - La papa para TCP esta en esta nota de aplicacion del fabricante: https://www.waveshare.com/w/upload/2/25/SIM800_Series_TCPIP_Application_Note_V1.03.pdf
-
-
-
 
 
 *** c# ***

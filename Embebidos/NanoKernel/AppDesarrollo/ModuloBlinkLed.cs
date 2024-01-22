@@ -1,4 +1,5 @@
 ﻿using nanoFramework.Hardware.Esp32;
+using System;
 using System.Device.Gpio;
 using System.Threading;
 
@@ -8,6 +9,7 @@ namespace AppDesarrollo
     {
         static GpioController gpio;
         static GpioPin led;
+        static int periodo = 1000;
 
         public ModuloBlinkLed(int ledPin)
         {
@@ -22,10 +24,20 @@ namespace AppDesarrollo
             while (true)
             {
                 led.Write(PinValue.High);
-                Thread.Sleep(1000);
+                Thread.Sleep(periodo);
                 led.Write(PinValue.Low);
-                Thread.Sleep(1000);
+                Thread.Sleep(periodo);
             }
+        }
+
+        public void Error()
+        {
+            periodo = 300;
+        }
+
+        public void OK()
+        {
+            periodo = 1000;
         }
     }
 }
