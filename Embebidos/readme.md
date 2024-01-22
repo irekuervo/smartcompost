@@ -8,6 +8,11 @@ https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 dotnet tool install -g nanoff
 
 *** Paso 3: Para actualizar el firmaware ***
+
+Importante:
+*1) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO!! Paciencia, pueden ser como 60 segs*
+*2) NO CONECTAR NADA EN LOS PINES TX/RX, ya que el debugger los usa*
+
 nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
 
 *** Paso 3 bis (opcional): Depploy manual de .bin *** 

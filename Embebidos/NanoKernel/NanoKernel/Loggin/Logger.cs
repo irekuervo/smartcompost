@@ -5,7 +5,7 @@ namespace NanoKernel.Loggin
 {
     public static class Logger
     {
-        public const bool LogDebug = false;
+        public const bool LogDebug = true;
 
         public static void Log(string mensaje)
         {

@@ -18,12 +18,11 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="ayString.cs" />
     <Compile Include="ComandosSIM800L.cs" />
     <Compile Include="API.cs" />
+    <Compile Include="ComunicadorSerie.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NanoKernel\NanoKernel.nfproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib">

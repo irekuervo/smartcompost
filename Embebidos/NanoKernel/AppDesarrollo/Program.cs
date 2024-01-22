@@ -1,5 +1,6 @@
+using Modulo.SIM800L;
 using nanoFramework.Hardware.Esp32;
-using System.Device.Gpio;
+using System;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Threading;
@@ -8,40 +9,30 @@ namespace AppDesarrollo
 {
     public class Program
     {
-        static GpioController gpio;
-        static GpioPin led;
         public static void Main()
         {
+            Debug.WriteLine("hola");
 
-            gpio = new GpioController();
-            led = gpio.OpenPin(2, PinMode.Output);
+            new ModuloBlinkLed(2);
 
-           
+            try
+            {
+                Configuration.SetPinFunction(32, DeviceFunction.COM2_RX);
+                Configuration.SetPinFunction(33, DeviceFunction.COM2_TX);
+                SerialPort serial = new SerialPort("COM2", 115200);
+                serial.Open();
 
-            new Thread(HiloLed).Start();
+                var comSerie = new ComunicadorSerie(serial);
+                var api = new API(comSerie);
 
-            //Thread.Sleep(5000);
-
-           // Configuration.SetPinFunction(34, DeviceFunction.COM2_RX);
-            //Configuration.SetPinFunction(35, DeviceFunction.COM2_TX);
-
-            //var serial = new SerialPort("COM2", 9600);
-            //serial.Open();
-
-           // new Thread(() => { for (; ; ) { serial.WriteLine("Alive"); Thread.Sleep(1000); } }).Start();
+                api.Iniciar();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
 
             Thread.Sleep(Timeout.Infinite);
-        }
-
-        public static void HiloLed()
-        {
-            while (true)
-            {
-                led.Write(PinValue.High);
-                Thread.Sleep(1000);
-                led.Write(PinValue.Low);
-                Thread.Sleep(1000);
-            }
         }
 
     }

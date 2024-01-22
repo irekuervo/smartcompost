@@ -1,12 +1,19 @@
-﻿namespace NanoKernel.Comunicacion
+﻿using System;
+
+namespace NanoKernel.Comunicacion
 {
-    public class Buffer
+    public class Buffer : IDisposable
     {
         public int Length => dataLength;
         public byte[] Data => buffer;
 
         private int dataLength;
         private byte[] buffer;
+
+        public Buffer()
+        {
+            Resize(0);
+        }
 
         public Buffer(int length)
         {
@@ -23,6 +30,11 @@
                 buffer = new byte[length];
                 dataLength = length;
             }
+        }
+
+        public void Dispose()
+        {
+            this.buffer = null;
         }
     }
 }
