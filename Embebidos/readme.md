@@ -34,6 +34,7 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 - Con el cp210x va como piña todo
 - Aveces deployeo algo que rompe todo y se autoreseta, y dejo de poder deployar. Ahi tengo que volver a instalar el firmware y probar de 0 (o deployar a mano cambiando algo que probablemente arregle el error)
 - 22/01/24: me esta cagando a palos usar una app con otras referencias, se resetea todo el sistema. Este comportamiento tambien lo vi cuando yo cagaba a palos la app corriendo en caliente, ni tira exception, directamente entra en un loop muerto.
+- 25/01/25: EL PROBLEMA ERA QUE TENIA GENERICS. POR DIOS, NO DEJAR NINGUN GENERICS, SE ROMPE TODO!!!
 
 *** Comunicacion Serie ***
 - COM1 (RT, TX) no se puede usar para debugear. Todavia no se si en modo release se puede usar!

@@ -156,14 +156,21 @@ namespace Modulo.SIM800L
             }
         }
 
-        private string EnviarComandoOK(string comando, int timeoutMilisegundos = 5000, int maxIntentos = 1)
+        public string EnviarComando(string comando, int timeoutMilis = 5000)
+        {
+            var res = this.com.EnviarComando(comando, timeoutMilis);
+            Debug.WriteLine(res);
+            return res;
+        }
+
+        private string EnviarComandoOK(string comando, int timeoutMilis = 5000, int maxIntentos = 1)
         {
             int intento = 0;
             bool ok = false;
             string res = "";
             while (intento++ < maxIntentos)
             {
-                res = this.com.EnviarComando(comando, timeoutMilisegundos);
+                res = EnviarComando(comando, timeoutMilis);
                 if (res.Contains(ComandosSIM800L.OK) && res.Contains("ERROR") == false)
                 {
                     ok = true;
@@ -179,56 +186,27 @@ namespace Modulo.SIM800L
             return res;
         }
 
-        //public void EnviarPayload(byte[] payload, int timeoutMilisegundos = 5000, int sleepMilis = 1000)
-        //{
-        //    if (hayConexionTCP == false)
-        //        throw new Exception("No hay ninguna conexion TCP activa");
-
-        //    lock (lockWriteBuffer)
-        //    {
-        //        var resTCP = EnviarComando(ComandosSIM800L.EnviarDatosTCP(payload.Length), timeoutMilisegundos, sleepMilis);
-        //        if (resTCP.ToLower().Contains("error") || resTCP.Contains(">") == false)
-        //            throw new Exception("No se pueden enviar datos TCP");
-
-        //        serialPort.Write(payload, 0, payload.Length);
-        //        ComandoEnviado?.Invoke(Encoding.UTF8.GetString(payload, 0, payload.Length));
-
-        //        Thread.Sleep(sleepMilis);
-
-        //        EnviarCTRL_Z(sleepMilis);
-
-        //        DateTime inicio = DateTime.UtcNow;
-        //        byte[] buffer = new byte[1024 * 2]; // Ajusta el tamaño según sea necesario
-
-        //        while ((DateTime.UtcNow - inicio).TotalMilliseconds < timeoutMilisegundos)
-        //        {
-        //            int bytesDisponibles = serialPort.BytesToRead;
-
-        //            if (bytesDisponibles > 0)
-        //            {
-        //                int bytesRead = serialPort.Read(buffer, 0, bytesDisponibles);
-        //                var res = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-        //                RespuestaRecibida?.Invoke(res);
-        //                return;
-        //            }
-
-        //            Thread.Sleep(100); // Pequeño tiempo de espera antes de volver a verificar
-        //        }
-
-        //        throw new Exception("Timeout");
-        //    }
-        //}
-
-        private object lock_ctrlz = new object();
-        public void EnviarCTRL_Z(int sleepMilis = 1000)
+        private object lockWriteBuffer = new object();
+        public void EnviarPayload(byte[] payload, int timeoutMilis = 10000)
         {
-            lock (lock_ctrlz)
+            if (hayConexionTCP == false)
+                throw new Exception("No hay ninguna conexion TCP activa");
+
+            lock (lockWriteBuffer)
             {
+                var resTCP = this.com.EnviarComando(ComandosSIM800L.EnviarDatosTCP(payload.Length), timeoutMilis);
+                if (resTCP.ToLower().Contains("error") || resTCP.Contains(">") == false)
+                    throw new Exception("No se pueden enviar datos TCP");
+
+                this.com.Enviar(payload, hayRespuesta: false);
+
+                //ctrlZ
                 byte[] buffer = new byte[1];
                 buffer[0] = 26; // ^Z
-                this.com.Enviar(buffer, sleepMilis);
+                this.com.Enviar(buffer, timeoutMilis: timeoutMilis, hayRespuesta: true);
             }
         }
+
 
         private void Detener()
         {

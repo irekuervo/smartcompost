@@ -41,10 +41,13 @@ namespace Modulo.SIM800L
             this.buffer = null;
         }
     }
+
+    public delegate void ComandoEnviadoDelgate(string texto);
+
     public class ComunicadorSerie : IDisposable
     {
-        public event Action<string> ComandoEnviado;
-        public event Action<string> RespuestaRecibida;
+        public event ComandoEnviadoDelgate ComandoEnviado;
+        public event ComandoEnviadoDelgate RespuestaRecibida;
 
         private SerialPort serialPort;
         private Buffer buffer = new Buffer();
@@ -64,41 +67,57 @@ namespace Modulo.SIM800L
                 serialPort.WriteLine(linea);
                 ComandoEnviado?.Invoke(linea);
 
-                inicio = DateTime.UtcNow;
-
-                while ((DateTime.UtcNow - inicio).TotalMilliseconds < timeoutMilis)
-                {
-                    int bytesDisponibles = serialPort.BytesToRead;
-
-                    if (bytesDisponibles > 0)
-                    {
-                        buffer.Resize(bytesDisponibles);
-                        int bytesRead = serialPort.Read(buffer.Data, 0, bytesDisponibles);
-                        if (bytesRead != bytesDisponibles)
-                            Debug.WriteLine("Me dieron distintos los buffers");
-
-                        string res = Encoding.UTF8.GetString(buffer.Data, 0, buffer.Length);
-
-                        RespuestaRecibida?.Invoke(res);
-
-                        return res;
-                    }
-
-                    Thread.Sleep(100); // Pequeño tiempo de espera antes de volver a verificar
-                }
-
-                throw new Exception("Timeout comando: " + comando);
+                return EsperarRespuesta(comando, timeoutMilis);
             }
         }
 
-        public void Enviar(byte[] datos, int sleepMilis)
+        public string Enviar(byte[] payload, int timeoutMilis = 5000, bool hayRespuesta = true, int sleepMilis = 1000)
         {
             lock (lockWrite)
             {
-                serialPort.Write(datos, 0, datos.Length);
+                serialPort.Write(payload, 0, payload.Length);
                 Thread.Sleep(sleepMilis);
+
+                if (hayRespuesta)
+                    return EsperarRespuesta("TCP", timeoutMilis);
+                else
+                {
+                    Thread.Sleep(sleepMilis);
+                    return "OK";
+                }
             }
         }
+
+        private string EsperarRespuesta(string comando, int timeoutMilis)
+        {
+            Thread.Sleep(1000);
+
+            inicio = DateTime.UtcNow;
+
+            while ((DateTime.UtcNow - inicio).TotalMilliseconds < timeoutMilis)
+            {
+                int bytesDisponibles = serialPort.BytesToRead;
+
+                if (bytesDisponibles > 0)
+                {
+                    buffer.Resize(bytesDisponibles);
+                    int bytesRead = serialPort.Read(buffer.Data, 0, bytesDisponibles);
+                    if (bytesRead != bytesDisponibles)
+                        Debug.WriteLine("Me dieron distintos los buffers");
+
+                    string res = Encoding.UTF8.GetString(buffer.Data, 0, buffer.Length);
+
+                    RespuestaRecibida?.Invoke(res);
+
+                    return res;
+                }
+
+                Thread.Sleep(100); // Pequeño tiempo de espera antes de volver a verificar
+            }
+
+            throw new Exception("Timeout comando" + comando);
+        }
+
 
         public void Dispose()
         {
