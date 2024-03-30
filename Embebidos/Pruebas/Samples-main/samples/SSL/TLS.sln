@@ -1,0 +1,57 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "ParseCertificate", "ParseCertificate\ParseCertificate.nfproj", "{638EFFB7-ED4A-402C-B70A-0406796B8BA9}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "SecureClient_Wifi", "SecureClient_Wifi\SecureClient_Wifi.nfproj", "{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "SecureServer_Wifi", "SecureServer_Wifi\SecureServer_Wifi.nfproj", "{B795119D-A3F0-43FA-99AA-AE582DE61AC2}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "SecureClient", "SecureClient\SecureClient.nfproj", "{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "SecureServer", "SecureServer\SecureServer.nfproj", "{4FFF49B0-79C5-458D-8C85-E50369AA71E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{638EFFB7-ED4A-402C-B70A-0406796B8BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{638EFFB7-ED4A-402C-B70A-0406796B8BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{638EFFB7-ED4A-402C-B70A-0406796B8BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{638EFFB7-ED4A-402C-B70A-0406796B8BA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{638EFFB7-ED4A-402C-B70A-0406796B8BA9}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE046A9A-FACA-4A43-B0A5-B8B808C4F606}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{B795119D-A3F0-43FA-99AA-AE582DE61AC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B795119D-A3F0-43FA-99AA-AE582DE61AC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B795119D-A3F0-43FA-99AA-AE582DE61AC2}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B795119D-A3F0-43FA-99AA-AE582DE61AC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B795119D-A3F0-43FA-99AA-AE582DE61AC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B795119D-A3F0-43FA-99AA-AE582DE61AC2}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{28B7CB4B-5BE1-4E56-850E-851CD026A8A1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{4FFF49B0-79C5-458D-8C85-E50369AA71E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FFF49B0-79C5-458D-8C85-E50369AA71E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FFF49B0-79C5-458D-8C85-E50369AA71E3}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{4FFF49B0-79C5-458D-8C85-E50369AA71E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FFF49B0-79C5-458D-8C85-E50369AA71E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FFF49B0-79C5-458D-8C85-E50369AA71E3}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {48FFE42A-7E6E-4EFC-99C2-13293D5F9C2B}
+	EndGlobalSection
+EndGlobal
