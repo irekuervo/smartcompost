@@ -12,9 +12,10 @@ dotnet tool install -g nanoff
 
 *** Paso 3: Para actualizar el firmaware ***
 
-Importante:
+Importante: si la placa tiene el CH340, obviar paso 2!!!
+
 * 1) Elegir target y puerto COM. "ESP32_PSRAM_REV0" es el mas generico, por ahora anda
-* 2) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO!! Paciencia, pueden ser como 60 segs *
+* 2) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO (EL QUE DICE EN) !! Paciencia, pueden ser como 60 segs *
 * 3) NO CONECTAR NADA EN LOS PINES TX/RX, ya que el debugger los usa *
 
 nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
@@ -28,6 +29,10 @@ Abrir un proyecto Blank Application (nanoFramework), y actualizar todos los paqu
 *** Paso 5: Deploy proyecto .Net *** 
 Comprobar que en el explorador aparezca el device, y que se le puedan pedir sus "Device Capabilities"
 Darle run si quiero debuggear, o deploy si solo quiero deployar
+
+*** ERRORES COMUNES ***
+
+- Version mismatch for mscorlib. Need v1.14.3.0 -> Updatear los paquetes de nuget!!
 
 *** BITACORA ***
 - Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si
