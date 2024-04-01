@@ -16,8 +16,8 @@ namespace LoRa
         const double Frequency = 915_000_000.0;
 
         static SX127XDevice sender;
-        const int senderDI01 = Gpio.IO26;
-        const int sender_NSS = Gpio.IO16;
+        const int sender_NSS = Gpio.IO17;
+        const int senderDI01 = Gpio.IO25;
 
         public static void Main()
         {
@@ -33,12 +33,15 @@ namespace LoRa
                                      //SharingMode = SpiSharingMode.Shared
             };
 
+            var spi = new SpiDevice(spiSender);
+            var gpio = new GpioController();
+
             bool ok = false;
             while (!ok)
             {
                 try
                 {
-                    sender = new SX127XDevice(new SpiDevice(spiSender), new GpioController(), dio0Pin: senderDI01);
+                    sender = new SX127XDevice(spi, gpio, dio0Pin: senderDI01);
                     sender.Initialize(
                         Frequency,
                         lnaGain: RegLnaLnaGain.Default,
@@ -64,8 +67,6 @@ namespace LoRa
 
             //sender.OnReceive += Sender_OnReceive;
             sender.OnTransmit += Sender_OnTransmit;
-
-            //reciever.OnTransmit += Reciever_OnTransmit;
 
             Thread.Sleep(500);
 

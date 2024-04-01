@@ -15,10 +15,11 @@ dotnet tool install -g nanoff
 Importante: si la placa tiene el CH340, obviar paso 2!!!
 
 * 1) Elegir target y puerto COM. "ESP32_PSRAM_REV0" es el mas generico, por ahora anda
+
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
+
 * 2) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO (EL QUE DICE EN) !! Paciencia, pueden ser como 60 segs *
 * 3) NO CONECTAR NADA EN LOS PINES TX/RX, ya que el debugger los usa *
-
-nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
 
 *** Paso 3 bis (opcional): Depploy manual de .bin *** 
 nanoff --target ESP32_PSRAM_REV0 --serialport COM12 --deploy --image "E:\GitHub\nf-Samples\samples\Blinky\Blinky\bin\Debug\Blinky.bin"
@@ -40,6 +41,7 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 - Aveces deployeo algo que rompe todo y se autoreseta, y dejo de poder deployar. Ahi tengo que volver a instalar el firmware y probar de 0 (o deployar a mano cambiando algo que probablemente arregle el error)
 - 22/01/24: me esta cagando a palos usar una app con otras referencias, se resetea todo el sistema. Este comportamiento tambien lo vi cuando yo cagaba a palos la app corriendo en caliente, ni tira exception, directamente entra en un loop muerto.
 - 25/01/24: EL PROBLEMA ERA QUE TENIA GENERICS. POR DIOS, NO DEJAR NINGUN GENERICS, SE ROMPE TODO!!!
+- 01/04/24: Noto una posible correlacion entre la imposibilidad de descubrir un device en el Device Explorer y los pines de SPI para placas sin el CH340
 
 *** Comunicacion Serie ***
 - COM1 (RT, TX) no se puede usar para debugear. Tenes que generar tu propia imagen de firmware para deshabilitar el debug por COM1

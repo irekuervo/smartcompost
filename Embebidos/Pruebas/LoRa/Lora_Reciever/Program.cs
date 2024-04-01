@@ -31,12 +31,15 @@ namespace Lora_Reciever
                                      //SharingMode = SpiSharingMode.Shared
             };
 
+            var spi = new SpiDevice(spiReciever);
+            var gpio = new GpioController();
+
             var ok = false;
             while (!ok)
             {
                 try
                 {
-                    reciever = new SX127XDevice(new SpiDevice(spiReciever), new GpioController(), dio0Pin: recieverDI01);
+                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI01);
                     reciever.Initialize(
                         Frequency,
                         lnaGain: RegLnaLnaGain.Default,
@@ -61,6 +64,8 @@ namespace Lora_Reciever
             }
 
             reciever.OnReceive += Reciever_OnReceive;
+
+            Thread.Sleep(Timeout.Infinite);
         }
 
         private static void Reciever_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
