@@ -507,7 +507,7 @@ namespace devMobile.IoT.SX127xLoRaDevice
 			}
 		}
 
-		private void InterruptGpioPin_ValueChanged(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
+		public void InterruptGpioPin_ValueChanged(object sender, PinValueChangedEventArgs pinValueChangedEventArgs)
 		{
 			Byte regIrqFlagsToClear = (byte)RegIrqFlags.ClearNone;
 

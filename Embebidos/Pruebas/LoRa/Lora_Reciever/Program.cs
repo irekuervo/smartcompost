@@ -16,7 +16,7 @@ namespace Lora_Reciever
 
         static SX127XDevice reciever;
         const int reciever_NSS = Gpio.IO17;
-        const int recieverDI01 = Gpio.IO25;
+        const int recieverDI01 = Gpio.IO16;
         public static void Main()
         {
             // Config SPI1
@@ -64,6 +64,12 @@ namespace Lora_Reciever
             }
 
             reciever.OnReceive += Reciever_OnReceive;
+            reciever.Receive();
+
+            //while (true) {
+            //    Thread.Sleep(1000);
+            //    reciever.InterruptGpioPin_ValueChanged(null, null);
+            //}
 
             Thread.Sleep(Timeout.Infinite);
         }
