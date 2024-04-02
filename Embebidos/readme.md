@@ -52,6 +52,8 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 - La papa para TCP esta en esta nota de aplicacion del fabricante: https://www.waveshare.com/w/upload/2/25/SIM800_Series_TCPIP_Application_Note_V1.03.pdf
 - 25/03/24: DEPRECADO, muy complicado, lento, y se soluciona mejor con un Dongle 4G que soporta 3G y 2G.
 
+*** SX127X ***
+ALIMENTAR COMO LA GENTE (no alimentar desde el esp32)
 
 *** c# ***
 // get available ports
