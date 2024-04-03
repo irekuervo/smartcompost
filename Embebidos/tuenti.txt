@@ -1,0 +1,5 @@
+-- CHIP 1 --
+numero: 1173613960
+usuario: erik.schatz@gmail.com
+pass: SmartCompost$123
+

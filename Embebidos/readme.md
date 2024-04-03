@@ -1,5 +1,6 @@
 NANOFRAMEWORK (C# framework): https://www.nanoframework.net/ , https://github.com/nanoframework
 NANOFF (Firmware flasher): https://github.com/nanoframework/nanoFirmwareFlasher
+SX127X (LoRa): https://github.com/KiwiBryn/SX127X-NetNF
 
 *** Paso 0: instalar vs2022 o dotnet 6***
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
