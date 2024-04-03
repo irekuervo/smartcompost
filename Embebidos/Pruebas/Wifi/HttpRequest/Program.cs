@@ -15,19 +15,20 @@ namespace HttpRequest
         {
             Debug.WriteLine("Hello from nanoFramework!");
 
-            const string Ssid = "SmartCompost";
-            const string Password = "Quericocompost";
+            const string Ssid = "La Gorda";
+            //const string Ssid = "SmartCompost";
+            const string Password = "comandante123";
+            //const string Password = "Quericocompost";
             const string endpointURL = "http://smartcompost.net:8080/api/compost_bins/add_measurement";
 
             // Give 60 seconds to the wifi join to happen
             CancellationTokenSource cs = new(60000);
-            var success = WifiNetworkHelper.ScanAndConnectDhcp(Ssid, Password, token: cs.Token);
-            if (!success)
+            Debug.WriteLine("Conectando");
+            while (!WifiNetworkHelper.ScanAndConnectDhcp(Ssid, Password, token: cs.Token))
             {
-                //Red Light indicates no Wifi connection
-                throw new Exception("Couldn't connect to the Wifi network");
+                Debug.Write(".");
             }
-
+            Debug.WriteLine("Conectado");
 
             Random ran = new Random();
             Medicion m = new();
@@ -69,6 +70,10 @@ namespace HttpRequest
                     {
                         // Manejar cualquier excepción que pueda ocurrir durante el envío de la solicitud
                         Console.WriteLine($"Error al enviar la solicitud: {ex.Message}");
+                    }
+                    finally
+                    {
+                        Thread.Sleep(5000);
                     }
                 }
             }
