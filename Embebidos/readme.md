@@ -44,6 +44,9 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 - 25/01/24: EL PROBLEMA ERA QUE TENIA GENERICS. POR DIOS, NO DEJAR NINGUN GENERICS, SE ROMPE TODO!!!
 - 01/04/24: Noto una posible correlacion entre la imposibilidad de descubrir un device en el Device Explorer y los pines de SPI para placas sin el CH340
 
+*** WIFI ***
+- Cuando no pude conectarme a nada, con error inclusive en el scan, me ayudo configurar el network configuration del board: Options=Auto Connect, Security/Encryption=WPA2
+
 *** Comunicacion Serie ***
 - COM1 (RT, TX) no se puede usar para debugear. Tenes que generar tu propia imagen de firmware para deshabilitar el debug por COM1
 

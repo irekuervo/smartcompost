@@ -13,8 +13,8 @@ namespace ScanWifi
     public class Program
     {
         // Set the SSID & Password to your local Wifi network
-        const string MYSSID = "MySsdid";
-        const string MYPASSWORD = "MyPassword";
+        const string MYSSID = "La Gorda";
+        const string MYPASSWORD = "comandante123";
 
         public static void Main()
         {

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "HttpRequest", "HttpRequest\HttpRequest.nfproj", "{0F7112B6-DBB2-452B-910D-AD2805C44A53}"
 EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "ScanWiFi", "..\Samples-main\samples\Wifi\ScanWiFi\ScanWiFi.nfproj", "{330D0350-433F-4A60-B545-2911379DDEB7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,12 @@ Global
 		{0F7112B6-DBB2-452B-910D-AD2805C44A53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F7112B6-DBB2-452B-910D-AD2805C44A53}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0F7112B6-DBB2-452B-910D-AD2805C44A53}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{330D0350-433F-4A60-B545-2911379DDEB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{330D0350-433F-4A60-B545-2911379DDEB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{330D0350-433F-4A60-B545-2911379DDEB7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{330D0350-433F-4A60-B545-2911379DDEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{330D0350-433F-4A60-B545-2911379DDEB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{330D0350-433F-4A60-B545-2911379DDEB7}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
