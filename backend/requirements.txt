@@ -1,6 +1,0 @@
-flask~=3.0.0
-Flask-SQLAlchemy
-SQLAlchemy
-flask_cors
-psycopg2-binary==2.9.8
-marshmallow
