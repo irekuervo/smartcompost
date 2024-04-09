@@ -2,6 +2,7 @@ using NanoKernel;
 using NanoKernel.Ayudantes;
 using NanoKernel.Loggin;
 using NanoKernel.Medidores;
+using NanoKernel.Repositorios;
 using System.Threading;
 
 namespace NodoMedidor
@@ -14,6 +15,15 @@ namespace NodoMedidor
         {
             //Assembly assembly = Assembly.GetExecutingAssembly();
             //App.Start(assembly);
+
+            IRepositorioDocumental repo = new RepositorioDocumentalInterno("base1");
+
+            repo.Update("clave1", "hola");
+
+            var valor = repo.Get("clave1");
+
+            Thread.Sleep(Timeout.Infinite);
+
 
             medidor.OnMedicionesEnPeriodoCallback += Medidor_OnMedicionesEnPeriodoCallback;
 

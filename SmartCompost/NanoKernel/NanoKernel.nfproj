@@ -19,6 +19,7 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="App.cs" />
+    <Compile Include="Ayudantes\ayArchivos.cs" />
     <Compile Include="Ayudantes\ayEstadisticas.cs" />
     <Compile Include="Ayudantes\ayFechas.cs" />
     <Compile Include="Ayudantes\ayInternet.cs" />
@@ -46,6 +47,8 @@
     <Compile Include="Modulos\ModuloHost.cs" />
     <Compile Include="Modulos\ServicioAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositorios\IRepositorioDocumental.cs" />
+    <Compile Include="Repositorios\RepositorioDocumentalInterno.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -72,6 +75,9 @@
     <Reference Include="nanoFramework.System.Collections">
       <HintPath>..\packages\nanoFramework.System.Collections.1.5.31\lib\nanoFramework.System.Collections.dll</HintPath>
     </Reference>
+    <Reference Include="nanoFramework.System.Runtime">
+      <HintPath>..\packages\nanoFramework.System.Runtime.1.0.6\lib\nanoFramework.System.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="nanoFramework.System.Text">
       <HintPath>..\packages\nanoFramework.System.Text.1.2.54\lib\nanoFramework.System.Text.dll</HintPath>
     </Reference>
@@ -83,6 +89,9 @@
     </Reference>
     <Reference Include="System.Diagnostics.Stopwatch">
       <HintPath>..\packages\nanoFramework.System.Diagnostics.Stopwatch.1.2.418\lib\System.Diagnostics.Stopwatch.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IO.FileSystem">
+      <HintPath>..\packages\nanoFramework.System.IO.FileSystem.1.1.36\lib\System.IO.FileSystem.dll</HintPath>
     </Reference>
     <Reference Include="System.IO.Ports">
       <HintPath>..\packages\nanoFramework.System.IO.Ports.1.1.78\lib\System.IO.Ports.dll</HintPath>
