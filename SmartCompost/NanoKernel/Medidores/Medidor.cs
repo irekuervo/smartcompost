@@ -197,9 +197,9 @@ namespace NanoKernel.Medidores
         private Hashtable ClonarContadores()
         {
             Hashtable res = new Hashtable();
-            foreach (var item in Contadores)
+            foreach (var item in Contadores.Keys)
             {
-                res.Add(item, ((Contador)Mediciones[item]).Clonar());
+                res.Add(item, ((Contador)Contadores[item]).Clonar());
             }
             return res;
         }

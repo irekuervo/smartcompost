@@ -31,7 +31,9 @@ namespace NodoMedidor
         private static void Loop(ref bool hiloActivo)
         {
             medidor.IniciarMedicionDeTiempo();
-            Thread.Sleep(1000);
+            Thread.Sleep(150);
+            //CUENTA MEDIO RARO EL TIEMPO
+            //Thread.Sleep(1000); 
             medidor.FinalizarMedicionDeTiempo();
             Thread.Sleep(10);
             medidor.Contar("vueltas-loop");
