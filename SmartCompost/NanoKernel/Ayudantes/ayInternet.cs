@@ -1,8 +1,10 @@
-﻿using nanoFramework.Networking;
+﻿using nanoFramework.Json;
+using nanoFramework.Networking;
+using NanoKernel.Loggin;
 using System;
-using System.Device.Wifi;
-using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 
 namespace NanoKernel.Ayudantes
@@ -43,6 +45,36 @@ namespace NanoKernel.Ayudantes
             }
 
             return ayInternet.HayInternet();
+        }
+
+        public static string EnviarJson(string endpointURL, object objeto)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                string jsonPayload = JsonSerializer.SerializeObject(objeto);
+                StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                try
+                {
+                    HttpResponseMessage response = client.Post(endpointURL, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return response.Content.ReadAsString();
+                    }
+                    else
+                    {
+                        string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                        Logger.Log(error);
+                        return error;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    string error = $"Error al enviar la solicitud: {ex.Message}";
+                    Logger.Log(error);
+                    return error;
+                }
+            }
         }
 
         public static IPAddress[] ObtenerTodasLasIpLocalesV4()

@@ -1,7 +1,6 @@
 ﻿using NanoKernel.Modulos;
 using System;
 using System.Device.Adc;
-using System.Threading;
 
 namespace NodoMedidor
 {
@@ -11,7 +10,8 @@ namespace NodoMedidor
         private static Random random = new Random();
 
         private static AdcController adc = new AdcController();
-       
+
+        const int idMock = 1;
 
         public ModuloSensor()
         {
@@ -40,19 +40,29 @@ namespace NodoMedidor
         [Servicio("Medir")]
         public Medicion Medir()
         {
-            return new Medicion(Temperatura(), Humedad());
+            return new Medicion(idMock, Temperatura(), Humedad());
         }
     }
 
     public class Medicion
     {
-        public double Temperatura { get; set; }
-        public double Humedad { get; set; }
-
-        public Medicion(double temperatura, double humedad)
+        public Medicion()
         {
-            this.Temperatura = temperatura;
-            this.Humedad = humedad;
+            // Para serializar
         }
+
+        public Medicion(int id, double temperatura, double humedad)
+        {
+            this.id = id;
+            this.datetime = DateTime.UtcNow;
+            this.temperatura = temperatura;
+            this.humedad = humedad;
+        }
+
+        public int id { get; set; }
+        public double temperatura { get; set; }
+        public double humedad { get; set; }
+        public DateTime datetime { get; set; }
     }
+
 }

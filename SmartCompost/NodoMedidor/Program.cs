@@ -10,6 +10,7 @@ using System.Threading;
 
 namespace NodoMedidor
 {
+
     public class Program
     {
         public static void Main()
@@ -17,11 +18,15 @@ namespace NodoMedidor
             App.Start(Setup, Loop);
         }
 
+        private static ModuloBlinkLed blinker;
+        private static ModuloSensor sensor;
         private static void Setup()
         {
             // Hacemos titilar el led del board
-            ModuloBlinkLed blink = new ModuloBlinkLed();
-            blink.Iniciar(1000);
+            blinker = new ModuloBlinkLed();
+            blinker.Iniciar(1000);
+
+            sensor = new ModuloSensor();
 
             // Sacamos los datos de la memoria interna
             IRepositorioClaveValor repo = new RepositorioClaveValorInterno("config");
@@ -35,13 +40,13 @@ namespace NodoMedidor
                 Debug.Write(".");
                 Thread.Sleep(1000);
             }
-            blink.CambiarPeriodo(500);
+            blinker.CambiarPeriodo(500);
             Debug.WriteLine("Conectado");
 
             // Ejecutamos una tarea para mandar a deep sleep
             MotorDeHilos.CrearHilo("DeepSleep", (ref bool a) =>
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(20_000);
                 aySleep.DeepSleepSegundos(15);
             }).Iniciar();
         }
@@ -53,7 +58,17 @@ namespace NodoMedidor
             try
             {
                 if (ayInternet.Hay)
+                {
+                    // Mando medicion
+                    var res = ayInternet.EnviarJson(
+                        "http://smartcompost.net:8080/api/compost_bins/add_measurement",
+                        sensor.Medir());
+                    Logger.Log(res);
+
+                    // Busco fecha utc
                     Logger.Log(ayFechas.GetNetworkTime().ToFechaLocal());
+                }
+
             }
             catch (System.Exception)
             {
