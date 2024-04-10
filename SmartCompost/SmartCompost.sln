@@ -33,6 +33,8 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Lora_Reciever", "..\Pruebas
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "SX127XLoRaDevice", "..\Pruebas\LoRa\SX127XLoRaDevice\SX127XLoRaDevice.nfproj", "{638A77F3-E9DE-4350-BBA1-65EF380DB0E4}"
 EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "BasicFileSystemExample", "..\Pruebas\Samples-main\samples\System.IO.FileSystem\BasicFileSystemExample\BasicFileSystemExample.nfproj", "{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,12 @@ Global
 		{638A77F3-E9DE-4350-BBA1-65EF380DB0E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{638A77F3-E9DE-4350-BBA1-65EF380DB0E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{638A77F3-E9DE-4350-BBA1-65EF380DB0E4}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -125,6 +133,7 @@ Global
 		{45582571-023F-4DB3-B27E-2A35AEB2DAD0} = {6BAC83EE-8E84-4E5C-BFA0-ED3EA4CEE704}
 		{EED5CAAD-F190-469B-9A9E-EDB63F005713} = {6BAC83EE-8E84-4E5C-BFA0-ED3EA4CEE704}
 		{638A77F3-E9DE-4350-BBA1-65EF380DB0E4} = {6BAC83EE-8E84-4E5C-BFA0-ED3EA4CEE704}
+		{2F085F9C-C2FC-4AF6-AD84-A6A1CBAF80D9} = {6BAC83EE-8E84-4E5C-BFA0-ED3EA4CEE704}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F548FDC4-4BB9-48B3-9642-F2A0622819AC}
