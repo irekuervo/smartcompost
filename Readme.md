@@ -45,6 +45,9 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 
 - Version mismatch for mscorlib. Need v1.14.3.0 -> Updatear los paquetes de nuget!!
 - The connected target does not have support for mscorlib. -> Updetear el firmware!!
+- ERROR: failing to connect to device: cuando todo falla y todo esta perdido, un mass erase del eeprom puede ayudar:
+
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM10 --masserase
 
 *** BITACORA ***
 - Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si

@@ -11,11 +11,14 @@ namespace BasicFileSystemExample
 
         public static void Main()
         {
+            var drives = DriveInfo.GetDrives();
             var files = Directory.GetFiles("I:\\");
             foreach (var item in files)
             {
                 Debug.WriteLine(item);
             }
+
+            Thread.Sleep(Timeout.Infinite);
         }
 
         /// <summary>
