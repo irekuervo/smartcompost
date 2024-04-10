@@ -15,17 +15,13 @@ namespace NanoKernel.Repositorios
 
         private string pathDb;
 
-        private CacheClaveValor cache;
+        private CacheClaveValor cache = new CacheClaveValor();
 
         public RepositorioClaveValorInterno(string direccion)
         {
             this.pathDb = unidadBase + direccion;
 
-            var directorios = Directory.GetDirectories(unidadBase);
-            var archivos = Directory.GetFiles(unidadBase);
-
-
-            CargarCache();
+            Inicializar();
         }
 
         public void Update(string id, string value)
@@ -55,27 +51,27 @@ namespace NanoKernel.Repositorios
         {
             lock (lockDrive)
             {
-                if (!File.Exists(pathDb))
-                    return;
+                if (File.Exists(pathDb) == false)
+                    throw new System.Exception();
 
-                File.Create(pathDb);
+                byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cache.Tabla));
 
-                if (cache == null)
-                    return;
-
-                byte[] sampleBuffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cache.Tabla));
                 using (FileStream fs = new FileStream(pathDb, FileMode.Open, FileAccess.ReadWrite))
                 {
-                    fs.Write(sampleBuffer, 0, sampleBuffer.Length);
+                    fs.Write(buffer, 0, buffer.Length);
                 }
             }
         }
 
-        private void CargarCache()
+        private void Inicializar()
         {
             if (File.Exists(pathDb) == false)
+            { 
+                File.Create(pathDb).Close();
                 ActualizarRepositorio();
-
+                return;
+            }
+            
             byte[] fileContent;
             using (FileStream fs2 = new FileStream(pathDb, FileMode.Open, FileAccess.Read))
             {

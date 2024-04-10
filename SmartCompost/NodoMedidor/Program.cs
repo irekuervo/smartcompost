@@ -16,9 +16,6 @@ namespace NodoMedidor
             //Assembly assembly = Assembly.GetExecutingAssembly();
             //App.Start(assembly);
 
-            //BORRAR repo1 !!
-            // IRepositorioClaveValor repo = new RepositorioClaveValorInterno("base1");
-
             IRepositorioClaveValor repo = new RepositorioClaveValorInterno("base2");
 
             repo.Update("clave1", "hola");
