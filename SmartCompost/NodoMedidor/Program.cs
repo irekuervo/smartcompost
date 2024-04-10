@@ -1,6 +1,6 @@
-using nanoFramework.Networking;
 using NanoKernel;
 using NanoKernel.Ayudantes;
+using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using NanoKernel.Medidores;
 using NanoKernel.Modulos;
@@ -17,49 +17,51 @@ namespace NodoMedidor
             App.Start(Setup, Loop);
         }
 
-        static bool hayInternet = false;
         private static void Setup()
         {
-            //Assembly assembly = Assembly.GetExecutingAssembly();
-            //App.Start(assembly);
-
-            //EjemploBaseDeDatosClaveValor();
-            //medidor.OnMedicionesEnPeriodoCallback += Medidor_OnMedicionesEnPeriodoCallback;
-
+            // Hacemos titilar el led del board
             ModuloBlinkLed blink = new ModuloBlinkLed();
             blink.Iniciar(1000);
 
-            // Jugamos probando sacar la configuracion de la eeprom
+            // Sacamos los datos de la memoria interna
             IRepositorioClaveValor repo = new RepositorioClaveValorInterno("config");
-
-            //repo.Update("wifi-ssid", "La Gorda");
-            //repo.Update("wifi-pass", "comandante123");
-
             var ssid = repo.Get("wifi-ssid");
             var pass = repo.Get("wifi-pass");
-           
-            //var ssid = "La Gorda";
-            //var pass = "comandante123";
 
+            // Conectamos a wifi
             Logger.Log("Conectando '" + ssid + "' pass: " + pass);
-
             while (!ayInternet.ConectarsePorWifi(ssid, pass))
             {
                 Debug.Write(".");
                 Thread.Sleep(1000);
             }
-
             blink.CambiarPeriodo(500);
             Debug.WriteLine("Conectado");
+
+            // Ejecutamos una tarea para mandar a deep sleep
+            MotorDeHilos.CrearHilo("DeepSleep", (ref bool a) =>
+            {
+                Thread.Sleep(5000);
+                aySleep.DeepSleepSegundos(15);
+            }).Iniciar();
         }
 
         private static void Loop(ref bool hiloActivo)
         {
             Thread.Sleep(1000);
 
-            //if (ayInternet.Hay)
-            //    Logger.Log(ayFechas.GetNetworkTime().ToFechaLocal());
+            try
+            {
+                if (ayInternet.Hay)
+                    Logger.Log(ayFechas.GetNetworkTime().ToFechaLocal());
+            }
+            catch (System.Exception)
+            {
+                Logger.Log("Upsi");
+            }
         }
+
+        #region Pruebas viejas
 
         private static void LoopDeepSleep(ref bool hiloActivo)
         {
@@ -96,5 +98,6 @@ namespace NodoMedidor
             Logger.Log("Tiempo promedio medido: " + tiempoPromedio.MilisToTiempo());
             Logger.Log("Vueltas loop: " + resultado.ContadoTotal("vueltas-loop"));
         }
+        #endregion
     }
 }
