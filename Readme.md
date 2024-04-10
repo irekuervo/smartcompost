@@ -9,7 +9,10 @@ https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
 *** Paso 2: instalar tools ***
-dotnet tool install -g nanoff
+
+    dotnet tool install -g nanoff
+
+    dotnet tool update -g nanoff
 
 *** Paso 3: Para actualizar el firmaware ***
 

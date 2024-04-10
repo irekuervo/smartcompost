@@ -11,6 +11,18 @@ namespace BasicFileSystemExample
 
         public static void Main()
         {
+            var files = Directory.GetFiles("I:\\");
+            foreach (var item in files)
+            {
+                Debug.WriteLine(item);
+            }
+        }
+
+        /// <summary>
+        /// Test original de github
+        /// </summary>
+        private static void Test1()
+        {
             #region Variables
 
             string sampleFilePath = "D:\\sampleFile.txt";
@@ -27,8 +39,8 @@ namespace BasicFileSystemExample
             // Wait until the Storage Devices are mounted (SD Card & USB). 
             // This usally takes some seconds after startup.
             // Not required for Internal drive or drives mounted from managed code. See mount sample.
-            Thread.Sleep(3000);     
-            
+            Thread.Sleep(3000);
+
             // D: is SD Card
             // E: is USB drive
             // I: is Internal flash drive
@@ -45,7 +57,7 @@ namespace BasicFileSystemExample
             FileStream fs = new FileStream(sampleFilePath, FileMode.Open, FileAccess.ReadWrite);
             fs.Write(sampleBuffer, 0, sampleBuffer.Length);
 
-            if(fs.CanSeek)
+            if (fs.CanSeek)
             {
                 Debug.WriteLine("+++++ Modify sample file +++++");
                 // Seek to beginning of the file and write something there
