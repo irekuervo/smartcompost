@@ -69,7 +69,7 @@ namespace NanoKernel.Estadisticas
                 UltimaMuestra = muestra;
 
                 //// FechaPrimeraMuestra y FechaUltimaMuestra
-                var ahora = ayFechas.Ahora;
+                var ahora = DateTime.UtcNow;
                 FechaUltimaMuestra = ahora;
                 if (FechaPrimeraMuestra == DateTime.MaxValue) FechaPrimeraMuestra = ahora;
 

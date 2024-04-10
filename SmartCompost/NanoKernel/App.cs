@@ -1,43 +1,51 @@
-﻿using NanoKernel.Hilos;
+﻿using nanoFramework.Hardware.Esp32;
+using nanoFramework.Runtime.Native;
+using NanoKernel.Hilos;
 using NanoKernel.Loggin;
-using NanoKernel.Modulos;
 using System;
-using System.Collections;
-using System.Reflection;
+using System.Diagnostics;
 using System.Threading;
 
 namespace NanoKernel
 {
     public static class App
     {
-        public static event HiloDelegate Loop;
-
         private static bool Detener = false;
+        private static event HiloDelegate appLoop;
+        private static event Action appSetup;
 
-        public static void Start(/*Assembly baseAssembly*/)
+        public static void Start(Action setup, HiloDelegate loop)
         {
+            App.appLoop += loop;
+            App.appSetup += setup;
+
             Logger.Log("\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n");
-            
+
+            Sleep.WakeupCause cause = Sleep.GetWakeupCause();
+            Debug.WriteLine("Wakeup cause:" + cause.ToString());
+
             //Logger.Log("Starting...");
             //ConstruirModulos(baseAssembly);
             //Logger.Log("Started OK");
+
+            appSetup.Invoke();
 
             while (!Detener)
             {
                 try
                 {
-                    Loop?.Invoke(ref Detener);
+                    appLoop.Invoke(ref Detener);
+                    Thread.Sleep(0);
                 }
                 catch (Exception ex)
                 {
                     Detener = true;
-                    Logger.Log(ex.Message);
+                    Logger.Log("Error detenimiento main loop: " + ex.Message);
                 }
             }
 
-            Logger.Log("Deteniendo la app...");
-
-            Thread.Sleep(Timeout.Infinite);
+            Logger.Log("Reboot 5segs");
+            Power.RebootDevice(5000);
         }
 
         //static Hashtable Modulos = new Hashtable();

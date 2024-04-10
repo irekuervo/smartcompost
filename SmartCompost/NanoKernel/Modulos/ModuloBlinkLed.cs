@@ -11,37 +11,42 @@ namespace NanoKernel.Modulos
     {
         static GpioController gpio;
         static GpioPin led;
-        static int periodo = 1000;
+        static int periodoMilis = 1000;
         static Hilo hilo;
 
-        public ModuloBlinkLed(int ledPin)
+        public ModuloBlinkLed(int ledPin = 2 /*default del esp-wroom-32*/)
         {
             gpio = new GpioController();
             led = gpio.OpenPin(ledPin, PinMode.Output);
 
-            hilo = Hilos.Hilos.CrearHiloLoop("Blinker", HiloLed);
+            hilo = MotorDeHilos.CrearHiloLoop("Blinker", HiloLed);
         }
 
-        public void Start(int periodo)
+        public void CambiarPeriodo(int periodoMilis)
         {
-            ModuloBlinkLed.periodo = periodo;
+            ModuloBlinkLed.periodoMilis = periodoMilis;
+        }
+
+        public void Iniciar(int periodoMilis)
+        {
+            ModuloBlinkLed.periodoMilis = periodoMilis;
             hilo.Iniciar();
         }
 
-        public void Stop()
+        public void Detener()
         {
             hilo.Detener();
         }
 
-        private static void HiloLed(ref bool detener)
+        private static void HiloLed(ref bool activo)
         {
-            if (detener) return;
+            if (!activo) return;
             led.Write(PinValue.High);
-            Thread.Sleep(periodo);
+            Thread.Sleep(periodoMilis);
 
-            if (detener) return;
+            if (!activo) return;
             led.Write(PinValue.Low);
-            Thread.Sleep(periodo);
+            Thread.Sleep(periodoMilis);
         }
 
 

@@ -5,7 +5,7 @@ using System.Collections;
 namespace NanoKernel.Hilos
 {
     // ES ESTATICO PORQUE ES DEMASIADO CRITICO DEJAR HILOS ABIERTOS, CENTRALIZO TODO
-    public static class Hilos
+    public static class MotorDeHilos
     {
         public static ICollection GetHilos => hilos.Values;
 
@@ -79,6 +79,9 @@ namespace NanoKernel.Hilos
             Logger.Log("Hilo creado: " + hilo.ToString());
         }
 
+        /// <summary>
+        /// OJO AL PIOJO ESTO MATA TODOS LOS PROCESOS
+        /// </summary>
         public static void Dispose()
         {
             try

@@ -7,7 +7,7 @@ namespace NanoKernel.Ayudantes
     public static class ayFechas
     {
         public static string FormatoFechaLocal = "yyyy-MM-dd HH:mm:ss";
-        public static readonly string NTP_Server = "ar.pool.ntp.org";
+        public const string NTP_Server = "ar.pool.ntp.org";
 
         public static DateTime Ahora => ultimaFecha.AddMilliseconds((ultimaActualizacion - DateTime.UtcNow).TotalMilliseconds);
 
@@ -37,9 +37,9 @@ namespace NanoKernel.Ayudantes
             }
         }
 
-        private static DateTime GetNetworkTime()
+        public static DateTime GetNetworkTime(string server = NTP_Server)
         {
-            using (var udpClient = new UdpClient(NTP_Server, 123))
+            using (var udpClient = new UdpClient(server, 123))
             {
                 // Enviar solicitud NTP
                 byte[] ntpData = new byte[48];

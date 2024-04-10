@@ -25,6 +25,7 @@
     <Compile Include="Ayudantes\ayInternet.cs" />
     <Compile Include="Ayudantes\ayNumeros.cs" />
     <Compile Include="Ayudantes\aySerializacion.cs" />
+    <Compile Include="Ayudantes\aySleep.cs" />
     <Compile Include="Ayudantes\ayString.cs" />
     <Compile Include="Ayudantes\ayUnidades.cs" />
     <Compile Include="CLI\Consola.cs" />
@@ -33,7 +34,7 @@
     <Compile Include="Comunicacion\ComunicadorSerie.cs" />
     <Compile Include="Estadisticas\EstadisticaEscalar.cs" />
     <Compile Include="Hilos\Hilo.cs" />
-    <Compile Include="Hilos\Hilos.cs" />
+    <Compile Include="Hilos\MotorDeHilos..cs" />
     <Compile Include="Loggin\Logger.cs" />
     <Compile Include="Medidores\Contador.cs" />
     <Compile Include="Medidores\InstanteMedicion.cs" />

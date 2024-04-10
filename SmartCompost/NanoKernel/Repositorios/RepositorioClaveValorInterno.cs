@@ -51,8 +51,7 @@ namespace NanoKernel.Repositorios
         {
             lock (lockDrive)
             {
-                if (File.Exists(pathDb) == false)
-                    throw new System.Exception();
+                File.Create(pathDb).Close();
 
                 byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cache.Tabla));
 
@@ -66,20 +65,19 @@ namespace NanoKernel.Repositorios
         private void Inicializar()
         {
             if (File.Exists(pathDb) == false)
-            { 
-                File.Create(pathDb).Close();
+            {
                 ActualizarRepositorio();
                 return;
             }
-            
+
             byte[] fileContent;
             using (FileStream fs2 = new FileStream(pathDb, FileMode.Open, FileAccess.Read))
             {
                 fileContent = new byte[fs2.Length];
                 fs2.Read(fileContent, 0, (int)fs2.Length);
             }
-
-            var datos = (Hashtable)JsonConvert.DeserializeObject(Encoding.UTF8.GetString(fileContent, 0, fileContent.Length), typeof(Hashtable));
+            var texto = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
+            var datos = (Hashtable)JsonConvert.DeserializeObject(texto, typeof(Hashtable));
             cache = new CacheClaveValor(datos);
         }
     }
