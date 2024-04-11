@@ -38,9 +38,9 @@ namespace NodoMedidor
         }
 
         [Servicio("Medir")]
-        public Medicion Medir()
+        public Medicion Medir(int id = idMock)
         {
-            return new Medicion(idMock, Temperatura(), Humedad());
+            return new Medicion(id, Temperatura(), Humedad());
         }
     }
 

@@ -33,6 +33,12 @@ namespace NodoMedidor
             var ssid = repo.Get("wifi-ssid");
             var pass = repo.Get("wifi-pass");
 
+            if (ssid == null) repo.Update("wifi-ssid", "La Gorda");
+            if (pass == null) repo.Update("wifi-pass", "comandante123");
+
+            ssid = repo.Get("wifi-ssid");
+            pass = repo.Get("wifi-pass");
+
             // Conectamos a wifi
             Logger.Log("Conectando '" + ssid + "' pass: " + pass);
             while (!ayInternet.ConectarsePorWifi(ssid, pass))
@@ -47,10 +53,12 @@ namespace NodoMedidor
             MotorDeHilos.CrearHilo("DeepSleep", (ref bool a) =>
             {
                 Thread.Sleep(20_000);
-                aySleep.DeepSleepSegundos(15);
+                aySleep.DeepSleepSegundos(60 * 60);
             }).Iniciar();
         }
 
+
+        const int idMock = 2; // del 1 al 4 tenemos cargado
         private static void Loop(ref bool hiloActivo)
         {
             Thread.Sleep(1000);
@@ -59,10 +67,12 @@ namespace NodoMedidor
             {
                 if (ayInternet.Hay)
                 {
+
+
                     // Mando medicion
                     var res = ayInternet.EnviarJson(
                         "http://smartcompost.net:8080/api/compost_bins/add_measurement",
-                        sensor.Medir());
+                        sensor.Medir(idMock));
                     Logger.Log(res);
 
                     // Busco fecha utc
