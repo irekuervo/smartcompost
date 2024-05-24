@@ -16,8 +16,8 @@ namespace LoRa
         const double Frequency = 915_000_000.0;
 
         static SX127XDevice sender;
-        const int sender_NSS = Gpio.IO05;
-        const int senderDI00 = Gpio.IO25;
+        const int sender_NSS = Gpio.IO05; // Selector de slave, es cualquier pin
+        const int senderDI00 = Gpio.IO25; // Pin para obtener interrupcion de envio/recepcion
         const int senderReset = Gpio.IO14;
 
         public static void Main()
@@ -79,7 +79,7 @@ namespace LoRa
                 string messageText = $"Sender envia {sendCount += 1}!";
                 byte[] messageBytes = UTF8Encoding.UTF8.GetBytes(messageText);
                 sender.Send(messageBytes);
-                Thread.Sleep(5000);
+                Thread.Sleep(255);
             }
 
             //Thread.Sleep(Timeout.Infinite);
@@ -102,7 +102,7 @@ namespace LoRa
         private static void Sender_OnTransmit(object sender, SX127XDevice.OnDataTransmitedEventArgs e)
         {
             //Program.sender.Receive();
-            Log($"Sender Envia OK");
+            //Log($"Sender Envia OK");
         }
 
         private static void Log(string message)

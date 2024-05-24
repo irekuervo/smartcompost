@@ -25,7 +25,7 @@
     <Compile Include="Ayudantes\ayInternet.cs" />
     <Compile Include="Ayudantes\ayNumeros.cs" />
     <Compile Include="Ayudantes\aySerializacion.cs" />
-    <Compile Include="Ayudantes\aySleep.cs" />
+    <Compile Include="Ayudantes\ayPower.cs" />
     <Compile Include="Ayudantes\ayString.cs" />
     <Compile Include="Ayudantes\ayUnidades.cs" />
     <Compile Include="CLI\Consola.cs" />

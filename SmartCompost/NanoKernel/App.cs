@@ -1,5 +1,6 @@
 ﻿using nanoFramework.Hardware.Esp32;
 using nanoFramework.Runtime.Native;
+using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using System;
@@ -11,13 +12,13 @@ namespace NanoKernel
     public static class App
     {
         private static bool Detener = false;
-        private static event HiloDelegate appLoop;
-        private static event Action appSetup;
+        private static HiloDelegate appLoop;
+        private static Action appSetup;
 
         public static void Start(Action setup, HiloDelegate loop)
         {
-            App.appLoop += loop;
-            App.appSetup += setup;
+            App.appLoop = loop;
+            App.appSetup = setup;
 
             Logger.Log("\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n");
 
@@ -30,6 +31,13 @@ namespace NanoKernel
 
             appSetup.Invoke();
 
+            if (loop == null)
+            {
+                Logger.Log("Sleep infinite");
+                Thread.Sleep(Timeout.Infinite);
+                return;
+            }
+            
             while (!Detener)
             {
                 try
@@ -44,8 +52,7 @@ namespace NanoKernel
                 }
             }
 
-            Logger.Log("Reboot 5segs");
-            Power.RebootDevice(5000);
+            Thread.Sleep(Timeout.Infinite);
         }
 
         //static Hashtable Modulos = new Hashtable();

@@ -1,17 +1,17 @@
-using NanoKernel;
 using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using NanoKernel.Medidores;
 using NanoKernel.Modulos;
 using NanoKernel.Repositorios;
+using NanoKernel;
+using System;
 using System.Diagnostics;
 using System.Threading;
 
-namespace NodoMedidor
+namespace NodoAP
 {
-
-    public class Program
+    public class MainAP
     {
         public static void Main()
         {
@@ -19,14 +19,12 @@ namespace NodoMedidor
         }
 
         private static ModuloBlinkLed blinker;
-        private static ModuloSensor sensor;
         private static void Setup()
         {
             // Hacemos titilar el led del board
             blinker = new ModuloBlinkLed();
             blinker.Iniciar(1000);
 
-            sensor = new ModuloSensor();
 
             // Sacamos los datos de la memoria interna
             IRepositorioClaveValor repo = new RepositorioClaveValorInterno("config");
@@ -70,10 +68,10 @@ namespace NodoMedidor
 
 
                     // Mando medicion
-                    var res = ayInternet.EnviarJson(
-                        "http://smartcompost.net:8080/api/compost_bins/add_measurement",
-                        sensor.Medir(idMock));
-                    Logger.Log(res);
+                    //var res = ayInternet.EnviarJson(
+                    //    "http://smartcompost.net:8080/api/compost_bins/add_measurement",
+                    //    sensor.Medir(idMock));
+                    //Logger.Log(res);
 
                     // Busco fecha utc
                     Logger.Log(ayFechas.GetNetworkTime().ToFechaLocal());

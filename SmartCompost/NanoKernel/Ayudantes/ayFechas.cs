@@ -6,35 +6,12 @@ namespace NanoKernel.Ayudantes
 {
     public static class ayFechas
     {
-        public static string FormatoFechaLocal = "yyyy-MM-dd HH:mm:ss";
+        public const string FormatoFechaLocal = "yyyy-MM-dd HH:mm:ss";
         public const string NTP_Server = "ar.pool.ntp.org";
-
-        public static DateTime Ahora => ultimaFecha.AddMilliseconds((ultimaActualizacion - DateTime.UtcNow).TotalMilliseconds);
-
-        private static DateTime ultimaFecha = DateTime.FromUnixTimeSeconds(0);
 
         public static string ToFechaLocal(this DateTime dt)
         {
             return dt.ToString(FormatoFechaLocal);
-        }
-
-        private static DateTime ultimaActualizacion = DateTime.UtcNow;
-        public static bool ActualizarFecha()
-        {
-            try
-            {
-                var fecha = GetNetworkTime();
-
-                if (fecha <= ultimaFecha) return true;
-
-                ultimaFecha = fecha;
-                ultimaActualizacion = DateTime.UtcNow;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
 
         public static DateTime GetNetworkTime(string server = NTP_Server)
