@@ -16,15 +16,18 @@ namespace LoRa
         const double Frequency = 915_000_000.0;
 
         static SX127XDevice sender;
-        const int sender_NSS = Gpio.IO17;
-        const int senderDI01 = Gpio.IO25;
+        const int sender_NSS = Gpio.IO05;
+        const int senderDI00 = Gpio.IO25;
+        const int senderReset = Gpio.IO14;
 
         public static void Main()
         {
+            Debug.WriteLine("Sender LoRa!");
+
             // Config SPI1
-            Configuration.SetPinFunction(Gpio.IO12, DeviceFunction.SPI1_MISO);
-            Configuration.SetPinFunction(Gpio.IO13, DeviceFunction.SPI1_MOSI);
-            Configuration.SetPinFunction(Gpio.IO14, DeviceFunction.SPI1_CLOCK);
+            Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.SPI1_MISO);
+            Configuration.SetPinFunction(Gpio.IO23, DeviceFunction.SPI1_MOSI);
+            Configuration.SetPinFunction(Gpio.IO18, DeviceFunction.SPI1_CLOCK);
 
             var spiSender = new SpiConnectionSettings(SPI_BUS_ID, sender_NSS)
             {
@@ -41,7 +44,7 @@ namespace LoRa
             {
                 try
                 {
-                    sender = new SX127XDevice(spi, gpio, dio0Pin: senderDI01);
+                    sender = new SX127XDevice(spi, gpio, dio0Pin: senderDI00);
                     sender.Initialize(
                         Frequency,
                         lnaGain: RegLnaLnaGain.Default,

@@ -15,14 +15,18 @@ namespace Lora_Reciever
         const double Frequency = 915_000_000.0;
 
         static SX127XDevice reciever;
-        const int reciever_NSS = Gpio.IO17;
-        const int recieverDI01 = Gpio.IO16;
+        const int reciever_NSS = Gpio.IO05;
+        const int recieverDI00 = Gpio.IO25;
+        const int recieverReset = Gpio.IO14;
+
         public static void Main()
         {
+            Debug.WriteLine("Reciever LoRa!");
+
             // Config SPI1
-            Configuration.SetPinFunction(Gpio.IO12, DeviceFunction.SPI1_MISO);
-            Configuration.SetPinFunction(Gpio.IO13, DeviceFunction.SPI1_MOSI);
-            Configuration.SetPinFunction(Gpio.IO14, DeviceFunction.SPI1_CLOCK);
+            Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.SPI1_MISO);
+            Configuration.SetPinFunction(Gpio.IO23, DeviceFunction.SPI1_MOSI);
+            Configuration.SetPinFunction(Gpio.IO18, DeviceFunction.SPI1_CLOCK);
 
             var spiReciever = new SpiConnectionSettings(SPI_BUS_ID, reciever_NSS)
             {
@@ -39,7 +43,7 @@ namespace Lora_Reciever
             {
                 try
                 {
-                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI01);
+                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI00, resetPin: recieverReset);
                     reciever.Initialize(
                         Frequency,
                         lnaGain: RegLnaLnaGain.Default,
