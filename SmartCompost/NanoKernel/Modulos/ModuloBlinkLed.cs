@@ -27,7 +27,7 @@ namespace NanoKernel.Modulos
             ModuloBlinkLed.periodoMilis = periodoMilis;
         }
 
-        public void Iniciar(int periodoMilis)
+        public void Iniciar(int periodoMilis = 1000)
         {
             ModuloBlinkLed.periodoMilis = periodoMilis;
             hilo.Iniciar();

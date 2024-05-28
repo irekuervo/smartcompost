@@ -13,6 +13,14 @@ namespace NodoAP
 {
     public class MainAP
     {
+
+        const string WIFI_SSID_KEY = "wifi-ssid";
+        const string WIFI_SSID = "";
+
+        const string WIFI_PASS_KEY = "wifi-pass";
+        const string WIFI_PASS = "";
+
+
         public static void Main()
         {
             App.Start(Setup, Loop);
@@ -23,19 +31,21 @@ namespace NodoAP
         {
             // Hacemos titilar el led del board
             blinker = new ModuloBlinkLed();
-            blinker.Iniciar(1000);
+            blinker.Iniciar();
 
 
             // Sacamos los datos de la memoria interna
             IRepositorioClaveValor repo = new RepositorioClaveValorInterno("config");
-            var ssid = repo.Get("wifi-ssid");
-            var pass = repo.Get("wifi-pass");
 
-            if (ssid == null) repo.Update("wifi-ssid", "La Gorda");
-            if (pass == null) repo.Update("wifi-pass", "comandante123");
+            var ssid = repo.Get(WIFI_SSID_KEY);
+            if (ssid == null) 
+                repo.Update(WIFI_SSID_KEY, "La Gorda");
 
-            ssid = repo.Get("wifi-ssid");
-            pass = repo.Get("wifi-pass");
+            var pass = repo.Get(WIFI_PASS_KEY);
+            if (pass == null) 
+                repo.Update(WIFI_PASS_KEY, "comandante123");
+
+           
 
             // Conectamos a wifi
             Logger.Log("Conectando '" + ssid + "' pass: " + pass);
@@ -71,7 +81,7 @@ namespace NodoAP
                     //var res = ayInternet.EnviarJson(
                     //    "http://smartcompost.net:8080/api/compost_bins/add_measurement",
                     //    sensor.Medir(idMock));
-                    //Logger.Log(res);
+                    //Logger.Log(res); 
 
                     // Busco fecha utc
                     Logger.Log(ayFechas.GetNetworkTime().ToFechaLocal());
