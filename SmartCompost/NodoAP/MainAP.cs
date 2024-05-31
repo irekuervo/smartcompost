@@ -13,13 +13,11 @@ namespace NodoAP
 {
     public class MainAP
     {
-
         const string WIFI_SSID_KEY = "wifi-ssid";
-        const string WIFI_SSID = "";
-
         const string WIFI_PASS_KEY = "wifi-pass";
-        const string WIFI_PASS = "";
 
+        const string WIFI_SSID = "La Gorda";
+        const string WIFI_PASS = "comandante123";
 
         public static void Main()
         {
@@ -33,19 +31,16 @@ namespace NodoAP
             blinker = new ModuloBlinkLed();
             blinker.Iniciar();
 
-
             // Sacamos los datos de la memoria interna
             IRepositorioClaveValor repo = new RepositorioClaveValorInterno("config");
 
             var ssid = repo.Get(WIFI_SSID_KEY);
-            if (ssid == null) 
-                repo.Update(WIFI_SSID_KEY, "La Gorda");
+            if (ssid.EquivaleA(WIFI_SSID) == false) 
+                repo.Update(WIFI_SSID_KEY, WIFI_SSID);
 
             var pass = repo.Get(WIFI_PASS_KEY);
-            if (pass == null) 
-                repo.Update(WIFI_PASS_KEY, "comandante123");
-
-           
+            if (pass.EquivaleA(WIFI_PASS) == false) 
+                repo.Update(WIFI_PASS_KEY, WIFI_PASS);
 
             // Conectamos a wifi
             Logger.Log("Conectando '" + ssid + "' pass: " + pass);

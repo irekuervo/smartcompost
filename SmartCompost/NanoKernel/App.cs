@@ -15,7 +15,7 @@ namespace NanoKernel
         private static HiloDelegate appLoop;
         private static Action appSetup;
 
-        public static void Start(Action setup, HiloDelegate loop)
+        public static void Start(Action setup = null, HiloDelegate loop = null)
         {
             App.appLoop = loop;
             App.appSetup = setup;
@@ -25,18 +25,10 @@ namespace NanoKernel
             Sleep.WakeupCause cause = Sleep.GetWakeupCause();
             Debug.WriteLine("Wakeup cause:" + cause.ToString());
 
-            //Logger.Log("Starting...");
-            //ConstruirModulos(baseAssembly);
-            //Logger.Log("Started OK");
-
-            appSetup.Invoke();
+            appSetup?.Invoke();
 
             if (loop == null)
-            {
-                Logger.Log("Sleep infinite");
-                Thread.Sleep(Timeout.Infinite);
                 return;
-            }
             
             while (!Detener)
             {
