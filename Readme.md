@@ -22,7 +22,7 @@ Importante: si la placa tiene el CH340, obviar el punto 2!!!. Asegurarse de que 
 
     nanoff --update --target ESP32_PSRAM_REV0 --serialport COM31
 
-* 2) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO (EL QUE DICE EN) !! Paciencia, pueden ser como 60 segs *
+* 2) MANTENER APRETADO EL BOTON DE PROGRAMACION DEL ESP32 DURANTE TODO EL COMANDO (EL QUE DICE BOOT) !! Paciencia, pueden ser como 60 segs *
 * 3) NO CONECTAR NADA EN LOS PINES TX/RX, ya que el debugger los usa *
 * 4) Conectar y desconectar el usb del esp32 para bootearlo bien
 
