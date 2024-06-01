@@ -1,12 +1,10 @@
 ﻿using nanoFramework.Hardware.Esp32;
-using nanoFramework.Runtime.Native;
 using NanoKernel.Loggin;
 using System;
 
 namespace NanoKernel.Ayudantes
 {
     public class aySleep
-
     {
         /// <summary>
         /// Mantiene el equipo en deep sleep, y rebootea

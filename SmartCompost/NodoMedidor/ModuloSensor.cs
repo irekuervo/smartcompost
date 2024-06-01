@@ -55,13 +55,20 @@ namespace NodoMedidor
         {
             this.id = id;
             this.datetime = DateTime.UtcNow;
-            
 
+            this.temperatura = temperatura;
+            this.humedad = humedad;
         }
 
         public int id { get; set; }
         public DateTime datetime { get; set; }
-        public Array measurments { get; set; }
+        public double temperatura { get; set; }
+        public double humedad { get; set; }
+
+        public override string ToString()
+        {
+            return $"{id}-{datetime}: {temperatura}ºC {humedad}g/kg";
+        }
     }
 
     public class MedicionSensor
