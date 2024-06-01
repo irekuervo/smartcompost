@@ -49,6 +49,10 @@ Darle run si quiero debuggear, o deploy si solo quiero deployar
 
     nanoff --update --target ESP32_PSRAM_REV0 --serialport COM10 --masserase
 
+O si ves que nunca te responde el device, puede ser que se updeteo el firmware, y el cache esta choto:
+
+    nanoff --clearcache
+
 *** BITACORA ***
 - Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si
 - Con el cp210x va como piña todo
