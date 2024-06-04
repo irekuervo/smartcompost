@@ -12,9 +12,12 @@ namespace Lora_Reciever
     public class Program
     {
         const int SPI_BUS_ID = 1;
-        const double Frequency = 915_000_000.0;
+        const double Frequency = 433e6;//915_000_000.0;
 
         static SX127XDevice reciever;
+        static GpioController gpio;
+        static GpioPin led;
+
         const int reciever_NSS = Gpio.IO05;
         const int recieverDI00 = Gpio.IO25;
         const int recieverReset = Gpio.IO14;
@@ -22,6 +25,12 @@ namespace Lora_Reciever
         public static void Main()
         {
             Debug.WriteLine("Reciever LoRa!");
+
+            gpio = new GpioController();
+            led = gpio.OpenPin(2, PinMode.Output);
+
+            led.Write(PinValue.High);
+
 
             // Config SPI1
             Configuration.SetPinFunction(Gpio.IO19, DeviceFunction.SPI1_MISO);
@@ -36,7 +45,7 @@ namespace Lora_Reciever
             };
 
             var spi = new SpiDevice(spiReciever);
-            var gpio = new GpioController();
+            //var gpio = new GpioController();
 
             var ok = false;
             while (!ok)
@@ -83,6 +92,10 @@ namespace Lora_Reciever
             try
             {
                 string messageText = UTF8Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
+
+                led.Write(PinValue.High);
+                Thread.Sleep(250);
+                led.Write(PinValue.Low);
 
                 Log($"RECIEVER: PacketSNR: {e.PacketSnr:0.0}, Packet RSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes \r\n{messageText}");
 

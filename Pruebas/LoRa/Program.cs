@@ -13,7 +13,7 @@ namespace LoRa
     public class Program
     {
         const int SPI_BUS_ID = 1;
-        const double Frequency = 915_000_000.0;
+        const double Frequency = 433e6;//915_000_000.0;
 
         static SX127XDevice sender;
         const int sender_NSS = Gpio.IO05; // Selector de slave, es cualquier pin
@@ -79,7 +79,7 @@ namespace LoRa
                 string messageText = $"Sender envia {sendCount += 1}!";
                 byte[] messageBytes = UTF8Encoding.UTF8.GetBytes(messageText);
                 sender.Send(messageBytes);
-                Thread.Sleep(255);
+                Thread.Sleep(1000);
             }
 
             //Thread.Sleep(Timeout.Infinite);
