@@ -18,7 +18,24 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="App.cs" />
+    <Compile Include="LoRa\Device\RegDetectionThreshold.cs" />
+    <Compile Include="LoRa\Device\RegDetectOptimise.cs" />
+    <Compile Include="LoRa\Device\RegDioMapping.cs" />
+    <Compile Include="LoRa\Device\RegHopChannel.cs" />
+    <Compile Include="LoRa\Device\RegInvertIq.cs" />
+    <Compile Include="LoRa\Device\RegIrqFlags.cs" />
+    <Compile Include="LoRa\Device\RegisterManager.cs" />
+    <Compile Include="LoRa\Device\Registers.cs" />
+    <Compile Include="LoRa\Device\RegLna.cs" />
+    <Compile Include="LoRa\Device\RegModemConfig1.cs" />
+    <Compile Include="LoRa\Device\RegModemConfig2.cs" />
+    <Compile Include="LoRa\Device\RegModemConfig3.cs" />
+    <Compile Include="LoRa\Device\RegOcp.cs" />
+    <Compile Include="LoRa\Device\RegOpMode.cs" />
+    <Compile Include="LoRa\Device\RegPaConfig.cs" />
+    <Compile Include="LoRa\Device\SX127XDevice.cs" />
+    <Compile Include="LoRa\LoRa.cs" />
+    <Compile Include="Nodos\Nodo.cs" />
     <Compile Include="Ayudantes\ayArchivos.cs" />
     <Compile Include="Ayudantes\ayEstadisticas.cs" />
     <Compile Include="Ayudantes\ayFechas.cs" />
@@ -47,6 +64,7 @@
     <Compile Include="Modulos\ModuloHilos.cs" />
     <Compile Include="Modulos\ModuloHost.cs" />
     <Compile Include="Modulos\ServicioAttribute.cs" />
+    <Compile Include="Nodos\TiposNodo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositorios\CacheClaveValor.cs" />
     <Compile Include="Repositorios\IRepositorioClaveValor.cs" />
@@ -54,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="LoRa\Device\SX127XLoRaDevice.nfproj" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,6 +126,11 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
+    <Reference Include="System.Device.Spi, Version=1.3.52.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.System.Device.Spi.1.3.52\lib\System.Device.Spi.dll</HintPath>
+      <Private>True</Private>
+      <SpecificVersion>True</SpecificVersion>
+    </Reference>
     <Reference Include="System.Device.Wifi, Version=1.5.85.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
       <HintPath>..\packages\nanoFramework.System.Device.Wifi.1.5.85\lib\System.Device.Wifi.dll</HintPath>
       <Private>True</Private>
@@ -147,8 +171,8 @@
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="System.Net.Sockets.UdpClient, Version=1.1.61.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
-      <HintPath>..\packages\nanoFramework.System.Net.Sockets.UdpClient.1.1.61\lib\System.Net.Sockets.UdpClient.dll</HintPath>
+    <Reference Include="System.Net.Sockets.UdpClient, Version=1.1.63.0, Culture=neutral, PublicKeyToken=c07d481e9758c731">
+      <HintPath>..\packages\nanoFramework.System.Net.Sockets.UdpClient.1.1.63\lib\System.Net.Sockets.UdpClient.dll</HintPath>
       <Private>True</Private>
       <SpecificVersion>True</SpecificVersion>
     </Reference>

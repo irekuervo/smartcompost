@@ -1,50 +1,58 @@
 ﻿using nanoFramework.Hardware.Esp32;
-using nanoFramework.Runtime.Native;
-using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
+using NanoKernel.Repositorios;
 using System;
-using System.Diagnostics;
 using System.Threading;
 
-namespace NanoKernel
+namespace NanoKernel.Nodos
 {
-    public static class App
+    public abstract class Nodo : IDisposable
     {
-        private static bool Detener = false;
-        private static HiloDelegate appLoop;
-        private static Action appSetup;
+        public abstract string IdSmartCompost { get; }
+        public abstract TiposNodo tipoNodo { get; }
 
-        public static void Start(Action setup = null, HiloDelegate loop = null)
+        private readonly IRepositorioClaveValor config;
+        private readonly Hilo loopThread;
+        private const string LOGO = "\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n";
+
+        public Nodo()
         {
-            App.appLoop = loop;
-            App.appSetup = setup;
+            loopThread = MotorDeHilos.CrearHiloLoop($"{IdSmartCompost}-MAIN", Loop);
+            config = new RepositorioClaveValorInterno("config");
+        }
 
-            Logger.Log("\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n");
+        public abstract void Setup();
+        public virtual void Loop(ref bool activo)
+        {
+            Thread.Sleep(0);
+        }
+
+        public void Iniciar()
+        {
+            Logger.Log(LOGO);
+            Logger.Log($"{IdSmartCompost}-{tipoNodo}");
 
             Sleep.WakeupCause cause = Sleep.GetWakeupCause();
-            Debug.WriteLine("Wakeup cause:" + cause.ToString());
+            Logger.Log("Wakeup cause: " + cause.ToString());
 
-            appSetup?.Invoke();
+            Logger.Log("Setup...");
+            Setup();
 
-            if (loop == null)
-                return;
-            
-            while (!Detener)
-            {
-                try
-                {
-                    appLoop.Invoke(ref Detener);
-                    Thread.Sleep(0);
-                }
-                catch (Exception ex)
-                {
-                    Detener = true;
-                    Logger.Log("Error detenimiento main loop: " + ex.Message);
-                }
-            }
-
+            loopThread.Iniciar();
+            Logger.Log("Nodo iniciado");
             Thread.Sleep(Timeout.Infinite);
+        }
+
+        public void Detener()
+        {
+            loopThread.Detener();
+        }
+
+        public void Dispose()
+        {
+            Detener();
+            loopThread.Dispose();
         }
 
         //static Hashtable Modulos = new Hashtable();

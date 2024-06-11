@@ -2,17 +2,18 @@ using NanoKernel;
 using NanoKernel.Ayudantes;
 using NanoKernel.Loggin;
 using NanoKernel.Modulos;
+using NanoKernel.Nodos;
 using System.Threading;
 
 namespace NodoMedidor
 {
-    public class MainNodo
+    public class NodoMedidor
     {
         private static ModuloBlinkLed blinker;
         private static ModuloSensor sensor;
         public static void Main()
         {
-            App.Start();
+            //Nodo.Iniciar();
 
             blinker = new ModuloBlinkLed();
             blinker.Iniciar();
@@ -24,6 +25,14 @@ namespace NodoMedidor
             Thread.Sleep(2000);
 
             aySleep.DeepSleepSegundos(10);
+
+            //// LO PUSE ACA POR QUE NO SABIA DONDE
+            // Ejecutamos una tarea para mandar a deep sleep
+            //MotorDeHilos.CrearHilo("DeepSleep", (ref bool a) =>
+            //{
+            //    Thread.Sleep(20_000);
+            //    aySleep.DeepSleepSegundos(60 * 60);
+            //}).Iniciar();
         }
 
         private static void Setup()

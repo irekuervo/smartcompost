@@ -9,7 +9,8 @@ namespace NodoTest
         static ModuloBlinkLed blinker;
         public static void Main()
         {
-            App.Start(setup, loop);
+            blinker = new ModuloBlinkLed();
+            blinker.Iniciar();
         }
 
         static void setup()
