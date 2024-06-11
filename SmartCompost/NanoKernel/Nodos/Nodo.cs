@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace NanoKernel.Nodos
 {
-    public abstract class Nodo : IDisposable
+    public abstract class NodoBase : IDisposable
     {
         public abstract string IdSmartCompost { get; }
         public abstract TiposNodo tipoNodo { get; }
@@ -16,7 +16,7 @@ namespace NanoKernel.Nodos
         private readonly Hilo loopThread;
         private const string LOGO = "\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n";
 
-        public Nodo()
+        public NodoBase()
         {
             loopThread = MotorDeHilos.CrearHiloLoop($"{IdSmartCompost}-MAIN", Loop);
             config = new RepositorioClaveValorInterno("config");
@@ -49,7 +49,7 @@ namespace NanoKernel.Nodos
             loopThread.Detener();
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Detener();
             loopThread.Dispose();

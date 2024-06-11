@@ -1,5 +1,6 @@
 ﻿
 using NanoKernel.Hilos;
+using System;
 using System.Device.Gpio;
 using System.Threading;
 
@@ -7,31 +8,38 @@ namespace NanoKernel.Modulos
 {
     [Modulo("Blink")]
     ///TODO Si usa Hardware deberia usar otro modulo que lo gestione
-    public class ModuloBlinkLed
+    public class ModuloBlinkLed : IDisposable
     {
-        static GpioController gpio;
-        static GpioPin led;
-        static int periodoMilis = 1000;
-        static Hilo hilo;
+        private GpioController gpio;
+        private GpioPin led;
+        private int periodoMilis;
+        private Hilo hilo;
 
-        public ModuloBlinkLed(int ledPin = 2 /*default del esp-wroom-32*/)
+        public ModuloBlinkLed(int ledPin = 2 /*default del esp-wroom-32*/, int periodoMilis = 1000)
         {
             gpio = new GpioController();
             led = gpio.OpenPin(ledPin, PinMode.Output);
+
+            this.periodoMilis = periodoMilis;
 
             hilo = MotorDeHilos.CrearHiloLoop("Blinker", HiloLed);
         }
 
         public void CambiarPeriodo(int periodoMilis)
         {
-            ModuloBlinkLed.periodoMilis = periodoMilis;
+            this.periodoMilis = periodoMilis;
         }
 
-        public void Iniciar(int periodoMilis = 1000)
+        public void Iniciar(int periodoMilis = 0)
         {
-            ModuloBlinkLed.periodoMilis = periodoMilis;
+            if (periodoMilis > 0)
+                this.periodoMilis = periodoMilis;
+
             hilo.Iniciar();
         }
+
+        public void High() => led.Write(PinValue.High);
+        public void Low() => led.Write(PinValue.Low);
 
         public void Detener()
         {
@@ -39,17 +47,21 @@ namespace NanoKernel.Modulos
             led.Write(PinValue.Low);
         }
 
-        private static void HiloLed(ref bool activo)
+        private void HiloLed(ref bool activo)
         {
             if (!activo) return;
-            led.Write(PinValue.High);
+            High();
             Thread.Sleep(periodoMilis);
 
             if (!activo) return;
-            led.Write(PinValue.Low);
+            Low();
             Thread.Sleep(periodoMilis);
         }
 
-
+        public void Dispose()
+        {
+            Detener();
+            gpio.Dispose();
+        }
     }
 }

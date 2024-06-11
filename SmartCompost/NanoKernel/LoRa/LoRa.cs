@@ -16,6 +16,7 @@ namespace NanoKernel.LoRa
         private readonly SX127XDevice device;
         private readonly SpiDevice spi;
         private readonly GpioController gpio;
+        private bool iniciado;
 
         public LoRa(
             int pinMISO = Gpio.IO19,
@@ -55,6 +56,19 @@ namespace NanoKernel.LoRa
                 rxPayloadCrcOn: true,
                 rxDoneignoreIfCrcMissing: false
                 );
+
+            device.Receive();
+
+            iniciado = true;
+        }
+
+        public void Enviar(byte[] data)
+        {
+            if (!iniciado)
+                throw new Exception("El device no esta iniciado");
+
+            device.Send(data);
+            device.Receive();
         }
 
         public void Dispose()

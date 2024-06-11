@@ -20,6 +20,7 @@
   <ItemGroup>
     <Compile Include="ModuloSensor.cs" />
     <Compile Include="NodoMedidor.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

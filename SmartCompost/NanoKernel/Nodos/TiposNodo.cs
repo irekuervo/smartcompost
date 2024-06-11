@@ -3,9 +3,7 @@
     public enum TiposNodo
     {
         Generico,
-        Lora,
-        LoraAP,
-        Wifi,
-        WifiAP
+        AccessPoint,
+        Medidor
     }
 }
