@@ -36,6 +36,7 @@ namespace NanoKernel.Modulos
         public void Detener()
         {
             hilo.Detener();
+            led.Write(PinValue.Low);
         }
 
         private static void HiloLed(ref bool activo)
