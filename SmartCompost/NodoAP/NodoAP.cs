@@ -1,15 +1,13 @@
 using NanoKernel.Ayudantes;
-using NanoKernel.Hilos;
 using NanoKernel.Loggin;
+using NanoKernel.LoRa;
 using NanoKernel.Medidores;
 using NanoKernel.Modulos;
+using NanoKernel.Nodos;
 using NanoKernel.Repositorios;
-using NanoKernel;
 using System;
 using System.Diagnostics;
 using System.Threading;
-using NanoKernel.Nodos;
-using NanoKernel.LoRa;
 
 namespace NodoAP
 {
@@ -26,27 +24,47 @@ namespace NodoAP
 
         public override void Setup()
         {
-            // Hacemos titilar el led del board
             blinker = new ModuloBlinkLed();
             blinker.Iniciar(400);
 
-            // Sacamos los datos de la memoria interna
-
             // Conectamos a wifi
             Logger.Log($"Conectando WiFi: {WIFI_SSID}-{WIFI_PASS}");
-            while (!ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS))
-            {
-                Debug.Write(".");
-                Thread.Sleep(1000);
-            }
-
-            Logger.Log($"Conectando LoRa: {WIFI_SSID}-{WIFI_PASS}");
             bool ok = false;
             while (!ok)
             {
-                lora = new LoRa();
-                lora.Iniciar();
-                ok = true;
+                try
+                {
+                    ok = ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                }
+                finally
+                {
+                    Thread.Sleep(1000);
+                }
+            }
+
+            // Conectamos a LoRa
+            Logger.Log($"Conectando LoRa: {WIFI_SSID}-{WIFI_PASS}");
+            ok = false;
+            while (!ok)
+            {
+                try
+                {
+                    lora = new LoRa();
+                    lora.Iniciar();
+                    ok = true;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                }
+                finally
+                {
+                    Thread.Sleep(1000);
+                }
             }
 
             blinker.Detener();

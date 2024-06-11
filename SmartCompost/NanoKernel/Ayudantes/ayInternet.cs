@@ -16,14 +16,16 @@ namespace NanoKernel.Ayudantes
         {
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://neverssl.com/");
+                using (HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://neverssl.com/"))
+                {
+                    request.Timeout = timeout;
+                    request.ReadWriteTimeout = timeout;
 
-                request.Timeout = timeout;
-                request.ReadWriteTimeout = timeout;
-
-                var response = (HttpWebResponse)request.GetResponse();
-                Hay = true;
-                return true;
+                    var response = (HttpWebResponse)request.GetResponse();
+                    response.Dispose();
+                    Hay = true;
+                    return true;
+                }
             }
             catch (Exception)
             {
@@ -34,7 +36,7 @@ namespace NanoKernel.Ayudantes
 
         public static bool ConectarsePorWifi(string ssid, string password)
         {
-            CancellationTokenSource cs = new(60000);
+            CancellationTokenSource cs = new(10_000);
 
             var conectado = WifiNetworkHelper.ConnectDhcp(ssid, password, token: cs.Token);
 
