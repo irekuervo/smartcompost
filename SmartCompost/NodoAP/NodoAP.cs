@@ -20,6 +20,7 @@ namespace NodoAP
 
         private ModuloBlinkLed blinker;
         private LoRa lora;
+        private ServidorLoRa server;
 
         public override void Setup()
         {
@@ -46,17 +47,13 @@ namespace NodoAP
             }
 
             // Conectamos a LoRa
-            Logger.Log($"Conectando LoRa:");
+            Logger.Log($"Conectando LoRa...");
             ok = false;
             while (!ok)
             {
                 try
                 {
                     lora = new LoRa();
-                    lora.OnReceive += Lora_OnReceive;
-                    lora.OnTransmit += Lora_OnTransmit;
-                    lora.Iniciar();
-
                     ok = true;
                 }
                 catch (Exception ex)
@@ -69,25 +66,11 @@ namespace NodoAP
                 }
             }
 
+            Logger.Log($"Iniciando server...");
+            server = new ServidorLoRa(ayInternet.GetMacAddress(), lora);
+            server.Iniciar();
             // Detenemos el blinker para avisar que esta todo OK
             blinker.Detener();
-        }
-
-        int idPaquete = 0;
-
-        private void Lora_OnTransmit(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataTransmitedEventArgs e)
-        {
-            Logger.Log("Enviado id: " + idPaquete);
-        }
-
-        private void Lora_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
-        {
-            blinker.High();
-            idPaquete = BitConverter.ToInt32(e.Data, 0);
-            Logger.Log("Recibido id: " + idPaquete);
-            Thread.Sleep(1000);
-            lora.Enviar(BitConverter.GetBytes(idPaquete));
-            blinker.Low();
         }
 
         public override void Dispose()

@@ -1,3 +1,4 @@
+using NanoKernel.Ayudantes;
 using NanoKernel.Loggin;
 using NanoKernel.LoRa;
 using NanoKernel.Modulos;
@@ -14,7 +15,8 @@ namespace NodoMedidor
 
         private static ModuloBlinkLed blinker;
         private LoRa lora;
-
+        private MacAddress macAddress;
+        private MacAddress macAddressAP;
         public override void Setup()
         {
             blinker = new ModuloBlinkLed();
@@ -28,10 +30,7 @@ namespace NodoMedidor
                 try
                 {
                     lora = new LoRa();
-                    lora.OnReceive += Lora_OnReceive;
-                    lora.OnTransmit += Lora_OnTransmit;
                     lora.Iniciar();
-
                     ok = true;
                 }
                 catch (Exception ex)
@@ -44,28 +43,27 @@ namespace NodoMedidor
                 }
             }
 
+            macAddress = ayInternet.GetMacAddress();
+            macAddressAP = new MacAddress(new byte[] { 176, 167, 50, 221, 15, 148 });
+            paquete = new byte[12];
             // Detenemos el blinker para avisar que esta todo OK
             blinker.Detener();
-
-            // Ahora esta pensado para que sea un ping pong que empieza este nodo
-            lora.Enviar(BitConverter.GetBytes(idPaquete));
         }
 
-        int idPaquete = 0;
-
-        private void Lora_OnTransmit(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataTransmitedEventArgs e)
-        {
-            Logger.Log("Enviado id: " + idPaquete);
-        }
-
-        private void Lora_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
+        byte[] paquete;
+        public override void Loop(ref bool activo)
         {
             blinker.High();
-            idPaquete = BitConverter.ToInt32(e.Data, 0);
-            Logger.Log("Recibido id: " + idPaquete);
-            Thread.Sleep(1000);
-            lora.Enviar(BitConverter.GetBytes(idPaquete + 1));
+
+            // devolvemos el Paquete OK = id destino + id origen
+            Array.Copy(macAddressAP.Address, 0, paquete, 0, macAddressAP.Address.Length);
+            Array.Copy(macAddress.Address, 0, paquete, 6, macAddress.Address.Length);
+
+            // Ahora esta pensado para que sea un ping pong que empieza este nodo
+            lora.Enviar(paquete);
             blinker.Low();
+
+            Thread.Sleep(1000);
         }
 
         public override void Dispose()

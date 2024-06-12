@@ -4,6 +4,7 @@ using NanoKernel.Loggin;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 
@@ -49,6 +50,20 @@ namespace NanoKernel.Ayudantes
             return ayInternet.HayInternet();
         }
 
+        /// <summary>
+        /// Return MAC Address from network interface.
+        /// </summary>
+        /// <returns>String from "First" Converted Physical Address</returns>
+        /// <remarks>Usage: string mac = Utilities.GetMacId();</remarks>
+        public static MacAddress GetMacAddress()
+        {
+            NetworkInterface[] nis = NetworkInterface.GetAllNetworkInterfaces();
+            if (nis.Length == 0)
+                return null;
+
+            return new MacAddress(nis[0].PhysicalAddress);
+        }
+
         public static string EnviarJson(string endpointURL, object objeto)
         {
             using (HttpClient client = new HttpClient())
@@ -84,6 +99,23 @@ namespace NanoKernel.Ayudantes
             const string hostLocal = ""; // lo dice la documentacion de  Dns.GetHostEntry("");
             IPHostEntry ip = Dns.GetHostEntry(hostLocal);
             return ip.AddressList;
+        }
+    }
+
+    public class MacAddress {
+
+        public byte[] Address => mac;
+
+        private static byte[] zero= { 0,0,0,0,0,0 };
+
+        private readonly byte[] mac;
+
+        public MacAddress(byte[] mac)
+        {
+            if (mac == null || mac.Length != 6 || mac.IsEqualsTo(zero))
+                throw new Exception("Invalid mac address");
+
+            this.mac = mac;
         }
     }
 }

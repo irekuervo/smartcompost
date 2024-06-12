@@ -18,6 +18,10 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
+    <Compile Include="Ayudantes\ayArrays.cs" />
+    <Compile Include="Ayudantes\BinaryReader.cs" />
+    <Compile Include="Comunicacion\Paquete.cs" />
+    <Compile Include="LoRa\ClienteLoRa.cs" />
     <Compile Include="LoRa\Device\RegDetectionThreshold.cs" />
     <Compile Include="LoRa\Device\RegDetectOptimise.cs" />
     <Compile Include="LoRa\Device\RegDioMapping.cs" />
@@ -35,6 +39,7 @@
     <Compile Include="LoRa\Device\RegPaConfig.cs" />
     <Compile Include="LoRa\Device\SX127XDevice.cs" />
     <Compile Include="LoRa\LoRa.cs" />
+    <Compile Include="LoRa\ServidorLoRa.cs" />
     <Compile Include="Nodos\Nodo.cs" />
     <Compile Include="Ayudantes\ayArchivos.cs" />
     <Compile Include="Ayudantes\ayEstadisticas.cs" />
