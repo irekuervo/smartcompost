@@ -5,7 +5,8 @@ namespace NodoAP
     public class AddMeasurementDto
     {
         public string node_type { get; set; }
-        public DateTime timestamp { get; set; } // Now del nodo, DATO DEBUG TODO, es para saber el tiempo de transporte
+        // iso8601
+        public DateTime last_updated { get; set; } // Now del nodo, DATO DEBUG TODO, es para saber el tiempo de transporte
         public Array node_measurements { get; set; }
     }
 

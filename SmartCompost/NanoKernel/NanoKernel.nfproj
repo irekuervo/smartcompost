@@ -19,7 +19,8 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Ayudantes\ayArrays.cs" />
-    <Compile Include="Ayudantes\BinaryReader.cs" />
+    <Compile Include="Ayudantes\Varios\BinaryReader.cs" />
+    <Compile Include="Ayudantes\Varios\ConcurrentQueue.cs" />
     <Compile Include="Comunicacion\Paquete.cs" />
     <Compile Include="LoRa\ClienteLoRa.cs" />
     <Compile Include="LoRa\Device\RegDetectionThreshold.cs" />

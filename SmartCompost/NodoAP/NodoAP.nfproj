@@ -22,6 +22,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="NodoAP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouterService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NanoKernel\NanoKernel.nfproj" />

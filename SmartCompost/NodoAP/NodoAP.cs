@@ -20,7 +20,8 @@ namespace NodoAP
 
         private ModuloBlinkLed blinker;
         private LoRa lora;
-        private ServidorLoRa server;
+        private ServidorLoRa serverLora;
+        private RouterService router;
 
         public override void Setup()
         {
@@ -67,14 +68,19 @@ namespace NodoAP
             }
 
             Logger.Log($"Iniciando server...");
-            server = new ServidorLoRa(ayInternet.GetMacAddress(), lora);
-            server.Iniciar();
+            serverLora = new ServidorLoRa(ayInternet.GetMacAddress(), lora);
+            serverLora.Iniciar();
+
+            router.Iniciar();
+
             // Detenemos el blinker para avisar que esta todo OK
             blinker.Detener();
         }
 
         public override void Dispose()
         {
+            serverLora.Dispose();
+            router.Dispose();
             blinker.Dispose();
             base.Dispose();
         }
