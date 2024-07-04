@@ -45,13 +45,7 @@ namespace NanoKernel.Comunicacion
                 if (p.MacDestino.Es(direccionLocal) == false)
                     return; // Se descarta
 
-                new Thread(new ThreadStart(() =>
-                {
-                    blinker.High();
-                    Thread.Sleep(100);
-                    blinker.Low();
-
-                })).Start();
+                blinker.BlinkOnce(100);
 
                 Paquete paquete = new Paquete(e.Data);
                 Logger.Log(paquete.ToString());

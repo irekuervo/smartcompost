@@ -29,7 +29,7 @@ namespace NodoMedidor
 
             cliente = new ClienteLora(lora, this.MacAddress);
 
-            direccionRouter = new MacAddress("e6:00:02:68:d3:b6");
+            direccionRouter = new MacAddress("B0:A7:32:DD:1E:F4");
 
             // Detenemos el blinker para avisar que esta todo OK
             blinker.Detener();
@@ -61,6 +61,8 @@ namespace NodoMedidor
         public override void Loop(ref bool activo)
         {
             cliente.Enviar("hola", direccionRouter);
+            blinker.BlinkOnce(100);
+            Thread.Sleep(4900);
         }
 
         public override void Dispose()

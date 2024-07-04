@@ -45,18 +45,16 @@ namespace NanoKernel.Comunicacion
 
         public void Empaquetar(MemoryStream ms)
         {
-            using (BinaryWriter bw = new BinaryWriter(ms))
-            {
-                bw.Write(TipoPaquete);
-                bw.Write(MacOrigen.Address);
-                bw.Write(MacDestino.Address);
-                bw.Write(Payload);
+            BinaryWriter bw = new BinaryWriter(ms);
+            bw.Write(TipoPaquete);
+            bw.Write(MacOrigen.Address);
+            bw.Write(MacDestino.Address);
+            bw.Write(Payload);
 
-                if (Payload.Length > ushort.MaxValue)
-                    throw new Exception("Paquete excede tamaño maximo de " + ushort.MaxValue.FormatearBytes());
+            if (Payload.Length > ushort.MaxValue)
+                throw new Exception("Paquete excede tamaño maximo de " + ushort.MaxValue.FormatearBytes());
 
-                bw.Write((ushort)Payload.Length);
-            }
+            bw.Write((ushort)Payload.Length);
         }
 
         public void Dispose()

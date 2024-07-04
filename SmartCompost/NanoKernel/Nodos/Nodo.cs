@@ -36,7 +36,7 @@ namespace NanoKernel.Nodos
         {
             Logger.Log(LOGO);
             Logger.Log($"{IdSmartCompost}-{tipoNodo}");
-            Logger.Log($"MAC: {MacAddress.Address}");
+            Logger.Log($"MAC: {MacAddress}");
 
             Sleep.WakeupCause cause = Sleep.GetWakeupCause();
             Logger.Log("Wakeup cause: " + cause.ToString());

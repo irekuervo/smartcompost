@@ -26,12 +26,10 @@ namespace NanoKernel.Comunicacion
 
         public void Empaquetar(MemoryStream ms)
         {
-            using (BinaryWriter bw = new BinaryWriter(ms))
-            {
-                bw.Write(LargoNodoId);
-                bw.Write(NodoId);
-                bw.Write(Medicion);
-            }
+            BinaryWriter bw = new BinaryWriter(ms);
+            bw.Write(LargoNodoId);
+            bw.Write(NodoId);
+            bw.Write(Medicion);
         }
     }
 }

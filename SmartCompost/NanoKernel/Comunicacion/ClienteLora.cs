@@ -1,6 +1,7 @@
 ﻿using devMobile.IoT.SX127xLoRaDevice;
 using NanoKernel.Ayudantes;
 using NanoKernel.LoRa;
+using NanoKernel.Modulos;
 using System;
 using System.IO;
 using System.Text;
@@ -10,23 +11,21 @@ namespace NanoKernel.Comunicacion
     public class ClienteLora
     {
         private readonly LoRaDevice lora;
-
         private readonly Paquete paqueteBuffer;
 
         private readonly byte[] buffer = new byte[128];
 
-        public ClienteLora(LoRaDevice lora, MacAddress direccionLocal)
+        public ClienteLora(LoRaDevice lora,MacAddress direccionLocal)
         {
             this.lora = lora;
-
             this.lora.OnReceive += Lora_OnReceive;
             this.lora.OnTransmit += Lora_OnTransmit;
 
-            paqueteBuffer = new Paquete(direccionLocal);
+            this.paqueteBuffer = new Paquete(direccionLocal);
         }
 
         public void Enviar(string texto, MacAddress destino)
-        { 
+        {
             Enviar(UTF8Encoding.UTF8.GetBytes(texto), destino, TipoPaqueteEnum.Texto);
         }
 
@@ -38,7 +37,11 @@ namespace NanoKernel.Comunicacion
                 paqueteBuffer.MacDestino = destino;
                 paqueteBuffer.Payload = datos;
                 paqueteBuffer.Empaquetar(ms);
-                this.lora.Enviar(ms.ToArray());
+
+                byte[] array = new byte[(int)ms.Position];
+                Array.Copy(buffer, 0, array, 0, (int)ms.Position);
+
+                this.lora.Enviar(array);
             }
         }
 

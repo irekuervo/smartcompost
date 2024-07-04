@@ -4,7 +4,7 @@ using System.Text;
 
 namespace NanoKernel.Ayudantes
 {
-    public class BinaryWriter : IDisposable
+    public class BinaryWriter
     {
         private readonly MemoryStream _stream;
 
@@ -66,11 +66,6 @@ namespace NanoKernel.Ayudantes
         private void WriteInternal(byte[] buffer, int index, int count)
         {
             _stream.Write(buffer, index, count);
-        }
-
-        public void Dispose()
-        {
-            _stream?.Dispose();
         }
     }
 }
