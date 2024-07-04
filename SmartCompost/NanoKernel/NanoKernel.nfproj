@@ -19,10 +19,15 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Ayudantes\ayArrays.cs" />
+    <Compile Include="Ayudantes\Varios\BinaryWriter.cs" />
     <Compile Include="Ayudantes\Varios\BinaryReader.cs" />
     <Compile Include="Ayudantes\Varios\ConcurrentQueue.cs" />
+    <Compile Include="Comunicacion\AddMeasurementDto.cs" />
+    <Compile Include="Comunicacion\ClienteLora.cs" />
+    <Compile Include="Comunicacion\Old\Paquete.cs" />
     <Compile Include="Comunicacion\Paquete.cs" />
-    <Compile Include="LoRa\ClienteLoRa.cs" />
+    <Compile Include="Comunicacion\PayloadMedicion.cs" />
+    <Compile Include="Comunicacion\RouterLoraWifi.cs" />
     <Compile Include="LoRa\Device\RegDetectionThreshold.cs" />
     <Compile Include="LoRa\Device\RegDetectOptimise.cs" />
     <Compile Include="LoRa\Device\RegDioMapping.cs" />
@@ -39,8 +44,7 @@
     <Compile Include="LoRa\Device\RegOpMode.cs" />
     <Compile Include="LoRa\Device\RegPaConfig.cs" />
     <Compile Include="LoRa\Device\SX127XDevice.cs" />
-    <Compile Include="LoRa\LoRa.cs" />
-    <Compile Include="LoRa\ServidorLoRa.cs" />
+    <Compile Include="LoRa\LoRaDevice.cs" />
     <Compile Include="Nodos\Nodo.cs" />
     <Compile Include="Ayudantes\ayArchivos.cs" />
     <Compile Include="Ayudantes\ayEstadisticas.cs" />
@@ -52,9 +56,9 @@
     <Compile Include="Ayudantes\ayString.cs" />
     <Compile Include="Ayudantes\ayUnidades.cs" />
     <Compile Include="CLI\Consola.cs" />
-    <Compile Include="Comunicacion\Buffer.cs" />
-    <Compile Include="Comunicacion\Comunicador.cs" />
-    <Compile Include="Comunicacion\ComunicadorSerie.cs" />
+    <Compile Include="Comunicacion\Old\Buffer.cs" />
+    <Compile Include="Comunicacion\Old\Comunicador.cs" />
+    <Compile Include="Comunicacion\Old\ComunicadorSerie.cs" />
     <Compile Include="Estadisticas\EstadisticaEscalar.cs" />
     <Compile Include="Hilos\Hilo.cs" />
     <Compile Include="Hilos\MotorDeHilos..cs" />

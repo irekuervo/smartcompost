@@ -1,4 +1,5 @@
 ﻿using nanoFramework.Hardware.Esp32;
+using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using NanoKernel.Repositorios;
@@ -12,14 +13,17 @@ namespace NanoKernel.Nodos
         public abstract string IdSmartCompost { get; }
         public abstract TiposNodo tipoNodo { get; }
 
+        public readonly MacAddress MacAddress;
         private readonly IRepositorioClaveValor config;
         private readonly Hilo loopThread;
+
         private const string LOGO = "\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n";
 
         public NodoBase()
         {
             loopThread = MotorDeHilos.CrearHiloLoop($"{IdSmartCompost}-MAIN", Loop);
             config = new RepositorioClaveValorInterno("config");
+            MacAddress = ayInternet.GetMacAddress();
         }
 
         public abstract void Setup();
@@ -32,14 +36,15 @@ namespace NanoKernel.Nodos
         {
             Logger.Log(LOGO);
             Logger.Log($"{IdSmartCompost}-{tipoNodo}");
+            Logger.Log($"MAC: {MacAddress.Address}");
 
             Sleep.WakeupCause cause = Sleep.GetWakeupCause();
             Logger.Log("Wakeup cause: " + cause.ToString());
 
-            Logger.Log("Setup...");
             Setup();
 
             loopThread.Iniciar();
+
             Logger.Log("Nodo iniciado");
             Thread.Sleep(Timeout.Infinite);
         }

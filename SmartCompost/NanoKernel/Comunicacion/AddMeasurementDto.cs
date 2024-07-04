@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 
-namespace NodoAP
+namespace NanoKernel.Comunicacion
 {
     public class AddMeasurementDto
     {
-        public string node_type { get; set; }
         // iso8601
         public DateTime last_updated { get; set; } // Now del nodo, DATO DEBUG TODO, es para saber el tiempo de transporte
         public ArrayList node_measurements { get; set; }

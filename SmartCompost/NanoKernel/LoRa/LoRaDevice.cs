@@ -8,7 +8,7 @@ using static devMobile.IoT.SX127xLoRaDevice.SX127XDevice;
 namespace NanoKernel.LoRa
 {
     ///Github: https://github.com/KiwiBryn/SX127X-NetNF/tree/master
-    public class LoRa : IDisposable
+    public class LoRaDevice : IDisposable
     {
         public event onReceivedEventHandler OnReceive;
         public event onTransmittedEventHandler OnTransmit;
@@ -18,7 +18,7 @@ namespace NanoKernel.LoRa
         private readonly GpioController gpio;
         private bool iniciado;
 
-        public LoRa(
+        public LoRaDevice(
             int pinMISO = Gpio.IO19,
             int pinMOSI = Gpio.IO23,
             int pinCLOCK = Gpio.IO18,

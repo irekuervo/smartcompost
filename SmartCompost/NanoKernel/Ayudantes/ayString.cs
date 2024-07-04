@@ -1,4 +1,5 @@
 ﻿using nanoFramework.Json;
+using NanoKernel.Ayudantes;
 using System.Text;
 
 namespace System
@@ -36,7 +37,7 @@ namespace System
             else if (type == typeof(bool))
                 return value.ToLower() == bool.TrueString.ToLower() ? true : false;
             else if (type.IsClass)
-                return JsonConvert.DeserializeObject(value, type);
+                return aySerializacion.FromJson(value, type);
 
             throw new Exception("Tipo no soportado: " + type.Name);
         }

@@ -1,5 +1,6 @@
 ﻿using nanoFramework.Json;
-using NanoKernel.Comunicacion;
+using NanoKernel.Ayudantes;
+using NanoKernel.Comunicacion.Old;
 using NanoKernel.Loggin;
 using NanoKernel.Modulos;
 using System;
@@ -151,7 +152,7 @@ namespace NanoKernel.CLI
             }
             else
             {
-                ResponderComando(JsonConvert.SerializeObject(methodResponse));
+                ResponderComando(aySerializacion.ToJson(methodResponse));
                 return;
             }
         }
@@ -198,9 +199,9 @@ namespace NanoKernel.CLI
                     if (tipoParametro == typeof(string))
                         obj = parametroDelComando;
                     else if (tipoParametro.IsValueType)
-                        obj = ParsearParametroComandoValueType(tipoParametro, parametroDelComando);
+                        obj = aySerializacion.FromString(tipoParametro, parametroDelComando);
                     else
-                        obj = JsonConvert.DeserializeObject(parametroDelComando, tipoParametro);
+                        obj = aySerializacion.FromJson(parametroDelComando, tipoParametro);
 
                     if (obj == null)
                         throw new Exception("No se pudo deserealizar el comando");
@@ -216,57 +217,6 @@ namespace NanoKernel.CLI
             }
 
             return parametrosMetodo;
-        }
-
-        private object ParsearParametroComandoValueType(Type tipoParametro, string parametroComando)
-        {
-            object objetoParametro = null;
-
-            if (tipoParametro == typeof(byte))
-            {
-                objetoParametro = Convert.ToByte(parametroComando);
-            }
-            else if (tipoParametro == typeof(short))
-            {
-                objetoParametro = Convert.ToInt16(parametroComando);
-            }
-            else if (tipoParametro == typeof(ushort))
-            {
-                objetoParametro = Convert.ToUInt16(parametroComando);
-            }
-            else if (tipoParametro == typeof(int))
-            {
-                objetoParametro = Convert.ToInt32(parametroComando);
-            }
-            else if (tipoParametro == typeof(uint))
-            {
-                objetoParametro = Convert.ToUInt32(parametroComando);
-            }
-            else if (tipoParametro == typeof(long))
-            {
-                objetoParametro = Convert.ToInt64(parametroComando);
-            }
-            else if (tipoParametro == typeof(ulong))
-            {
-                objetoParametro = Convert.ToUInt64(parametroComando);
-            }
-            else if (tipoParametro == typeof(float))
-            {
-                objetoParametro = Convert.ToSingle(parametroComando);
-            }
-            else if (tipoParametro == typeof(double))
-            {
-                objetoParametro = Convert.ToDouble(parametroComando);
-            }
-            else if (tipoParametro == typeof(bool))
-            {
-                objetoParametro = parametroComando.ToLower() == bool.TrueString.ToLower() ? true : false;
-            }
-
-            if (objetoParametro == null)
-                throw new Exception($"No se puede parsear el parametro '{parametroComando}' del tipo '{tipoParametro.Name}'");
-
-            return objetoParametro;
         }
 
         public void Dispose()

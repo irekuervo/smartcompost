@@ -1,4 +1,5 @@
 ﻿using nanoFramework.Json;
+using NanoKernel.Ayudantes;
 using System.Collections;
 using System.IO;
 using System.Text;
@@ -53,7 +54,7 @@ namespace NanoKernel.Repositorios
             {
                 File.Create(pathDb).Close();
 
-                byte[] buffer = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cache.Tabla));
+                byte[] buffer = Encoding.UTF8.GetBytes(aySerializacion.ToJson(cache.Tabla));
 
                 using (FileStream fs = new FileStream(pathDb, FileMode.Open, FileAccess.ReadWrite))
                 {
@@ -77,7 +78,7 @@ namespace NanoKernel.Repositorios
                 fs2.Read(fileContent, 0, (int)fs2.Length);
             }
             var texto = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-            var datos = (Hashtable)JsonConvert.DeserializeObject(texto, typeof(Hashtable));
+            var datos = (Hashtable)aySerializacion.FromJson(texto, typeof(Hashtable));
             cache = new CacheClaveValor(datos);
         }
     }

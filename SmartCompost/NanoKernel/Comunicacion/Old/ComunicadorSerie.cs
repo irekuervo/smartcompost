@@ -5,7 +5,7 @@
 //using System.IO.Ports;
 //using System.Threading;
 
-namespace NanoKernel.Comunicacion
+namespace NanoKernel.Comunicacion.Old
 {
     public enum Baudrate
     {

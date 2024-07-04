@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NanoKernel.Comunicacion
+namespace NanoKernel.Comunicacion.Old
 {
     public class Buffer : IDisposable
     {
@@ -34,7 +34,7 @@ namespace NanoKernel.Comunicacion
 
         public void Dispose()
         {
-            this.buffer = null;
+            buffer = null;
         }
     }
 }

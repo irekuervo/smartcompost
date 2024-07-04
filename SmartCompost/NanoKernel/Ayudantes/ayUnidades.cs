@@ -4,15 +4,21 @@ namespace NanoKernel.Ayudantes
 {
     public static class ayUnidades
     {
+        public static string FormatearBytes(this ushort bytes, int decimales = 2)
+        {
+            return FormatearMagnitud(bytes, decimales, "B");
+        }
 
         public static string FormatearBytes(this int bytes, int decimales = 2)
         {
             return FormatearMagnitud(bytes, decimales, "B");
         }
+
         public static string FormatearBytes(this long bytes, int decimales = 2)
         {
             return FormatearMagnitud(bytes, decimales, "B");
         }
+
         public static string FormatearBytes(this double bytes, int decimales = 2)
         {
             return FormatearMagnitud(bytes, decimales, "B");
@@ -159,7 +165,7 @@ namespace NanoKernel.Ayudantes
             }
 
 
-            return FormatoString(Math.Round(scaled* decimales) / decimales, prefix, unidad);
+            return FormatoString(Math.Round(scaled * decimales) / decimales, prefix, unidad);
         }
 
         private static string FormatoString(double num, string prefix = null, string unidad = null)

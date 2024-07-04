@@ -5,7 +5,7 @@
 
 using System;
 
-namespace NanoKernel.Comunicacion
+namespace NanoKernel.Comunicacion.Old
 {
     public delegate void OnDataRecieved(byte[] data, int offset, int count);
 

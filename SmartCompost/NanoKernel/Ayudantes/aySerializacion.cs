@@ -14,5 +14,10 @@ namespace NanoKernel.Ayudantes
         { 
             return JsonConvert.DeserializeObject(json, type);
         }
+
+        public static object FromString(Type tipoParametro, string text)
+        {
+            return text.Convertir(tipoParametro);
+        }
     }
 }

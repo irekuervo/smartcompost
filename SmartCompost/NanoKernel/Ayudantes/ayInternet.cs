@@ -12,7 +12,6 @@ namespace NanoKernel.Ayudantes
 {
     public static class ayInternet
     {
-        public static bool Hay = false;
         public static bool HayInternet(int timeout = 1500)
         {
             try
@@ -24,13 +23,11 @@ namespace NanoKernel.Ayudantes
 
                     var response = (HttpWebResponse)request.GetResponse();
                     response.Dispose();
-                    Hay = true;
                     return true;
                 }
             }
             catch (Exception)
             {
-                Hay = false;
                 return false;
             }
         }
@@ -40,21 +37,14 @@ namespace NanoKernel.Ayudantes
             CancellationTokenSource cs = new(10_000);
 
             var conectado = WifiNetworkHelper.ConnectDhcp(ssid, password, token: cs.Token);
-
             if (conectado == false)
             {
-                Hay = false;
                 return false;
             }
 
             return ayInternet.HayInternet();
         }
 
-        /// <summary>
-        /// Return MAC Address from network interface.
-        /// </summary>
-        /// <returns>String from "First" Converted Physical Address</returns>
-        /// <remarks>Usage: string mac = Utilities.GetMacId();</remarks>
         public static MacAddress GetMacAddress()
         {
             NetworkInterface[] nis = NetworkInterface.GetAllNetworkInterfaces();
@@ -68,7 +58,7 @@ namespace NanoKernel.Ayudantes
         {
             using (HttpClient client = new HttpClient())
             {
-                string jsonPayload = JsonSerializer.SerializeObject(objeto);
+                string jsonPayload = aySerializacion.ToJson(objeto);
                 StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
                 using (HttpResponseMessage response = client.Post(endpointURL, content))
@@ -97,7 +87,6 @@ namespace NanoKernel.Ayudantes
 
     public class MacAddress
     {
-
         public byte[] Address => mac;
 
         private static byte[] zero = { 0, 0, 0, 0, 0, 0 };
@@ -110,6 +99,40 @@ namespace NanoKernel.Ayudantes
                 throw new Exception("Invalid mac address");
 
             this.mac = mac;
+        }
+
+        public MacAddress(string macString)
+        {
+            // Eliminar caracteres no válidos en la dirección MAC
+            macString = macString.Replace(":", "").Replace("-", "").ToUpper();
+
+            // Validar que la cadena tenga el formato adecuado
+            if (macString.Length != 12 || !IsHexadecimal(macString))
+                throw new ArgumentException("Invalid MAC address format");
+
+            // Convertir la cadena hexadecimal a bytes
+            mac = new byte[6];
+            for (int i = 0; i < 6; i++)
+            {
+                mac[i] = Convert.ToByte(macString.Substring(i * 2, 2), 16);
+            }
+        }
+
+        private bool IsHexadecimal(string input)
+        {
+            foreach (char c in input)
+            {
+                if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F')))
+                    return false;
+            }
+            return true;
+        }
+
+        public bool Es(MacAddress mac) => mac.Address.IsEqualsTo(this.mac);
+
+        public override string ToString()
+        {
+            return BitConverter.ToString(mac).Replace("-", ":");
         }
     }
 }

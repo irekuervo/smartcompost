@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace NanoKernel.Ayudantes
 {
@@ -13,27 +14,39 @@ namespace NanoKernel.Ayudantes
             _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         }
 
+        public byte ReadByte()
+        {
+            FillBuffer(sizeof(byte));
+            return _buffer[0];
+        }
+
+        public ushort ReadUInt16()
+        {
+            FillBuffer(sizeof(ushort));
+            return BitConverter.ToUInt16(_buffer, 0);
+        }
+
         public int ReadInt32()
         {
-            FillBuffer(4);
+            FillBuffer(sizeof(int));
             return BitConverter.ToInt32(_buffer, 0);
         }
 
         public long ReadInt64()
         {
-            FillBuffer(8);
+            FillBuffer(sizeof(long));
             return BitConverter.ToInt64(_buffer, 0);
         }
 
         public double ReadDouble()
         {
-            FillBuffer(8);
+            FillBuffer(sizeof(double));
             return BitConverter.ToDouble(_buffer, 0);
         }
 
         public float ReadSingle()
         {
-            FillBuffer(4);
+            FillBuffer(sizeof(float));
             return BitConverter.ToSingle(_buffer, 0);
         }
 
@@ -46,6 +59,11 @@ namespace NanoKernel.Ayudantes
             FillBuffer(count, result);
 
             return result;
+        }
+
+        public string ReadString(int length)
+        {
+            return Encoding.UTF8.GetString(ReadBytes(length), 0, length);
         }
 
         private void FillBuffer(int numBytes, byte[] buffer = null)

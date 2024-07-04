@@ -1,66 +1,60 @@
-﻿
-using NanoKernel.Hilos;
-using System;
+﻿using System;
 using System.Device.Gpio;
 using System.Threading;
 
 namespace NanoKernel.Modulos
 {
     [Modulo("Blink")]
-    ///TODO Si usa Hardware deberia usar otro modulo que lo gestione
     public class ModuloBlinkLed : IDisposable
     {
         private GpioController gpio;
         private GpioPin led;
         private int periodoMilis;
-        private Hilo hilo;
+        private Timer timer;
+        private const int MIN_PERIODO = 100;
 
-        public ModuloBlinkLed(int ledPin = 2 /*default del esp-wroom-32*/, int periodoMilis = 1000)
+        public ModuloBlinkLed(int periodoMilis = 1000, int ledPin = 2 /*default del esp-wroom-32*/)
         {
             gpio = new GpioController();
             led = gpio.OpenPin(ledPin, PinMode.Output);
-
+            timer = new Timer(ToggleLed, null, Timeout.Infinite, Timeout.Infinite);
+            this.ledOn = false;
             this.periodoMilis = periodoMilis;
-
-            hilo = MotorDeHilos.CrearHiloLoop("Blinker", HiloLed);
         }
 
         public void CambiarPeriodo(int periodoMilis)
         {
+            periodoMilis = periodoMilis < MIN_PERIODO ? MIN_PERIODO : periodoMilis;
             this.periodoMilis = periodoMilis;
+            timer.Change(0, this.periodoMilis);
         }
 
-        public void Iniciar(int periodoMilis = 0)
+        public void Iniciar()
         {
-            if (periodoMilis > 0)
-                this.periodoMilis = periodoMilis;
-
-            hilo.Iniciar();
+            CambiarPeriodo(this.periodoMilis);
         }
-
-        public void High() => led.Write(PinValue.High);
-        public void Low() => led.Write(PinValue.Low);
-
         public void Detener()
         {
-            hilo.Detener();
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
             led.Write(PinValue.Low);
         }
 
-        private void HiloLed(ref bool activo)
-        {
-            if (!activo) return;
-            High();
-            Thread.Sleep(periodoMilis);
+        public void High() { led.Write(PinValue.High); ledOn = true; }
+        public void Low() {led.Write(PinValue.Low); ledOn = false; } 
 
-            if (!activo) return;
-            Low();
-            Thread.Sleep(periodoMilis);
+        private bool ledOn = false;
+        private void ToggleLed(object state)
+        {
+            if (ledOn)
+                Low();
+            else
+                High();
         }
 
         public void Dispose()
         {
             Detener();
+            timer.Dispose();
             gpio.Dispose();
         }
     }
