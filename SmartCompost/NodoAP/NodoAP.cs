@@ -74,6 +74,7 @@ namespace NodoAP
                 try
                 {
                     lora = new LoRaDevice();
+                    lora.Iniciar();
                     ok = true;
                 }
                 catch (Exception ex)

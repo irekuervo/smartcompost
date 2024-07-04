@@ -62,6 +62,7 @@ namespace NodoMedidor
         {
             cliente.Enviar("hola", direccionRouter);
             blinker.BlinkOnce(100);
+            Logger.Log("Enviado");
             Thread.Sleep(4900);
         }
 

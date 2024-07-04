@@ -36,19 +36,20 @@ namespace NanoKernel.Modulos
         public void Detener()
         {
             timer.Change(Timeout.Infinite, Timeout.Infinite);
-            led.Write(PinValue.Low);
+            Off();
         }
 
         public void BlinkOnce(int periodo)
         {
-            CambiarPeriodo(periodo);
-            Iniciar();
-            Thread.Sleep(periodo);
             Detener();
+
+            On();
+            Thread.Sleep(periodo);
+            Off();
         }
 
-        public void On() { led.Write(PinValue.Low); ledOn = true; } // Estan al reves HIGH y LOW para el esp32
-        public void Off() { led.Write(PinValue.High); ledOn = false; }
+        public void On() { led.Write(PinValue.High); ledOn = true; }
+        public void Off() { led.Write(PinValue.Low); ledOn = false; }
 
         private bool ledOn = false;
         private void ToggleLed(object state)
