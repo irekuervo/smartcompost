@@ -6,6 +6,7 @@ using NanoKernel.Modulos;
 using NanoKernel.Nodos;
 using NanoKernel.Repositorios;
 using System;
+using System.Collections;
 using System.Threading;
 
 namespace NodoAP
@@ -17,6 +18,8 @@ namespace NodoAP
 
         private const string WIFI_SSID = "Bondiola 2.4";
         private const string WIFI_PASS = "comandante123";
+
+        private const string URL = "http://smartcompost.net:8080/api/nodes/1/measurements";
 
         private ModuloBlinkLed blinker;
         private LoRa lora;
@@ -44,6 +47,38 @@ namespace NodoAP
                 finally
                 {
                     Thread.Sleep(1000);
+                }
+            }
+
+            var ran = new Random();
+            blinker.Detener();
+            // PARA PROBAR:
+            while (true)
+            {
+                try
+                {
+                    AddMeasurementDto addMeasurementDto = new AddMeasurementDto();
+                    addMeasurementDto.node_type = this.tipoNodo.ToString();
+                    addMeasurementDto.last_updated = DateTime.UtcNow;
+                    addMeasurementDto.node_measurements = new ArrayList();
+
+                    MeasurementDto measurementDto = new MeasurementDto();
+                    measurementDto.timestamp = DateTime.UtcNow;
+                    measurementDto.type = "temperatura";
+                    measurementDto.value = (float)ran.NextDouble() * 10 + 25;
+
+                    addMeasurementDto.node_measurements.Add(measurementDto);
+
+                    var res = ayInternet.DoPost(URL, addMeasurementDto);
+                    Logger.Log("Enviado ok");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                }
+                finally
+                {
+                    Thread.Sleep(5000);
                 }
             }
 

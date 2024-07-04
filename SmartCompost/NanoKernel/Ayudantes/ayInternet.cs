@@ -64,16 +64,15 @@ namespace NanoKernel.Ayudantes
             return new MacAddress(nis[0].PhysicalAddress);
         }
 
-        public static string EnviarJson(string endpointURL, object objeto)
+        public static string DoPost(string endpointURL, object objeto)
         {
             using (HttpClient client = new HttpClient())
             {
                 string jsonPayload = JsonSerializer.SerializeObject(objeto);
                 StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                try
-                {
-                    HttpResponseMessage response = client.Post(endpointURL, content);
 
+                using (HttpResponseMessage response = client.Post(endpointURL, content))
+                {
                     if (response.IsSuccessStatusCode)
                     {
                         return response.Content.ReadAsString();
@@ -84,12 +83,6 @@ namespace NanoKernel.Ayudantes
                         Logger.Log(error);
                         return error;
                     }
-                }
-                catch (Exception ex)
-                {
-                    string error = $"Error al enviar la solicitud: {ex.Message}";
-                    Logger.Log(error);
-                    return error;
                 }
             }
         }
@@ -102,11 +95,12 @@ namespace NanoKernel.Ayudantes
         }
     }
 
-    public class MacAddress {
+    public class MacAddress
+    {
 
         public byte[] Address => mac;
 
-        private static byte[] zero= { 0,0,0,0,0,0 };
+        private static byte[] zero = { 0, 0, 0, 0, 0, 0 };
 
         private readonly byte[] mac;
 

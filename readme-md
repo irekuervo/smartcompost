@@ -1,0 +1,19 @@
+SMARTCOMPOST-NANOFRAMEWORK 
+
+Version 1.0.0 - 02/07/2024
+
+Stack: 
+    SDK: .net 8
+    IDE: visual studio 2022
+    Nanoff: .NET nanoFramework Firmware Flasher v2.5.90+c66e018c48
+    VsExtension: .NET nanoFramwork Extension 2022.3.0.86
+    Firmware: ESP32_PSRAM_REV0 1.9.1.247 
+
+Deploy:
+
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM24 --fwversion 1.9.1.247
+
+Limpiar flash entera:  
+
+    python -m esptool --port COM24 erase_flash
+

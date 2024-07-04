@@ -60,7 +60,9 @@ O si ves que nunca te responde el device, puede ser que se updeteo el firmware, 
 - 22/01/24: me esta cagando a palos usar una app con otras referencias, se resetea todo el sistema. Este comportamiento tambien lo vi cuando yo cagaba a palos la app corriendo en caliente, ni tira exception, directamente entra en un loop muerto.
 - 25/01/24: EL PROBLEMA ERA QUE TENIA GENERICS. POR DIOS, NO DEJAR NINGUN GENERICS, SE ROMPE TODO!!!
 - 01/04/24: Noto una posible correlacion entre la imposibilidad de descubrir un device en el Device Explorer y los pines de SPI para placas sin el CH340
-
+- 03/07/24: Un bajon que te actualicen todo, estoy aprendiendo a configurar el proyecto para uqe funcione clavado en una version. 
+            Aprendi que si todo falla, hay que borrar todo con esptools. 
+            Aprendi que si puedo flashear pero no me reconoce en nanoff, cambiar el puerto usb ayuda
 *** WIFI ***
 - Cuando no pude conectarme a nada, con error inclusive en el scan, me ayudo configurar el network configuration del board: Options=Auto Connect, Security/Encryption=WPA2
 
