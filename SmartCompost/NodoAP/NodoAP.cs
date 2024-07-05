@@ -58,13 +58,6 @@ namespace NodoAP
             Logger.Log($"OK");
         }
 
-        private void IniciarRouter()
-        {
-            Logger.Log($"Iniciando router...");
-            router = new RouterLoraWifi(lora, blinker, this.MacAddress);
-            Logger.Log($"OK");
-        }
-
         private void ConectarLora()
         {
             Logger.Log($"Conectando LoRa...");
@@ -86,6 +79,13 @@ namespace NodoAP
                     Thread.Sleep(1000);
                 }
             }
+            Logger.Log($"OK");
+        }
+
+        private void IniciarRouter()
+        {
+            Logger.Log($"Iniciando router...");
+            router = new RouterLoraWifi(lora, blinker, this.MacAddress);
             Logger.Log($"OK");
         }
 

@@ -46,7 +46,7 @@ namespace NanoKernel.LoRa
             device.OnTransmit += (object sender, OnDataTransmitedEventArgs e) => OnTransmit?.Invoke(sender, e);
         }
 
-        public void Iniciar(double frequency = 433e6)
+        public void Iniciar(double frequency = SX127XDevice.FrequencyDefault)
         {
             device.Initialize(
                 frequency,

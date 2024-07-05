@@ -17,7 +17,7 @@ namespace NanoKernel.Comunicacion
 
     public class Paquete : IDisposable
     {
-        public byte TipoPaquete { get; set; }
+        public TipoPaqueteEnum TipoPaquete { get; set; }
         public MacAddress MacOrigen { get; set; }
         public MacAddress MacDestino { get; set; }
         public ushort TamanioPayload { get; set; }
@@ -28,7 +28,7 @@ namespace NanoKernel.Comunicacion
             using (MemoryStream ms = new MemoryStream(buffer))
             using (BinaryReader br = new BinaryReader(ms))
             {
-                this.TipoPaquete = br.ReadByte();
+                this.TipoPaquete = (TipoPaqueteEnum)br.ReadByte();
                 this.MacOrigen = new MacAddress(br.ReadBytes(6));
                 this.MacDestino = new MacAddress(br.ReadBytes(6));
                 this.TamanioPayload = br.ReadUInt16();
@@ -40,13 +40,13 @@ namespace NanoKernel.Comunicacion
         {
             this.MacOrigen = MacOrigen;
             this.MacDestino = MacDestino;
-            this.TipoPaquete = (byte)tipoPaquete;
+            this.TipoPaquete = tipoPaquete;
         }
 
         public void Empaquetar(MemoryStream ms)
         {
             BinaryWriter bw = new BinaryWriter(ms);
-            bw.Write(TipoPaquete);
+            bw.Write((byte)TipoPaquete);
             bw.Write(MacOrigen.Address);
             bw.Write(MacDestino.Address);
             bw.Write(Payload);
