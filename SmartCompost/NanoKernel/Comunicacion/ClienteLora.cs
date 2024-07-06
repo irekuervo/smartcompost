@@ -33,7 +33,7 @@ namespace NanoKernel.Comunicacion
         {
             using (MemoryStream ms = new MemoryStream(buffer))
             {
-                paqueteBuffer.TipoPaquete = (byte)tipoPaquete;
+                paqueteBuffer.TipoPaquete = tipoPaquete;
                 paqueteBuffer.MacDestino = destino;
                 paqueteBuffer.Payload = datos;
                 paqueteBuffer.Empaquetar(ms);

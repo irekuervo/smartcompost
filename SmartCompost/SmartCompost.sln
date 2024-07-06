@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.33920.266
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NanoKernel", "NanoKernel\NanoKernel.nfproj", "{CC0E298D-E675-4C5B-8E41-B7E1139F3699}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NodoAP", "NodoAP\NodoAP.nfproj", "{D420C53F-63AC-45E3-8430-38E619EAA187}"
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NodoTest", "NodoTest\NodoTest.nfproj", "{F95A9A31-351E-4D0B-97B0-CDCD0C99D453}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaSensores", "PruebaSensores\PruebaSensores.nfproj", "{C06BA987-69A2-4D58-B1AE-1D1C4910091B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,12 @@ Global
 		{F95A9A31-351E-4D0B-97B0-CDCD0C99D453}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F95A9A31-351E-4D0B-97B0-CDCD0C99D453}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F95A9A31-351E-4D0B-97B0-CDCD0C99D453}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C06BA987-69A2-4D58-B1AE-1D1C4910091B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C06BA987-69A2-4D58-B1AE-1D1C4910091B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C06BA987-69A2-4D58-B1AE-1D1C4910091B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C06BA987-69A2-4D58-B1AE-1D1C4910091B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C06BA987-69A2-4D58-B1AE-1D1C4910091B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C06BA987-69A2-4D58-B1AE-1D1C4910091B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

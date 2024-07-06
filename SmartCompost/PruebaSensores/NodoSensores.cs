@@ -1,3 +1,5 @@
+using Iot.Device.Ds18b20;
+using nanoFramework.Device.OneWire;
 using NanoKernel.Nodos;
 
 namespace NodoAP
@@ -9,6 +11,8 @@ namespace NodoAP
 
         public override void Setup()
         {
+            OneWireHost oneWire = new OneWireHost();
+            Ds18b20 ds18b20 = new Ds18b20(oneWire, null, false, TemperatureResolution.VeryHigh);
 
         }
 
@@ -17,4 +21,5 @@ namespace NodoAP
 
         }
     }
+
 }
