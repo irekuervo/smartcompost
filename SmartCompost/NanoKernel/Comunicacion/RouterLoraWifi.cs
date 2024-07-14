@@ -48,6 +48,9 @@ namespace NanoKernel.Comunicacion
         {
             try
             {
+                Logger.Log("Recibido");
+                return;
+
                 Paquete p = new Paquete(e.Data);
 
                 if (p.MacDestino.Es(direccionLocal) == false)

@@ -52,7 +52,7 @@ namespace Lora_Reciever
             {
                 try
                 {
-                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI00, resetPin: recieverReset);
+                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI00);
                     reciever.Initialize(
                         Frequency,
                         lnaGain: RegLnaLnaGain.Default,

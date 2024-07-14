@@ -29,7 +29,7 @@ namespace devMobile.IoT.SX127xLoRaDevice
 		private const double SX127X_FXOSC = 32000000.0;
 		private const double SX127X_FSTEP = SX127X_FXOSC / 524288.0;
 
-		public const double FrequencyDefault = 434000000.0;
+		public const double FrequencyDefault = 433e6;
 
 		public const byte MessageLengthMinimum = 0;
 		public const byte MessageLengthMaximum = 128;
