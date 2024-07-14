@@ -49,6 +49,7 @@ namespace NanoKernel.Comunicacion
             try
             {
                 Logger.Log("Recibido");
+                blinker.BlinkOnce(100);
                 return;
 
                 Paquete p = new Paquete(e.Data);
@@ -56,7 +57,7 @@ namespace NanoKernel.Comunicacion
                 if (p.MacDestino.Es(direccionLocal) == false)
                     return; // Se descarta
 
-                blinker.BlinkOnce(100);
+                
 
                 Paquete paquete = new Paquete(e.Data);
 

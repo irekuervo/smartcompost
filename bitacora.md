@@ -3,7 +3,8 @@
 
 - 03/07/24:
     Tenemos un problema de sobrecalentamiento del switching del NODO AP
-    Tenemo un problema de CRC del lora en el NODO AP
+    Tenemo un problema de CRC del lora en el NODO AP:
+        Teniendo el AP y el Medidor SIN BATERIA, puedo hacer que se hablen de muy cerca, pero me tira error de CRC el AP
 - 03/07/24: 
     Un bajon que te actualicen todo, estoy aprendiendo a configurar el proyecto para uqe funcione clavado en una version. 
     Aprendi que si todo falla, hay que borrar todo con esptools. 
