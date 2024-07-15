@@ -138,8 +138,8 @@ namespace devMobile.IoT.SX127xLoRaDevice
 		private readonly RegisterManager _registerManager = null;
 		private readonly object _regFifoLock = new object();
 		private double _frequency = FrequencyDefault;
-		private bool _rxDoneIgnoreIfCrcMissing = false;
-		private bool _rxDoneIgnoreIfCrcInvalid = false;
+		private bool _rxDoneIgnoreIfCrcMissing = true;
+		private bool _rxDoneIgnoreIfCrcInvalid = true;
 
 		public SX127XDevice(SpiDevice spiDevice, GpioController gpioController,
 			int dio0Pin,
@@ -245,7 +245,7 @@ namespace devMobile.IoT.SX127xLoRaDevice
 		}
 
 		public void Initialize(double frequency = FrequencyDefault, // RegFrMsb, RegFrMid, RegFrLsb
-			bool rxDoneignoreIfCrcMissing = false, bool rxDoneignoreIfCrcInvalid = false,
+			bool rxDoneignoreIfCrcMissing = true, bool rxDoneignoreIfCrcInvalid = true,
 			sbyte outputPower = OutputPowerDefault, RegPAConfigPASelect powerAmplifier = RegPAConfigPASelect.Default, // RegPAConfig & RegPaDac
 			RegOcp ocpOn = RegOcp.Default, RegOcpTrim ocpTrim = RegOcpTrim.Default, // RegOcp
 			RegLnaLnaGain lnaGain = RegLnaLnaGain.Default, bool lnaBoost = false, // RegLna
