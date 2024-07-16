@@ -93,6 +93,24 @@ namespace NanoKernel.Ayudantes
             }
         }
 
+        public static string DoGet(string endpointURL)
+        {
+            using (HttpClient client = new HttpClient())
+            using (HttpResponseMessage response = client.Get(endpointURL))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    return response.Content.ReadAsString();
+                }
+                else
+                {
+                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                    Logger.Error(error);
+                    return error;
+                }
+            }
+        }
+
         public static IPAddress[] ObtenerTodasLasIpLocalesV4()
         {
             const string hostLocal = ""; // lo dice la documentacion de  Dns.GetHostEntry("");

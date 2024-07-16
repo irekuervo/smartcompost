@@ -5,14 +5,14 @@ namespace NanoKernel.Dominio
 {
     public class MensajeMediciones
     {
-        public DateTime last_updated;
-        public ArrayList node_measurments = new ArrayList();
+        public DateTime last_updated { get; set; }
+        public ArrayList node_measurements { get; set; } = new ArrayList();
     }
 
     public class Medicion
     {
-        public float value;
-        public DateTime timestamp;
-        public string type;
+        public float value { get; set; }
+        public DateTime timestamp { get; set; }
+        public string type { get; set; }
     }
 }

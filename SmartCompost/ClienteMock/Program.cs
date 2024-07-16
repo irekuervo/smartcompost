@@ -26,9 +26,16 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 });
 
+
+app.MapGet("/ping", () =>
+{
+    Console.WriteLine("pong");
+    return Results.Ok("pong");
+});
+
 app.MapPost("/api/nodes/{nodeId:int}/measurements", (int nodeId, MensajeMediciones medicion) =>
 {
-    Console.WriteLine(JsonSerializer.Serialize(medicion));
+    Console.WriteLine($"{DateTime.UtcNow} | {JsonSerializer.Serialize(medicion)}");
     return Results.Ok();
 });
 

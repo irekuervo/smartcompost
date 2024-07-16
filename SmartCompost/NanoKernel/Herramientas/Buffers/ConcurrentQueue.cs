@@ -16,6 +16,11 @@ namespace NanoKernel.Ayudantes
             _maxSize = maxSize;
         }
 
+        public int Count()
+        { 
+            return _items.Count;
+        }
+
         public object Enqueue(object item)
         {
             lock (_lockObject)
