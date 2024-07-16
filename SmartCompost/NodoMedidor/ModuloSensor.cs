@@ -70,12 +70,4 @@ namespace NodoMedidor
             return $"{id}-{datetime}: {temperatura}ºC {humedad}g/kg";
         }
     }
-
-    public class MedicionSensor
-    { 
-        public string type { get; set; }
-        public float value { get; set; }
-    
-    }
-
 }

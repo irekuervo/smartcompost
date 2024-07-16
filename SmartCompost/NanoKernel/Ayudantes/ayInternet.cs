@@ -1,10 +1,10 @@
-﻿using nanoFramework.Json;
-using nanoFramework.Networking;
+﻿using nanoFramework.Networking;
 using NanoKernel.Loggin;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
@@ -32,6 +32,24 @@ namespace NanoKernel.Ayudantes
             }
         }
 
+        public static string ObtenerIp()
+        {
+            // Obtén todas las interfaces de red disponibles
+            var networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (var networkInterface in networkInterfaces)
+            {
+                if (networkInterface.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
+                {
+                    // Verifica que la interfaz esté conectada
+                    if (networkInterface.IPv4Address != null)
+                        return networkInterface.IPv4Address;
+                }
+            }
+
+            return "No hay ip asignada";
+        }
+
         public static bool ConectarsePorWifi(string ssid, string password)
         {
             CancellationTokenSource cs = new(10_000);
@@ -56,23 +74,21 @@ namespace NanoKernel.Ayudantes
 
         public static string DoPost(string endpointURL, object objeto)
         {
-            using (HttpClient client = new HttpClient())
-            {
-                string jsonPayload = aySerializacion.ToJson(objeto);
-                StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+            string jsonPayload = aySerializacion.ToJson(objeto);
 
-                using (HttpResponseMessage response = client.Post(endpointURL, content))
+            using (HttpClient client = new HttpClient())
+            using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
+            using (HttpResponseMessage response = client.Post(endpointURL, content))
+            {
+                if (response.IsSuccessStatusCode)
                 {
-                    if (response.IsSuccessStatusCode)
-                    {
-                        return response.Content.ReadAsString();
-                    }
-                    else
-                    {
-                        string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                        Logger.Log(error);
-                        return error;
-                    }
+                    return response.Content.ReadAsString();
+                }
+                else
+                {
+                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                    Logger.Error(error);
+                    return error;
                 }
             }
         }
@@ -83,7 +99,82 @@ namespace NanoKernel.Ayudantes
             IPHostEntry ip = Dns.GetHostEntry(hostLocal);
             return ip.AddressList;
         }
+
+        private const int IcmpEcho = 8;
+        private const int IcmpEchoReply = 0;
+        public static bool Ping(string address)
+        {
+            byte[] buffer = CreatePingPacket();
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(address), 0);
+
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Icmp))
+            {
+                socket.SendTo(buffer, buffer.Length, SocketFlags.None, endPoint);
+
+                byte[] receiveBuffer = new byte[256];
+                EndPoint responseEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+                try
+                {
+                    socket.ReceiveFrom(receiveBuffer, ref responseEndPoint);
+                    if (receiveBuffer[20] == IcmpEchoReply)
+                        return true;
+                    
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+        }
+
+        private static byte[] CreatePingPacket()
+        {
+            byte[] packet = new byte[32];
+            packet[0] = IcmpEcho; // Echo Type
+            packet[1] = 0; // Code
+            packet[2] = 0; // Checksum
+            packet[3] = 0; // Checksum
+            packet[4] = 0; // Identifier (arbitrary)
+            packet[5] = 1; // Identifier (arbitrary)
+            packet[6] = 0; // Sequence number (arbitrary)
+            packet[7] = 1; // Sequence number (arbitrary)
+
+            // Calculate checksum
+            ushort checksum = CalculateChecksum(packet);
+            packet[2] = (byte)(checksum >> 8);
+            packet[3] = (byte)(checksum & 0xff);
+
+            return packet;
+        }
+
+        private static ushort CalculateChecksum(byte[] buffer)
+        {
+            int length = buffer.Length;
+            int index = 0;
+            uint sum = 0;
+
+            while (length > 1)
+            {
+                sum += (uint)(buffer[index++] << 8 | buffer[index++]);
+                length -= 2;
+            }
+
+            if (length > 0)
+            {
+                sum += (uint)(buffer[index] << 8);
+            }
+
+            while ((sum >> 16) != 0)
+            {
+                sum = (sum & 0xffff) + (sum >> 16);
+            }
+
+            return (ushort)~sum;
+        }
     }
+
 
     public class MacAddress
     {

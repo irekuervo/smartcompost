@@ -19,6 +19,7 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Ayudantes\ayArrays.cs" />
+    <Compile Include="Dominio\Medicion.cs" />
     <Compile Include="Herramientas\Buffers\BinaryWriter.cs" />
     <Compile Include="Herramientas\Buffers\BinaryReader.cs" />
     <Compile Include="Herramientas\Buffers\ConcurrentQueue.cs" />

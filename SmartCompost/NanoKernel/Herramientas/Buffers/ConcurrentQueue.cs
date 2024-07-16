@@ -8,17 +8,26 @@ namespace NanoKernel.Ayudantes
     {
         private readonly ArrayList _items;
         private readonly object _lockObject = new object();
+        private readonly int _maxSize;
 
-        public ConcurrentQueue()
+        public ConcurrentQueue(int maxSize)
         {
             _items = new ArrayList();
+            _maxSize = maxSize;
         }
 
-        public void Enqueue(object item)
+        public object Enqueue(object item)
         {
             lock (_lockObject)
             {
+                object discardedItem = null;
+                if (_items.Count >= _maxSize)
+                {
+                    discardedItem = _items[0];
+                    _items.RemoveAt(0);
+                }
                 _items.Add(item);
+                return discardedItem;
             }
         }
 
@@ -28,7 +37,7 @@ namespace NanoKernel.Ayudantes
             {
                 if (_items.Count == 0)
                 {
-                    throw new InvalidOperationException("Queue is empty.");
+                    return null;
                 }
 
                 var item = _items[0];
