@@ -1,4 +1,4 @@
-﻿namespace NanoKernel.Repositorios
+﻿namespace NanoKernel.Herramientas.Repositorios
 {
     public interface IRepositorioClaveValor
     {

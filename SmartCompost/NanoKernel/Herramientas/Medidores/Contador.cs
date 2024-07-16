@@ -1,4 +1,4 @@
-﻿namespace NanoKernel.Medidores
+﻿namespace NanoKernel.Herramientas.Medidores
 {
     public class Contador
     {
@@ -14,8 +14,8 @@
         public Contador Clonar()
         {
             Contador res = new Contador();
-            res.ContadorEnPeriodo = this.ContadorEnPeriodo;
-            res.ContadorTotal = this.ContadorTotal;
+            res.ContadorEnPeriodo = ContadorEnPeriodo;
+            res.ContadorTotal = ContadorTotal;
             return res;
         }
     }

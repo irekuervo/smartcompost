@@ -1,8 +1,8 @@
 ﻿using nanoFramework.Hardware.Esp32;
 using NanoKernel.Ayudantes;
+using NanoKernel.Herramientas.Repositorios;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
-using NanoKernel.Repositorios;
 using System;
 using System.Threading;
 
@@ -27,10 +27,7 @@ namespace NanoKernel.Nodos
         }
 
         public abstract void Setup();
-        public virtual void Loop(ref bool activo)
-        {
-            Thread.Sleep(0);
-        }
+        public abstract void Loop(ref bool activo);
 
         public void Iniciar()
         {

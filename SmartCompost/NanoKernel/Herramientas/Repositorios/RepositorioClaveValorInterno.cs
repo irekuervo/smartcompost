@@ -4,7 +4,7 @@ using System.Collections;
 using System.IO;
 using System.Text;
 
-namespace NanoKernel.Repositorios
+namespace NanoKernel.Herramientas.Repositorios
 {
     /// <summary>
     /// Herramienta para manejar un repo en la unidad I: propia del micro
@@ -20,7 +20,7 @@ namespace NanoKernel.Repositorios
 
         public RepositorioClaveValorInterno(string direccion)
         {
-            this.pathDb = unidadBase + direccion;
+            pathDb = unidadBase + direccion;
 
             Inicializar();
         }
@@ -54,7 +54,7 @@ namespace NanoKernel.Repositorios
             {
                 File.Create(pathDb).Close();
 
-                byte[] buffer = Encoding.UTF8.GetBytes(aySerializacion.ToJson(cache.Tabla));
+                byte[] buffer = Encoding.UTF8.GetBytes(cache.Tabla.ToJson());
 
                 using (FileStream fs = new FileStream(pathDb, FileMode.Open, FileAccess.ReadWrite))
                 {

@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-namespace NanoKernel.Estadisticas
+namespace NanoKernel.Herramientas.Estadisticas
 {
     public class EstadisticaEscalar
     {
@@ -75,7 +75,7 @@ namespace NanoKernel.Estadisticas
 
                 /// CantidadMuestrasFueraDeRango
                 bool huboInfraccion = false;
-                if ((RangoMaximo != float.MaxValue && muestra > RangoMaximo) || (RangoMinimo != float.MinValue && muestra < RangoMinimo))
+                if (RangoMaximo != float.MaxValue && muestra > RangoMaximo || RangoMinimo != float.MinValue && muestra < RangoMinimo)
                 {
                     huboInfraccion = true;
                     Infracciones++;
@@ -102,51 +102,51 @@ namespace NanoKernel.Estadisticas
         /// sino intentamos acumular el vector entero. Está pensado para estadisticas que se acumulan de a una muestra (misiones)
         public void AcumularMuestras(EstadisticaEscalar estadistica, bool acumularUltimaMuestraHistograma = false)
         {
-            this.SumaCuadratica += estadistica.SumaCuadratica;
-            this.Suma += estadistica.Suma;
-            this.CantidadMuestras += estadistica.CantidadMuestras;
-            this.Infracciones += estadistica.Infracciones;
+            SumaCuadratica += estadistica.SumaCuadratica;
+            Suma += estadistica.Suma;
+            CantidadMuestras += estadistica.CantidadMuestras;
+            Infracciones += estadistica.Infracciones;
 
-            this.Minimo = estadistica.Minimo < this.Minimo ? estadistica.Minimo : this.Minimo;
-            this.Maximo = estadistica.Maximo > this.Maximo ? estadistica.Maximo : this.Maximo;
+            Minimo = estadistica.Minimo < Minimo ? estadistica.Minimo : Minimo;
+            Maximo = estadistica.Maximo > Maximo ? estadistica.Maximo : Maximo;
 
-            this.FechaPrimeraMuestra = new DateTime((long)Math.Min(estadistica.FechaPrimeraMuestra.Ticks, FechaPrimeraMuestra.Ticks));
-            this.FechaUltimaMuestra = new DateTime((long)Math.Max(estadistica.FechaUltimaMuestra.Ticks, FechaUltimaMuestra.Ticks));
+            FechaPrimeraMuestra = new DateTime((long)Math.Min(estadistica.FechaPrimeraMuestra.Ticks, FechaPrimeraMuestra.Ticks));
+            FechaUltimaMuestra = new DateTime((long)Math.Max(estadistica.FechaUltimaMuestra.Ticks, FechaUltimaMuestra.Ticks));
 
             if (acumularUltimaMuestraHistograma)
             {
-                this.AgregarMuestraHistograma(estadistica.UltimaMuestra);
+                AgregarMuestraHistograma(estadistica.UltimaMuestra);
             }
             else
             {
                 /// Acumulacion Histograma
-                if (this.Histograma.Length == 0 && estadistica.Histograma.Length > 0)
+                if (Histograma.Length == 0 && estadistica.Histograma.Length > 0)
                 {
-                    this.Histograma = new uint[estadistica.Histograma.Length];
+                    Histograma = new uint[estadistica.Histograma.Length];
                 }
 
                 /// Si no tengo nada me adapto al que viene
-                if (this.Histograma.Any(c => c > 0) == false)
+                if (Histograma.Any(c => c > 0) == false)
                 {
-                    this.HistogramaDesde = estadistica.HistogramaDesde;
-                    this.HistogramaHasta = estadistica.HistogramaHasta;
+                    HistogramaDesde = estadistica.HistogramaDesde;
+                    HistogramaHasta = estadistica.HistogramaHasta;
                 }
 
                 /// Si no coinciden exactamente no acumulo
-                if (this.Histograma.Length != estadistica.Histograma.Length
-                    || this.HistogramaDesde != estadistica.HistogramaDesde
-                    || this.HistogramaHasta != estadistica.HistogramaHasta)
+                if (Histograma.Length != estadistica.Histograma.Length
+                    || HistogramaDesde != estadistica.HistogramaDesde
+                    || HistogramaHasta != estadistica.HistogramaHasta)
                     return;
 
                 /// Si puedo acumular los bines, acumulo los datos
-                this.CantidadMuestrasHistograma += estadistica.CantidadMuestrasHistograma;
-                this.CantidadMuestrasFueraHistogramaIzquierda += estadistica.CantidadMuestrasFueraHistogramaIzquierda;
-                this.CantidadMuestrasFueraHistogramaDerecha += estadistica.CantidadMuestrasFueraHistogramaDerecha;
+                CantidadMuestrasHistograma += estadistica.CantidadMuestrasHistograma;
+                CantidadMuestrasFueraHistogramaIzquierda += estadistica.CantidadMuestrasFueraHistogramaIzquierda;
+                CantidadMuestrasFueraHistogramaDerecha += estadistica.CantidadMuestrasFueraHistogramaDerecha;
 
                 /// Acumulo los bines
-                for (int i = 0; i < this.Histograma.Length; i++)
+                for (int i = 0; i < Histograma.Length; i++)
                 {
-                    this.Histograma[i] += estadistica.Histograma[i];
+                    Histograma[i] += estadistica.Histograma[i];
                 }
             }
 
@@ -154,15 +154,15 @@ namespace NanoKernel.Estadisticas
 
         public void Limpiar()
         {
-            this.SumaCuadratica         /**/ = 0;
-            this.Suma                   /**/ = 0;
-            this.CantidadMuestras       /**/ = 0;
-            this.Minimo                 /**/ = float.MaxValue;
-            this.Maximo                 /**/ = float.MinValue;
-            this.Infracciones           /**/ = 0;
-            this.UltimaMuestra          /**/ = float.NaN;
-            this.FechaUltimaMuestra     /**/ = DateTime.MinValue;
-            this.FechaPrimeraMuestra    /**/ = DateTime.MaxValue;
+            SumaCuadratica         /**/ = 0;
+            Suma                   /**/ = 0;
+            CantidadMuestras       /**/ = 0;
+            Minimo                 /**/ = float.MaxValue;
+            Maximo                 /**/ = float.MinValue;
+            Infracciones           /**/ = 0;
+            UltimaMuestra          /**/ = float.NaN;
+            FechaUltimaMuestra     /**/ = DateTime.MinValue;
+            FechaPrimeraMuestra    /**/ = DateTime.MaxValue;
 
             LimpiarHistograma();
         }
@@ -171,39 +171,39 @@ namespace NanoKernel.Estadisticas
         {
             EstadisticaEscalar ret = new EstadisticaEscalar();
 
-            ret.Habilitado =                                /**/ this.Habilitado;
-            ret.SumaCuadratica =                            /**/ this.SumaCuadratica;
-            ret.Suma =                                      /**/ this.Suma;
-            ret.CantidadMuestras =                          /**/ this.CantidadMuestras;
-            ret.Minimo =                                    /**/ this.Minimo;
-            ret.Maximo =                                    /**/ this.Maximo;
-            ret.RangoMaximo =                               /**/ this.RangoMaximo;
-            ret.RangoMinimo =                               /**/ this.RangoMinimo;
-            ret.Infracciones =                              /**/ this.Infracciones;
-            ret.UltimaMuestra =                             /**/ this.UltimaMuestra;
-            ret.FechaUltimaMuestra =                        /**/ this.FechaUltimaMuestra;
-            ret.FechaPrimeraMuestra =                       /**/ this.FechaPrimeraMuestra;
-            ret.Histograma =                                /**/ this.Histograma;
-            ret.HistogramaDesde =                           /**/ this.HistogramaDesde;
-            ret.HistogramaHasta =                           /**/ this.HistogramaHasta;
-            ret.CantidadMuestrasHistograma =                /**/ this.CantidadMuestrasHistograma;
-            ret.CantidadMuestrasFueraHistogramaDerecha =    /**/ this.CantidadMuestrasFueraHistogramaDerecha;
-            ret.CantidadMuestrasFueraHistogramaIzquierda =  /**/ this.CantidadMuestrasFueraHistogramaIzquierda;
+            ret.Habilitado =                                /**/ Habilitado;
+            ret.SumaCuadratica =                            /**/ SumaCuadratica;
+            ret.Suma =                                      /**/ Suma;
+            ret.CantidadMuestras =                          /**/ CantidadMuestras;
+            ret.Minimo =                                    /**/ Minimo;
+            ret.Maximo =                                    /**/ Maximo;
+            ret.RangoMaximo =                               /**/ RangoMaximo;
+            ret.RangoMinimo =                               /**/ RangoMinimo;
+            ret.Infracciones =                              /**/ Infracciones;
+            ret.UltimaMuestra =                             /**/ UltimaMuestra;
+            ret.FechaUltimaMuestra =                        /**/ FechaUltimaMuestra;
+            ret.FechaPrimeraMuestra =                       /**/ FechaPrimeraMuestra;
+            ret.Histograma =                                /**/ Histograma;
+            ret.HistogramaDesde =                           /**/ HistogramaDesde;
+            ret.HistogramaHasta =                           /**/ HistogramaHasta;
+            ret.CantidadMuestrasHistograma =                /**/ CantidadMuestrasHistograma;
+            ret.CantidadMuestrasFueraHistogramaDerecha =    /**/ CantidadMuestrasFueraHistogramaDerecha;
+            ret.CantidadMuestrasFueraHistogramaIzquierda =  /**/ CantidadMuestrasFueraHistogramaIzquierda;
             return ret;
         }
 
         public void SetRangosAutomaticos()
         {
-            this.RangoMaximo = Maximo;
-            this.RangoMinimo = Minimo;
+            RangoMaximo = Maximo;
+            RangoMinimo = Minimo;
         }
 
         public void SetHistogramaAutomatico()
         {
             LimpiarHistograma();
 
-            this.HistogramaDesde = Minimo;
-            this.HistogramaHasta = Maximo;
+            HistogramaDesde = Minimo;
+            HistogramaHasta = Maximo;
         }
 
         #endregion

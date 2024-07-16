@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 
-namespace NanoKernel.Repositorios
+namespace NanoKernel.Herramientas.Repositorios
 {
     public class CacheClaveValor : IRepositorioClaveValor
     {
         public CacheClaveValor()
         {
-                
+
         }
 
         public CacheClaveValor(Hashtable valoresIniciales)

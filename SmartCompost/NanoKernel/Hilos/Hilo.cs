@@ -129,6 +129,31 @@ namespace NanoKernel.Hilos
                 throw new Exception($"No se pudo detener {this}");
         }
 
+        public static void Intentar(Action accion, string nombreIntento = "", int milisIntento = 1000, uint intentos = uint.MaxValue)
+        {
+            Logger.Log("Intentando " + nombreIntento);
+            var ok = false;
+            while (!ok && intentos > 0)
+            {
+                try
+                {
+                    accion.Invoke();
+                    Logger.Log("OK");
+                    ok = true;
+                }
+                catch (Exception)
+                {
+                    Logger.Log("Reintentando");
+                    Thread.Sleep(milisIntento);
+                    ok = false;
+                }
+                finally
+                {
+                    intentos--;
+                }
+            }
+        }
+
         public override string ToString()
         {
             return $"Hilo [{Id}]->{Nombre}";

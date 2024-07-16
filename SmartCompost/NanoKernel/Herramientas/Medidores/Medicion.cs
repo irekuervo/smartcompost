@@ -1,6 +1,6 @@
-﻿using NanoKernel.Estadisticas;
+﻿using NanoKernel.Herramientas.Estadisticas;
 
-namespace NanoKernel.Medidores
+namespace NanoKernel.Herramientas.Medidores
 {
     public class Medicion
     {
@@ -23,8 +23,8 @@ namespace NanoKernel.Medidores
         public Medicion Clonar()
         {
             Medicion res = new Medicion();
-            res.MedicionEnPeriodo = this.MedicionEnPeriodo.Clonar();
-            res.MedicionTotal = this.MedicionTotal.Clonar();
+            res.MedicionEnPeriodo = MedicionEnPeriodo.Clonar();
+            res.MedicionTotal = MedicionTotal.Clonar();
             return res;
         }
 

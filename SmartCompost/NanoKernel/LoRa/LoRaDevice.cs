@@ -7,7 +7,8 @@ using static devMobile.IoT.SX127xLoRaDevice.SX127XDevice;
 
 namespace NanoKernel.LoRa
 {
-    ///Github: https://github.com/KiwiBryn/SX127X-NetNF/tree/master
+    // Github: https://github.com/KiwiBryn/SX127X-NetNF/tree/master
+    // Es un wrapper para simplificar la interaccion con el device
     public class LoRaDevice : IDisposable
     {
         public event onReceivedEventHandler OnReceive;
@@ -68,7 +69,9 @@ namespace NanoKernel.LoRa
                 throw new Exception("El device no esta iniciado");
 
             device.Send(data);
-            device.Receive();
+
+            // Me parece que esto jode
+            //device.Receive();
         }
 
         public void Dispose()

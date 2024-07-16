@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 
-namespace NanoKernel.CLI
+namespace NanoKernel.Herramientas.CLI
 {
     public class Consola : IDisposable
     {
@@ -101,7 +101,7 @@ namespace NanoKernel.CLI
         private void AyudaGeneral()
         {
             string res = "Modulos disponibles: \r\n";
-            foreach (var item in this.modulos.Keys)
+            foreach (var item in modulos.Keys)
             {
                 res += $"[{item}]" + "\r\n";
             }
@@ -133,7 +133,7 @@ namespace NanoKernel.CLI
             }
 
             /// Respuesta no vacia
-             if (returnType == typeof(string))
+            if (returnType == typeof(string))
             {
                 ResponderComando(methodResponse.ToString());
                 return;
@@ -152,7 +152,7 @@ namespace NanoKernel.CLI
             }
             else
             {
-                ResponderComando(aySerializacion.ToJson(methodResponse));
+                ResponderComando(methodResponse.ToJson());
                 return;
             }
         }

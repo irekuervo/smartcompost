@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace NanoKernel.Medidores
+namespace NanoKernel.Herramientas.Medidores
 {
     public class InstanteMedicion
     {

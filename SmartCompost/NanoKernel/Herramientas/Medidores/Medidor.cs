@@ -3,7 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Threading;
 
-namespace NanoKernel.Medidores
+namespace NanoKernel.Herramientas.Medidores
 {
     public delegate void MedicionEnPeriodoCallback(InstanteMedicion resultado);
 

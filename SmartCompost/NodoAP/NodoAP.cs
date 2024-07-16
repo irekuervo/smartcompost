@@ -35,6 +35,11 @@ namespace NodoAP
             blinker.Detener();
         }
 
+        public override void Loop(ref bool activo)
+        {
+
+        }
+
         private static void ConectarWifi()
         {
             Logger.Log($"Conectando WiFi: {WIFI_SSID}-{WIFI_PASS}");
