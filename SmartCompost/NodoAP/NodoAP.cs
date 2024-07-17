@@ -1,104 +1,143 @@
-using NanoKernel.Ayudantes;
-using NanoKernel.Comunicacion;
+﻿using NanoKernel.Ayudantes;
+using NanoKernel.Dominio;
+using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using NanoKernel.LoRa;
-using NanoKernel.Modulos;
 using NanoKernel.Nodos;
 using System;
+using System.Device.Gpio;
+using System.Diagnostics;
 using System.Threading;
 
 namespace NodoAP
 {
     public class NodoAP : NodoBase
     {
-        public override string IdSmartCompost => "AP-FIUBA-AP00000001";
+        public override string IdSmartCompost => "NODO AP TEST";
         public override TiposNodo tipoNodo => TiposNodo.AccessPoint;
 
-        private const string WIFI_SSID = "Bondiola 2.4";
-        private const string WIFI_PASS = "comandante123";
+        private ConcurrentQueue colaMensajes = new ConcurrentQueue(50);
+        private Hilo hiloMensajes;
 
-        private ModuloBlinkLed blinker;
+        private GpioController gpio;
+        private GpioPin led;
         private LoRaDevice lora;
-        private RouterLoraWifi router;
+        private uint paquete = 1;
+
+        private const string WIFI_SSID = "SmartCompost";//"Bondiola 2.4";
+        private const string WIFI_PASS = "Quericocompost";//"comandante123";
+
+        private const string CLOUD_HOST = "181.88.245.34";
 
         public override void Setup()
         {
-            blinker = new ModuloBlinkLed(400);
-            blinker.Iniciar();
+            Logger.Log("----ACCESS POINT----");
+            Logger.Log("");
 
-            ConectarWifi();
+            // Configuramos el LED
+            gpio = new GpioController();
+            led = gpio.OpenPin(2, PinMode.Output);
+            // Prendemos el led para avisar que estamos configurando
+            led.Write(PinValue.High);
 
-            ConectarLora();
+            //// Configuramos el Lora
+            lora = new LoRaDevice();
+            lora.OnReceive += Device_OnReceive;
+            lora.OnTransmit += Device_OnTransmit;
+            // Intentamos conectarnos al lora
+            Hilo.Intentar(() => lora.Iniciar(), "Lora");
 
-            IniciarRouter();
+            // Conectamos a internet
+            Hilo.Intentar(() => ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS), $"Wifi: {WIFI_SSID}-{WIFI_PASS}");
+            Logger.Log(ayInternet.ObtenerIp());
+            bool ping = ayInternet.Ping(CLOUD_HOST);
+            Debug.Assert(ping);
 
-            blinker.Detener();
+            hiloMensajes = MotorDeHilos.CrearHiloLoop("EnvioMensajes", LoopMensajes);
+            hiloMensajes.Iniciar();
+
+            // Avisamos que terminamos de configurar
+            led.Write(PinValue.Low);
         }
 
         public override void Loop(ref bool activo)
         {
-
+            Thread.Sleep(Timeout.Infinite); // Liberamos el thread, no necesitamos el loop
         }
 
-        private static void ConectarWifi()
+        private void Device_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
         {
-            Logger.Log($"Conectando WiFi: {WIFI_SSID}-{WIFI_PASS}");
-            bool ok = false;
-            while (!ok)
+            try
             {
+                if (colaMensajes.Enqueue(e.Data) != null)
+                    Logger.Error("Cola desbordada!!!");
+
+                Logger.Log($"PacketSNR: {e.PacketSnr}, Packet RSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
+
+                Blink(100);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex.Message);
+            }
+        }
+
+        private void Blink(int time)
+        {
+            led.Write(PinValue.High);
+            Thread.Sleep(time);
+            led.Write(PinValue.Low);
+        }
+
+        private void Device_OnTransmit(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataTransmitedEventArgs e)
+        {
+            Logger.Log("Se envio el paquete " + paquete);
+        }
+
+        private Random rnd = new Random();
+        private string url = $"http://{CLOUD_HOST}:8080/api/nodes/1/measurements";
+        private void LoopMensajes(ref bool activo)
+        {
+            try
+            {
+                if (colaMensajes.IsEmpty())
+                {
+                    Logger.Log("Cola vacia");
+                    return;
+                }
+
+                var m = new MensajeMediciones();
+                m.last_updated = DateTime.UtcNow;
+
+                while (colaMensajes.IsEmpty() == false)
+                {
+                    byte[] mensaje = (byte[])colaMensajes.Dequeue();
+                    m.node_measurements.Add(new Medicion()
+                    {
+                        timestamp = DateTime.UtcNow,
+                        type = "temp",
+                        value = (float)(rnd.NextDouble() * 5 + 25)
+                    });
+                }
+
                 try
                 {
-                    ok = ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS);
+                    ayInternet.DoPost(url, m);
+                    Logger.Log($"Se enviaron {m.node_measurements.Count} mediciones");
+                    Logger.Log($"Quedan {colaMensajes.Count()} en la cola");
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    Logger.Log(ex);
-                }
-                finally
-                {
-                    Thread.Sleep(1000);
+                    Logger.Log(e);
+                    // aca deberia poder reencolar todo denuevo
+                    // colaMensajes.Enqueue(mensaje);
                 }
             }
-
-            Logger.Log($"OK");
-        }
-
-        private void ConectarLora()
-        {
-            Logger.Log($"Conectando LoRa...");
-            bool ok = false;
-            while (!ok)
+            finally
             {
-                try
-                {
-                    lora = new LoRaDevice();
-                    lora.Iniciar();
-                    ok = true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex);
-                }
-                finally
-                {
-                    Thread.Sleep(1000);
-                }
+                Thread.Sleep(5000);
             }
-            Logger.Log($"OK");
         }
 
-        private void IniciarRouter()
-        {
-            Logger.Log($"Iniciando router...");
-            router = new RouterLoraWifi(lora, blinker, this.MacAddress);
-            Logger.Log($"OK");
-        }
-
-        public override void Dispose()
-        {
-            router.Dispose();
-            blinker.Dispose();
-            base.Dispose();
-        }
     }
 }

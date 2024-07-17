@@ -1,75 +1,85 @@
-using NanoKernel.Ayudantes;
-using NanoKernel.Comunicacion;
+﻿using NanoKernel.Ayudantes;
+using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using NanoKernel.LoRa;
-using NanoKernel.Modulos;
 using NanoKernel.Nodos;
 using System;
+using System.Device.Gpio;
+using System.Text;
 using System.Threading;
 
 namespace NodoMedidor
 {
     public class NodoMedidor : NodoBase
     {
-        public override string IdSmartCompost => "FIUBA-N00000001";
+        public override string IdSmartCompost => "Medidor";
         public override TiposNodo tipoNodo => TiposNodo.Medidor;
 
-        private static ModuloBlinkLed blinker;
+        private GpioController gpio;
+        private GpioPin led;
         private LoRaDevice lora;
-        private ClienteLora cliente;
-
-        private MacAddress direccionRouter;
+        private uint paquete = 1;
         public override void Setup()
         {
-            blinker = new ModuloBlinkLed(400);
-            blinker.Iniciar();
+            Logger.Log("----ACCESS POINT----");
+            Logger.Log("");
 
-            // Conectamos a LoRa
-            ContectarLora();
+            // Configuramos el LED
+            gpio = new GpioController();
+            led = gpio.OpenPin(2, PinMode.Output);
+            // Prendemos el led para avisar que estamos configurando
+            led.Write(PinValue.High);
 
-            cliente = new ClienteLora(lora, this.MacAddress);
+            // Configuramos el Lora
+            lora = new LoRaDevice();
+            lora.OnReceive += Device_OnReceive;
+            lora.OnTransmit += Device_OnTransmit;
+            // Intentamos conectarnos al lora
+            Hilo.Intentar(() => lora.Iniciar(), "Lora");
 
-            direccionRouter = new MacAddress("B0:A7:32:DD:1E:F4");
+            // Avisamos que terminamos de configurar
+            led.Write(PinValue.Low);
 
-            // Detenemos el blinker para avisar que esta todo OK
-            blinker.Detener();
-        }
-
-        private void ContectarLora()
-        {
-            Logger.Log($"Conectando LoRa:");
-            bool ok = false;
-            while (!ok)
-            {
-                try
-                {
-                    lora = new LoRaDevice();
-                    lora.Iniciar();
-                    ok = true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex);
-                }
-                finally
-                {
-                    Thread.Sleep(1000);
-                }
-            }
+            var ran = new Random();
+            lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Temp:{ran.NextDouble() * 5 + 30}"));
+            Blink(100);
+            Thread.Sleep(900);
+            aySleep.DeepSleepSegundos(15, "pinto loco");
         }
 
         public override void Loop(ref bool activo)
         {
-            cliente.Enviar("hola", direccionRouter);
-            blinker.BlinkOnce(100);
-            Logger.Log("Enviado");
-            Thread.Sleep(4900);
+            //lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Este mensaje es largo para probar cuantos bytes puedo mandar y que parezca que mando mucha info importante"));
+            //Blink(100);
+            //Thread.Sleep(900);
         }
 
-        public override void Dispose()
+        private void Device_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
         {
-            blinker.Dispose();
-            base.Dispose();
+            try
+            {
+                led.Write(PinValue.High);
+                Thread.Sleep(100);
+                led.Write(PinValue.Low);
+
+                Logger.Log($"PacketSNR: {e.PacketSnr}, Packet RSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex.Message);
+            }
+        }
+
+        private void Device_OnTransmit(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataTransmitedEventArgs e)
+        {
+            Logger.Log("Se envio el paquete " + paquete);
+        }
+
+        private void Blink(int time)
+        {
+            led.Write(PinValue.High);
+            Thread.Sleep(time);
+            led.Write(PinValue.Low);
         }
     }
 }

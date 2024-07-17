@@ -1,4 +1,5 @@
-﻿using NanoKernel.Hilos;
+﻿using NanoKernel.Ayudantes;
+using NanoKernel.Hilos;
 using NanoKernel.Loggin;
 using NanoKernel.LoRa;
 using NanoKernel.Nodos;
@@ -38,13 +39,19 @@ namespace PruebaMedidor
 
             // Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
+
+            var ran = new Random();
+            lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Temp:{ran.NextDouble() * 5 + 30}"));
+            Blink(100);
+            Thread.Sleep(900);
+            aySleep.DeepSleepSegundos(15, "pinto loco");
         }
 
         public override void Loop(ref bool activo)
         {
-            lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Este mensaje es largo para probar cuantos bytes puedo mandar y que parezca que mando mucha info importante"));
-            Blink(100);
-            Thread.Sleep(900);
+            //lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Este mensaje es largo para probar cuantos bytes puedo mandar y que parezca que mando mucha info importante"));
+            //Blink(100);
+            //Thread.Sleep(900);
         }
 
         private void Device_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
