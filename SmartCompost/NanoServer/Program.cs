@@ -1,6 +1,6 @@
 using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using System.Diagnostics;
 using System.Net;
 using System.Text;

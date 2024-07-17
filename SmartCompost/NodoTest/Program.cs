@@ -1,7 +1,7 @@
 using NanoKernel.Ayudantes;
 using NanoKernel.Herramientas.Medidores;
 using NanoKernel.Herramientas.Repositorios;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using NanoKernel.Modulos;
 using System.Threading;
 

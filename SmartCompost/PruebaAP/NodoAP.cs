@@ -2,7 +2,7 @@
 using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
 using NanoKernel.Hilos;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;

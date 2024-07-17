@@ -1,5 +1,5 @@
 ﻿using nanoFramework.Hardware.Esp32;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using System;
 
 namespace NanoKernel.Ayudantes

@@ -1,5 +1,5 @@
 ﻿using nanoFramework.Networking;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using System;
 using System.Net;
 using System.Net.Http;

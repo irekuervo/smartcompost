@@ -2,7 +2,7 @@
 using NanoKernel.Ayudantes;
 using NanoKernel.Herramientas.Repositorios;
 using NanoKernel.Hilos;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using System;
 using System.Threading;
 

@@ -1,7 +1,7 @@
 ﻿using nanoFramework.Json;
 using NanoKernel.Ayudantes;
 using NanoKernel.Comunicacion.Old;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 using NanoKernel.Modulos;
 using System;
 using System.Collections;

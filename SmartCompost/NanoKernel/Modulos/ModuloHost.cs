@@ -1,5 +1,5 @@
 ﻿using nanoFramework.Runtime.Native;
-using NanoKernel.Loggin;
+using NanoKernel.Logging;
 
 namespace NanoKernel.Modulos
 {

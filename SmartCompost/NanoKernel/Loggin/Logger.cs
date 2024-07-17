@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace NanoKernel.Loggin
+namespace NanoKernel.Logging
 {
     public static class Logger
     {

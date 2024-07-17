@@ -1,4 +1,4 @@
-﻿using NanoKernel.Loggin;
+﻿using NanoKernel.Logging;
 using System;
 using System.Collections;
 
