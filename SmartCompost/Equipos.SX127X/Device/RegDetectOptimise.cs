@@ -14,33 +14,13 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	using System;
-
-	// RegLna settings from Semtech SX127X Datasheet
-	[Flags]
-	public enum RegLnaLnaGain : byte
+	// RegDetectOptimize
+	public enum RegDetectOptimizeDetectionOptimize
 	{
-		G1 = 0b00100000,
-		Default = G1,
-		G2 = 0b01000000,
-		G3 = 0b01100000,
-		G4 = 0b10000000,
-		G5 = 0b10100000,
-		G6 = 0b11000000
-	}
-	// TODO : Fix lnaBoost default as there must be a better way of doing this
-	// public const bool LnaBoostDefault = false; 
-
-	[Flags]
-	internal enum RegLnaLnaBoost : byte
-	{
-		LfOn = 0b00011000,
-		LfOff = 0b00000000,
-		LfDefault = LfOff,
-		HfOn = 0b00000011,
-		HfOff = 0b00000000,
-		HfDefault = HfOff
-	}
+		SF7toSF12 = 0x03,
+		Default = SF7toSF12,
+		SF6 = 0x05,
+	};
 }

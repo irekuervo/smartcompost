@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
 	// Registers from Semtech SX127X Datasheet
 	internal enum Registers : byte

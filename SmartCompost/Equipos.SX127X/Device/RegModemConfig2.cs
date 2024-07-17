@@ -14,49 +14,37 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	// RegOcp settings from Semtech SX127X Datasheet
-	public enum RegOcp
+	using System;
+
+	// RegModemConfig2
+	[Flags]
+	public enum RegModemConfig2SpreadingFactor : byte
 	{
-		On = 0b00100000,
-		Off = 0b00000000,
-		Default = On
+		_64ChipsPerSymbol = 0b01100000,
+		_128ChipsPerSymbol = 0b01110000,
+		Default = _128ChipsPerSymbol,
+		_256ChipsPerSymbol = 0b10000000,
+		_512ChipsPerSymbol = 0b10010000,
+		_1024ChipsPerSymbol = 0b10100000,
+		_2048ChipsPerSymbol = 0b10110000,
+		_4096ChipsPerSymbol = 0b11000000,
 	}
 
-	// RegOcpTrim - precalculating seemed a lot easier than doing on the fly with two different ranges
-	public enum RegOcpTrim
+	[Flags]
+	public enum RegModemConfig2TxContinuousMode
 	{
-		Minimum = _45mA,
-		_45mA = 0x00,
-		_50mA = 0x01,
-		_55mA = 0x02,
-		_60mA = 0x03,
-		_65mA = 0x04,
-		_70mA = 0x05,
-		_75mA = 0x06,
-		_80mA = 0x07,
-		_85mA = 0x08,
-		_90mA = 0x09,
-		_95mA = 0x0A,
-		_100mA = 0x0B,
-		Default = _100mA,
-		_105mA = 0x0C,
-		_110mA = 0x0D,
-		_115mA = 0x0E,
-		_120mA = 0x0F,
-		_130mA = 0x10,
-		_140mA = 0x11,
-		_150mA = 0x12,
-		_160mA = 0x13,
-		_170mA = 0x14,
-		_180mA = 0x15,
-		_190mA = 0x16,
-		_200mA = 0x17,
-		_210mA = 0x18,
-		_220mA = 0x19,
-		_230mA = 0x1A,
-		_240mA = 0x1B,
-		Maximum = _240mA
-	};
+		On = 0b00001000,
+		Off = 0b00000000,
+		Default = Off
+	}
+
+	[Flags]
+	public enum RegModemConfig2RxPayloadCrc
+	{
+		On = 0b00000100,
+		Off = 0b00000000,
+		Default = Off
+	}
 }

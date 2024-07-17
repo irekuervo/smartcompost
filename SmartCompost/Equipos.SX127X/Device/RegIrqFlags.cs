@@ -14,27 +14,35 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	// RegInvertIq settings from Semtech SX127X Datasheet
-	public enum InvertIqRx : byte
+	using System;
+
+	// RegIrqFlags settings from Semtech SX127X Datasheet
+	[Flags]
+	internal enum RegIrqFlagsMask : byte
 	{
-		On = 0b01000000,
-		Off = 0b00000000,
-		Default = Off
+		RxTimeoutMask = 0b10000000,
+		RxDoneMask = 0b01000000,
+		PayLoadCrcErrorMask = 0b00100000,
+		ValidHeaderMask = 0b00010000,
+		TxDoneMask = 0b00001000,
+		CadDoneMask = 0b00000100,
+		FhssChangeChannelMask = 0b00000010,
+		CadDetectedMask = 0b00000001,
 	}
 
-	public enum InvertIqTx : byte
+	[Flags]
+	internal enum RegIrqFlags : byte
 	{
-		On = 0b00000001,
-		Default = On,
-		Off = 0b00000000
-	}
-
-	internal enum RegInvertIq2
-	{
-		On = 0x19,
-		Off = 0x1D,
-		Default = Off
+		ClearNone = 0b00000000,
+		RxTimeout = 0b10000000,
+		RxDone = 0b01000000,
+		PayLoadCrcError = 0b00100000,
+		ValidHeader = 0b00010000,
+		TxDone = 0b00001000,
+		CadDone = 0b00000100,
+		FhssChangeChannel = 0b00000010,
+		CadDetected = 0b00000001,
 	}
 }

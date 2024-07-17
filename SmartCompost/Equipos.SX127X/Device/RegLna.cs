@@ -14,34 +14,33 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
 	using System;
 
-	// RegOpMode bit flags from Semtech SX127X Datasheet
+	// RegLna settings from Semtech SX127X Datasheet
 	[Flags]
-	internal enum RegOpModeModeFlags : byte
+	public enum RegLnaLnaGain : byte
 	{
-		LongRangeModeLoRa = 0b10000000,
-		LongRangeModeFskOok = 0b00000000,
-		LongRangeModeDefault = LongRangeModeFskOok,
-		AcessSharedRegLoRa = 0b00000000,
-		AcessSharedRegFsk = 0b01000000,
-		AcessSharedRegDefault = AcessSharedRegLoRa,
-		LowFrequencyModeOnHighFrequency = 0b00000000,
-		LowFrequencyModeOnLowFrequency = 0b00001000,
-		LowFrequencyModeOnDefault = LowFrequencyModeOnLowFrequency
+		G1 = 0b00100000,
+		Default = G1,
+		G2 = 0b01000000,
+		G3 = 0b01100000,
+		G4 = 0b10000000,
+		G5 = 0b10100000,
+		G6 = 0b11000000
 	}
+	// TODO : Fix lnaBoost default as there must be a better way of doing this
+	// public const bool LnaBoostDefault = false; 
 
-	internal enum RegOpModeMode : byte
+	[Flags]
+	internal enum RegLnaLnaBoost : byte
 	{
-		Sleep = 0b00000000,
-		StandBy = 0b00000001,
-		FrequencySynthesisTX = 0b00000010,
-		Transmit = 0b00000011,
-		FrequencySynthesisRX = 0b00000100,
-		ReceiveContinuous = 0b00000101,
-		ReceiveSingle = 0b00000110,
-		ChannelActivityDetection = 0b00000111,
-	};
+		LfOn = 0b00011000,
+		LfOff = 0b00000000,
+		LfDefault = LfOff,
+		HfOn = 0b00000011,
+		HfOff = 0b00000000,
+		HfDefault = HfOff
+	}
 }

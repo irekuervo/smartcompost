@@ -24,28 +24,9 @@
     <Compile Include="Herramientas\Buffers\BinaryReader.cs" />
     <Compile Include="Herramientas\Buffers\ConcurrentQueue.cs" />
     <Compile Include="Herramientas\Comunicacion\AddMeasurementDto.cs" />
-    <Compile Include="Herramientas\Comunicacion\ClienteLora.cs" />
     <Compile Include="Herramientas\Comunicacion\Old\Paquete.cs" />
     <Compile Include="Herramientas\Comunicacion\Paquete.cs" />
     <Compile Include="Herramientas\Comunicacion\PayloadMedicion.cs" />
-    <Compile Include="Herramientas\Comunicacion\RouterLoraWifi.cs" />
-    <Compile Include="LoRa\Device\RegDetectionThreshold.cs" />
-    <Compile Include="LoRa\Device\RegDetectOptimise.cs" />
-    <Compile Include="LoRa\Device\RegDioMapping.cs" />
-    <Compile Include="LoRa\Device\RegHopChannel.cs" />
-    <Compile Include="LoRa\Device\RegInvertIq.cs" />
-    <Compile Include="LoRa\Device\RegIrqFlags.cs" />
-    <Compile Include="LoRa\Device\RegisterManager.cs" />
-    <Compile Include="LoRa\Device\Registers.cs" />
-    <Compile Include="LoRa\Device\RegLna.cs" />
-    <Compile Include="LoRa\Device\RegModemConfig1.cs" />
-    <Compile Include="LoRa\Device\RegModemConfig2.cs" />
-    <Compile Include="LoRa\Device\RegModemConfig3.cs" />
-    <Compile Include="LoRa\Device\RegOcp.cs" />
-    <Compile Include="LoRa\Device\RegOpMode.cs" />
-    <Compile Include="LoRa\Device\RegPaConfig.cs" />
-    <Compile Include="LoRa\Device\SX127XDevice.cs" />
-    <Compile Include="LoRa\LoRaDevice.cs" />
     <Compile Include="Nodos\Nodo.cs" />
     <Compile Include="Ayudantes\ayArchivos.cs" />
     <Compile Include="Ayudantes\ayEstadisticas.cs" />
@@ -83,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="LoRa\Device\SX127XLoRaDevice.nfproj" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

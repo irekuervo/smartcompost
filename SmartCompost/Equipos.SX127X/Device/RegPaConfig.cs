@@ -14,13 +14,32 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	// RegDetectOptimize
-	public enum RegDetectOptimizeDetectionOptimize
+	using System;
+
+	// RegPaConfig + RegPaDac settings from Semtech SX127X Datasheet with complexity hidden from user 
+	[Flags]
+	public enum RegPAConfigPASelect : byte
 	{
-		SF7toSF12 = 0x03,
-		Default = SF7toSF12,
-		SF6 = 0x05,
-	};
+		Rfo = 0b00000000,
+		PABoost = 0b10000000,
+		Default = Rfo
+	}
+
+	internal enum RegPAConfigMaxPower : byte
+	{
+		Min = 0b00000000,
+		Max = 0b01110000,
+		Default = 0b01000000
+	}
+
+	// RegPaDac more power
+	[Flags]
+	internal enum RegPaDac
+	{
+		Normal = 0x84,
+		Boost = 0x87,
+		Default = Normal
+	}
 }

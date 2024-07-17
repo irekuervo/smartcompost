@@ -14,13 +14,21 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	// RegDetectionThreshold
-	public enum RegisterDetectionThreshold
+	using System;
+
+	[Flags]
+	internal enum RegHopChannelFlags : byte
 	{
-		SF7toSF12 = 0x0A,
-		Default = SF7toSF12,
-		SF6 = 0x0c,
+		PllTimeout = 0b10000000,
+		CrcOnPayload = 0b01000000,
+	}
+
+	internal enum RegHopChannelMask : byte
+	{
+		PllTimeout = 0b10000000,
+		CrcOnPayload = 0b01000000,
+		FhssPresentChannel = 0b01111111,
 	}
 }

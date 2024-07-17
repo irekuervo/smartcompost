@@ -23,6 +23,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Equipos.SX127X\Equipos.SX127X.nfproj" />
     <ProjectReference Include="..\NanoKernel\NanoKernel.nfproj" />
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,10 @@
-using devMobile.IoT.SX127xLoRaDevice;
 using nanoFramework.Hardware.Esp32;
 using System;
 using System.Device.Gpio;
 using System.Device.Spi;
-using static devMobile.IoT.SX127xLoRaDevice.SX127XDevice;
+using static Equipos.SX127X.SX127XDevice;
 
-namespace NanoKernel.LoRa
+namespace Equipos.SX127X
 {
     // Github: https://github.com/KiwiBryn/SX127X-NetNF/tree/master
     // Es un wrapper para simplificar la interaccion con el device

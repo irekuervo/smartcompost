@@ -1,7 +1,7 @@
-﻿using NanoKernel.Ayudantes;
+﻿using Equipos.SX127X;
+using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
-using NanoKernel.LoRa;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
@@ -21,9 +21,6 @@ namespace NodoMedidor
         private uint paquete = 1;
         public override void Setup()
         {
-            Logger.Log("----ACCESS POINT----");
-            Logger.Log("");
-
             // Configuramos el LED
             gpio = new GpioController();
             led = gpio.OpenPin(2, PinMode.Output);
@@ -39,7 +36,11 @@ namespace NodoMedidor
 
             // Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
+        }
 
+        // Este loop se corre una sola vez, por el deep sleep
+        public override void Loop(ref bool activo)
+        {
             var ran = new Random();
             lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Temp:{ran.NextDouble() * 5 + 30}"));
             Blink(100);
@@ -47,14 +48,7 @@ namespace NodoMedidor
             aySleep.DeepSleepSegundos(15, "pinto loco");
         }
 
-        public override void Loop(ref bool activo)
-        {
-            //lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Este mensaje es largo para probar cuantos bytes puedo mandar y que parezca que mando mucha info importante"));
-            //Blink(100);
-            //Thread.Sleep(900);
-        }
-
-        private void Device_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
+        private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
             try
             {
@@ -70,7 +64,7 @@ namespace NodoMedidor
             }
         }
 
-        private void Device_OnTransmit(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataTransmitedEventArgs e)
+        private void Device_OnTransmit(object sender, SX127XDevice.OnDataTransmitedEventArgs e)
         {
             Logger.Log("Se envio el paquete " + paquete);
         }

@@ -14,24 +14,13 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	using System;
-
-	// RegModemConfig3 bit flags from Semtech SX127X Datasheet
-	[Flags]
-	public enum RegModemConfig3LowDataRateOptimise : byte
+	// RegDetectionThreshold
+	public enum RegisterDetectionThreshold
 	{
-		Disabled = 0b00000000,
-		Default = Disabled,
-		Enabled = 0b00001000
-	}
-
-	[Flags]
-	public enum RegModemConfig3AgcAutoOn : byte
-	{
-		LnaGain = 0b00000000,
-		Default = LnaGain,
-		AgcLoop = 0b00000100
+		SF7toSF12 = 0x0A,
+		Default = SF7toSF12,
+		SF6 = 0x0c,
 	}
 }

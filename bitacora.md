@@ -2,23 +2,23 @@
 *** BITACORA ***
 
 - 03/07/24:
-    Tenemos un problema de sobrecalentamiento del switching del NODO AP
-    Tenemo un problema de CRC del lora en el NODO AP:
+    -Tenemos un problema de sobrecalentamiento del switching del NODO AP
+    -Tenemo un problema de CRC del lora en el NODO AP:
         Teniendo el AP y el Medidor SIN BATERIA, puedo hacer que se hablen de muy cerca, pero me tira error de CRC el AP
 - 03/07/24: 
-    Un bajon que te actualicen todo, estoy aprendiendo a configurar el proyecto para uqe funcione clavado en una version. 
-    Aprendi que si todo falla, hay que borrar todo con esptools. 
-    Aprendi que si puedo flashear pero no me reconoce en nanoff, cambiar el puerto usb ayuda
+    -Un bajon que te actualicen todo, estoy aprendiendo a configurar el proyecto para uqe funcione clavado en una version. 
+    -Aprendi que si todo falla, hay que borrar todo con esptools. 
+    -Aprendi que si puedo flashear pero no me reconoce en nanoff, cambiar el puerto usb ayuda
 - 01/04/24: 
-    Noto una posible correlacion entre la imposibilidad de descubrir un device en el Device Explorer y los pines de SPI para placas sin el CH340
+    -Noto una posible correlacion entre la imposibilidad de descubrir un device en el Device Explorer y los pines de SPI para placas sin el CH340
 - 25/01/24: 
-    EL PROBLEMA ERA QUE TENIA GENERICS. POR DIOS, NO DEJAR NINGUN GENERICS, SE ROMPE TODO!!!
+    -EL PROBLEMA ERA QUE TENIA GENERICS. POR DIOS, NO DEJAR NINGUN GENERICS, SE ROMPE TODO!!!
 - 22/01/24: 
-    me esta cagando a palos usar una app con otras referencias, se resetea todo el sistema. Este comportamiento tambien lo vi cuando yo cagaba a palos la app corriendo en caliente, ni tira exception, directamente entra en un loop muerto.
+    -me esta cagando a palos usar una app con otras referencias, se resetea todo el sistema. Este comportamiento tambien lo vi cuando yo cagaba a palos la app corriendo en caliente, ni tira exception, directamente entra en un loop muerto.
 - PREVIO SIN FECHA
-    Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si
-    Con el cp210x va como piña todo
-    Aveces deployeo algo que rompe todo y se autoreseta, y dejo de poder deployar. Ahi tengo que volver a instalar el firmware y probar de 0 (o deployar a mano cambiando algo que probablemente arregle el error)
+    -Al parecer, en las placas que tienen el CH340 no funca el debugger en VS, pero lo demas si
+    -Con el cp210x va como piña todo
+    -Aveces deployeo algo que rompe todo y se autoreseta, y dejo de poder deployar. Ahi tengo que volver a instalar el firmware y probar de 0 (o deployar a mano cambiando algo que probablemente arregle el error)
 
 *** WIFI ***
 - Cuando no pude conectarme a nada, con error inclusive en el scan, me ayudo configurar el network configuration del board: Options=Auto Connect, Security/Encryption=WPA2
@@ -31,9 +31,6 @@
 - Para hablarle en crudo, uso un ESP32 con el pin EN conectado a GND (lo puentea y hablo directo con el conversor serie)
 - La papa para TCP esta en esta nota de aplicacion del fabricante: https://www.waveshare.com/w/upload/2/25/SIM800_Series_TCPIP_Application_Note_V1.03.pdf
 - 25/03/24: DEPRECADO, muy complicado, lento, y se soluciona mejor con un Dongle 4G que soporta 3G y 2G.
-
-*** SX127X ***
-ALIMENTAR COMO LA GENTE (no alimentar desde el esp32)
 
 *** c# ***
 // get available ports

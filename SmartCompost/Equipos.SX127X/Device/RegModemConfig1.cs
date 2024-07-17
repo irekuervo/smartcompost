@@ -14,32 +14,37 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
-	using System;
-
-	// RegPaConfig + RegPaDac settings from Semtech SX127X Datasheet with complexity hidden from user 
-	[Flags]
-	public enum RegPAConfigPASelect : byte
+	// RegModemConfig1 & RegModemConfig2 settings from Semtech SX127X Datasheet
+	public enum RegModemConfig1Bandwidth : byte
 	{
-		Rfo = 0b00000000,
-		PABoost = 0b10000000,
-		Default = Rfo
+		_7_8KHz = 0b00000000,
+		_10_4KHz = 0b00010000,
+		_15_6KHz = 0b00100000,
+		_20_8KHz = 0b00110000,
+		_31_25KHz = 0b01000000,
+		_41_7KHz = 0b01010000,
+		_62_5KHz = 0b01100000,
+		_125KHz = 0b01110000,
+		Default = _125KHz,
+		_250KHz = 0b10000000,
+		_500KHz = 0b10010000
 	}
 
-	internal enum RegPAConfigMaxPower : byte
+	public enum RegModemConfig1CodingRate
 	{
-		Min = 0b00000000,
-		Max = 0b01110000,
-		Default = 0b01000000
+		_4of5 = 0b00000010,
+		Default = _4of5,
+		_4of6 = 0b00000100,
+		_4of7 = 0b00000110,
+		_4of8 = 0b00001000,
 	}
 
-	// RegPaDac more power
-	[Flags]
-	internal enum RegPaDac
+	public enum RegModemConfig1ImplicitHeaderModeOn
 	{
-		Normal = 0x84,
-		Boost = 0x87,
-		Default = Normal
+		ExplicitHeaderMode = 0b00000000,
+		Default = ExplicitHeaderMode,
+		ImplicitHeaderMode = 0b00000001,
 	}
 }

@@ -14,21 +14,34 @@
 // limitations under the License.
 //
 //---------------------------------------------------------------------------------
-namespace devMobile.IoT.SX127xLoRaDevice
+namespace Equipos.SX127X
 {
 	using System;
 
+	// RegOpMode bit flags from Semtech SX127X Datasheet
 	[Flags]
-	internal enum RegHopChannelFlags : byte
+	internal enum RegOpModeModeFlags : byte
 	{
-		PllTimeout = 0b10000000,
-		CrcOnPayload = 0b01000000,
+		LongRangeModeLoRa = 0b10000000,
+		LongRangeModeFskOok = 0b00000000,
+		LongRangeModeDefault = LongRangeModeFskOok,
+		AcessSharedRegLoRa = 0b00000000,
+		AcessSharedRegFsk = 0b01000000,
+		AcessSharedRegDefault = AcessSharedRegLoRa,
+		LowFrequencyModeOnHighFrequency = 0b00000000,
+		LowFrequencyModeOnLowFrequency = 0b00001000,
+		LowFrequencyModeOnDefault = LowFrequencyModeOnLowFrequency
 	}
 
-	internal enum RegHopChannelMask : byte
+	internal enum RegOpModeMode : byte
 	{
-		PllTimeout = 0b10000000,
-		CrcOnPayload = 0b01000000,
-		FhssPresentChannel = 0b01111111,
-	}
+		Sleep = 0b00000000,
+		StandBy = 0b00000001,
+		FrequencySynthesisTX = 0b00000010,
+		Transmit = 0b00000011,
+		FrequencySynthesisRX = 0b00000100,
+		ReceiveContinuous = 0b00000101,
+		ReceiveSingle = 0b00000110,
+		ChannelActivityDetection = 0b00000111,
+	};
 }

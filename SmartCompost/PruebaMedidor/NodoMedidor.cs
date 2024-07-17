@@ -1,7 +1,7 @@
-﻿using NanoKernel.Ayudantes;
+﻿using Equipos.SX127X;
+using NanoKernel.Ayudantes;
 using NanoKernel.Hilos;
 using NanoKernel.Loggin;
-using NanoKernel.LoRa;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
@@ -54,7 +54,7 @@ namespace PruebaMedidor
             //Thread.Sleep(900);
         }
 
-        private void Device_OnReceive(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataReceivedEventArgs e)
+        private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
             try
             {
@@ -70,7 +70,7 @@ namespace PruebaMedidor
             }
         }
 
-        private void Device_OnTransmit(object sender, devMobile.IoT.SX127xLoRaDevice.SX127XDevice.OnDataTransmitedEventArgs e)
+        private void Device_OnTransmit(object sender, SX127XDevice.OnDataTransmitedEventArgs e)
         {
             Logger.Log("Se envio el paquete " + paquete);
         }
