@@ -1,7 +1,12 @@
 
 *** BITACORA ***
-
-- 17/07/24:
+- 18/07/24: Prueba Nodos 5v Paquetes posta, sleep 15s
+    -PRUEBA EXITOSA, sin errores, el Medidor duro 14hs, el AP le quedaba jugo todavia (RARO no?).
+    -TODO: Se pierden paquetes cuando no se puede hacer un POST, hay que reencolar!
+    -Corriented el AP medida en serie al 3uA DC promedio (raro, me parece poco)
+    -Para la prueba de corriente desenchufe la bateria, lo volvi a enchufar, y no se pierde el clock interno del micro, me sigue mandando
+    el tiempo como corresponde. Investigar como funciona!
+- 17/07/24: Prueba Nodos 5v Paquetes mock, sleep 1s
     -Despues de dejar el AP intensivo andando muchisimo tiempo, perdi control del equipo totalmente. Tuve que borrar la flash.
     Sospecho que puede ser un problema de memoria a falta de buen manejo de los objetos instanciados.
     Me parece que es el GC, cuando veo el mensaje: "Failed allocation for 426 blocks, 5112 bytes." falla el envio de HTTP
