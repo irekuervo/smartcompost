@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace ClienteMock
+namespace MockSmartcompost.Dto
 {
     public class MensajeMediciones
     {
