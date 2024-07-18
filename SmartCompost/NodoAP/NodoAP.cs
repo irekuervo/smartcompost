@@ -1,12 +1,13 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
+using NanoKernel.Comunicacion;
 using NanoKernel.Dominio;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
-using System.Diagnostics;
+using System.IO;
 using System.Threading;
 
 namespace NodoAP
@@ -22,39 +23,44 @@ namespace NodoAP
         private GpioController gpio;
         private GpioPin led;
         private LoRaDevice lora;
-        private uint paquete = 1;
 
         private const string WIFI_SSID = "SmartCompost";//"Bondiola 2.4";
         private const string WIFI_PASS = "Quericocompost";//"comandante123";
 
         private const string CLOUD_HOST = "181.88.245.34";
+        private string url = $"http://{CLOUD_HOST}:8080/api/nodes/{{}}/measurements";
 
         public override void Setup()
         {
-            Logger.Log("----ACCESS POINT----");
-            Logger.Log("");
-
             // Configuramos el LED
             gpio = new GpioController();
             led = gpio.OpenPin(2, PinMode.Output);
             // Prendemos el led para avisar que estamos configurando
             led.Write(PinValue.High);
 
-            //// Configuramos el Lora
-            lora = new LoRaDevice();
-            lora.OnReceive += Device_OnReceive;
-            lora.OnTransmit += Device_OnTransmit;
-            // Intentamos conectarnos al lora
-            Hilo.Intentar(() => lora.Iniciar(), "Lora");
-
             // Conectamos a internet
             Hilo.Intentar(() => ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS), $"Wifi: {WIFI_SSID}-{WIFI_PASS}");
-            Logger.Log(ayInternet.ObtenerIp());
-            bool ping = ayInternet.Ping(CLOUD_HOST);
-            Debug.Assert(ping);
+            string ip = ayInternet.ObtenerIp();
+            if (ip == "0.0.0.0")
+                Logger.Error("No se pudo asignar la ip");
 
+            // IP asignada
+            Logger.Log(ip);
+
+            // Vemos si podemos pingear la api
+            bool ping = ayInternet.Ping(CLOUD_HOST);
+            if (ping == false)
+                Logger.Log("NO PUEDO LLEGAR AL SERVIDOR");
+
+            // Levantamos el hilo de mensajes
             hiloMensajes = MotorDeHilos.CrearHiloLoop("EnvioMensajes", LoopMensajes);
             hiloMensajes.Iniciar();
+
+            // Configuramos el Lora
+            lora = new LoRaDevice();
+            lora.OnReceive += Device_OnReceive;
+            // Intentamos conectarnos al lora
+            Hilo.Intentar(() => lora.Iniciar(), "Lora");
 
             // Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
@@ -65,16 +71,21 @@ namespace NodoAP
             Thread.Sleep(Timeout.Infinite); // Liberamos el thread, no necesitamos el loop
         }
 
+        const int tamanioPaquete = 27;
         private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
             try
             {
+                Logger.Log($"PacketSNR: {e.PacketSnr}, PacketRSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
+
+                if (e.Data.Length != tamanioPaquete)
+                {
+                    Logger.Error($"Paquete con tamaño invalido. Esperado: {tamanioPaquete}. Recibido {e.Data.Length}.");
+                    return;
+                }
+
                 if (colaMensajes.Enqueue(e.Data) != null)
-                    Logger.Error("Cola desbordada!!!");
-
-                Logger.Log($"PacketSNR: {e.PacketSnr}, Packet RSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
-
-                Blink(100);
+                    Logger.Error("Cola desbordada!");
             }
             catch (Exception ex)
             {
@@ -89,53 +100,70 @@ namespace NodoAP
             led.Write(PinValue.Low);
         }
 
-        private void Device_OnTransmit(object sender, SX127XDevice.OnDataTransmitedEventArgs e)
-        {
-            Logger.Log("Se envio el paquete " + paquete);
-        }
-
-        private Random rnd = new Random();
-        private string url = $"http://{CLOUD_HOST}:8080/api/nodes/1/measurements";
+        MensajeMediciones m = new MensajeMediciones();
         private void LoopMensajes(ref bool activo)
         {
+            // TODO: falta agrupar los mensajes por id de origen (para multiples origenes)
+            // falta un mecanismo para reencolar cuando hay errores
             try
             {
                 if (colaMensajes.IsEmpty())
-                {
-                    Logger.Log("Cola vacia");
                     return;
-                }
 
-                var m = new MensajeMediciones();
                 m.last_updated = DateTime.UtcNow;
-
+                MacAddress idOrigen = null;
+                int mensajes = 0;
                 while (colaMensajes.IsEmpty() == false)
                 {
                     byte[] mensaje = (byte[])colaMensajes.Dequeue();
-                    m.node_measurements.Add(new Medicion()
+                    using (MemoryStream ms = new MemoryStream(mensaje))
+                    using (BinaryReader br = new BinaryReader(ms))
                     {
-                        timestamp = DateTime.UtcNow,
-                        type = "temp",
-                        value = (float)(rnd.NextDouble() * 5 + 25)
-                    });
+                        var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
+                        idOrigen = new MacAddress(br.ReadBytes(6));
+                        var ticksMedicion = br.ReadInt64();
+                        var bateria = br.ReadSingle();
+                        var temperatura = br.ReadSingle();
+                        var humedad = br.ReadSingle();
+                        var fecha = new DateTime(ticksMedicion);
+
+                        m.node_measurements.Clear();
+                        m.node_measurements.Add(new Medicion()
+                        {
+                            timestamp = fecha,
+                            type = "bat",
+                            value = bateria
+                        });
+                        m.node_measurements.Add(new Medicion()
+                        {
+                            timestamp = fecha,
+                            type = "temp",
+                            value = temperatura
+                        });
+                        m.node_measurements.Add(new Medicion()
+                        {
+                            timestamp = fecha,
+                            type = "hum",
+                            value = humedad
+                        });
+                    }
+                    mensajes++;
                 }
 
-                try
-                {
-                    ayInternet.DoPost(url, m);
-                    Logger.Log($"Se enviaron {m.node_measurements.Count} mediciones");
-                    Logger.Log($"Quedan {colaMensajes.Count()} en la cola");
-                }
-                catch (Exception e)
-                {
-                    Logger.Log(e);
-                    // aca deberia poder reencolar todo denuevo
-                    // colaMensajes.Enqueue(mensaje);
-                }
+                const int idMock = 1;
+                url = url.Replace("{}", idMock.ToString());
+                ayInternet.DoPost(url, m);
+
+                Blink(100);
+                Logger.Log($"{mensajes} enviados. {colaMensajes.Count()} encolados.");
+            }
+            catch (Exception e)
+            {
+                Logger.Log(e);
             }
             finally
             {
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
         }
 

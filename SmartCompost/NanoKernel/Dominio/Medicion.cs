@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NanoKernel.Ayudantes;
+using NanoKernel.Comunicacion;
+using System;
 using System.Collections;
 
 namespace NanoKernel.Dominio

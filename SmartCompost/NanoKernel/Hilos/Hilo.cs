@@ -138,7 +138,7 @@ namespace NanoKernel.Hilos
                 try
                 {
                     accion.Invoke();
-                    Logger.Log("OK");
+                    Logger.Log($"{nombreIntento} OK");
                     ok = true;
                 }
                 catch (Exception)

@@ -1,11 +1,12 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
+using NanoKernel.Comunicacion;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
-using System.Text;
+using System.IO;
 using System.Threading;
 
 namespace NodoMedidor
@@ -15,10 +16,12 @@ namespace NodoMedidor
         public override string IdSmartCompost => "Medidor";
         public override TiposNodo tipoNodo => TiposNodo.Medidor;
 
+        private const int segundosSleep = 15;
+        private Random random = new Random();
         private GpioController gpio;
         private GpioPin led;
         private LoRaDevice lora;
-        private uint paquete = 1;
+
         public override void Setup()
         {
             // Configuramos el LED
@@ -29,8 +32,6 @@ namespace NodoMedidor
 
             // Configuramos el Lora
             lora = new LoRaDevice();
-            lora.OnReceive += Device_OnReceive;
-            lora.OnTransmit += Device_OnTransmit;
             // Intentamos conectarnos al lora
             Hilo.Intentar(() => lora.Iniciar(), "Lora");
 
@@ -41,32 +42,41 @@ namespace NodoMedidor
         // Este loop se corre una sola vez, por el deep sleep
         public override void Loop(ref bool activo)
         {
-            var ran = new Random();
-            lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Temp:{ran.NextDouble() * 5 + 30}"));
-            Blink(100);
-            Thread.Sleep(900);
-            aySleep.DeepSleepSegundos(15, "pinto loco");
-        }
+            // Mido la bateria
+            float bateria = (float)random.NextDouble() * 100;
+            // Mido la temperatura
+            float temperatura = (float)random.NextDouble() * 5 + 25;
+            // Mido la humedad
+            float humedad = (float)random.NextDouble() * 100;
 
-        private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
-        {
-            try
+            // Mandamos el paquete
+            const int tamanioPaquete = 27;
+            byte[] paquete = new byte[tamanioPaquete];
+            using (MemoryStream ms = new MemoryStream(paquete))
             {
-                led.Write(PinValue.High);
-                Thread.Sleep(100);
-                led.Write(PinValue.Low);
+                var fecha = DateTime.UtcNow.Ticks;
+                BinaryWriter bw = new BinaryWriter(ms);
+                bw.Write((byte)TipoPaqueteEnum.Medicion); // 1 byte
+                bw.Write(ayInternet.GetMacAddress().Address); // 6 bytes
+                bw.Write(fecha); // 8 bytes (lo voy a usar como id de paquete)
+                bw.Write(bateria); // 4 bytes
+                bw.Write(temperatura);  // 4 bytes
+                bw.Write(humedad);  // 4 bytes
 
-                Logger.Log($"PacketSNR: {e.PacketSnr}, Packet RSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
+                try
+                {
+                    lora.Enviar(paquete);
+                    Blink(100);
+                    Logger.Log($"Paquete {fecha} enviado");
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex);
+                }
             }
-            catch (Exception ex)
-            {
-                Logger.Log(ex.Message);
-            }
-        }
 
-        private void Device_OnTransmit(object sender, SX127XDevice.OnDataTransmitedEventArgs e)
-        {
-            Logger.Log("Se envio el paquete " + paquete);
+            // Nos vamos a mimir
+            aySleep.DeepSleepSegundos(segundosSleep);
         }
 
         private void Blink(int time)

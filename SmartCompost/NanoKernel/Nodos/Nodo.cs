@@ -38,6 +38,7 @@ namespace NanoKernel.Nodos
             Sleep.WakeupCause cause = Sleep.GetWakeupCause();
             Logger.Log("Wakeup cause: " + cause.ToString());
 
+            Logger.Log("Iniciando nodo...");
             Setup();
 
             loopThread.Iniciar();

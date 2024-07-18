@@ -1,6 +1,5 @@
 ﻿using NanoKernel.Ayudantes;
 using System;
-using System.IO;
 
 namespace NanoKernel.Comunicacion
 {
@@ -17,45 +16,52 @@ namespace NanoKernel.Comunicacion
 
     public class Paquete : IDisposable
     {
-        public TipoPaqueteEnum TipoPaquete { get; set; }
-        public MacAddress MacOrigen { get; set; }
-        public MacAddress MacDestino { get; set; }
-        public ushort TamanioPayload { get; set; }
-        public byte[] Payload { get; set; }
+        public TipoPaqueteEnum TipoPaquete { get; private set; }
+        public MacAddress MacOrigen { get; private set; }
+        public MacAddress MacDestino { get; private set; }
+        public ushort TamanioPayload { get; private set; }
+        public byte[] Payload { get; private set; }
 
-        public Paquete(byte[] buffer)
+        public Paquete(MacAddress macOrigen)
         {
-            using (MemoryStream ms = new MemoryStream(buffer))
-            using (BinaryReader br = new BinaryReader(ms))
-            {
-                this.TipoPaquete = (TipoPaqueteEnum)br.ReadByte();
-                this.MacOrigen = new MacAddress(br.ReadBytes(6));
-                this.MacDestino = new MacAddress(br.ReadBytes(6));
-                this.TamanioPayload = br.ReadUInt16();
-                this.Payload = br.ReadBytes(TamanioPayload);
-            }
+            this.MacOrigen = macOrigen;
         }
 
-        public Paquete(MacAddress MacOrigen, TipoPaqueteEnum tipoPaquete = TipoPaqueteEnum.Medicion)
-        {
-            this.MacOrigen = MacOrigen;
-            this.MacDestino = MacDestino;
-            this.TipoPaquete = tipoPaquete;
-        }
 
-        public void Empaquetar(MemoryStream ms)
-        {
-            BinaryWriter bw = new BinaryWriter(ms);
-            bw.Write((byte)TipoPaquete);
-            bw.Write(MacOrigen.Address);
-            bw.Write(MacDestino.Address);
-            bw.Write(Payload);
 
-            if (Payload.Length > ushort.MaxValue)
-                throw new Exception("Paquete excede tamaño maximo de " + ushort.MaxValue.FormatearBytes());
+        //public Paquete(byte[] buffer)
+        //{
+        //    using (MemoryStream ms = new MemoryStream(buffer))
+        //    using (BinaryReader br = new BinaryReader(ms))
+        //    {
+        //        this.TipoPaquete = (TipoPaqueteEnum)br.ReadByte();
+        //        this.MacOrigen = new MacAddress(br.ReadBytes(6));
+        //        this.MacDestino = new MacAddress(br.ReadBytes(6));
+        //        this.TamanioPayload = br.ReadUInt16();
+        //        this.Payload = br.ReadBytes(TamanioPayload);
+        //    }
+        //}
 
-            bw.Write((ushort)Payload.Length);
-        }
+        //public Paquete(MacAddress MacOrigen, TipoPaqueteEnum tipoPaquete = TipoPaqueteEnum.Medicion)
+        //{
+        //    this.MacOrigen = MacOrigen;
+        //    this.MacDestino = MacDestino;
+        //    this.TipoPaquete = tipoPaquete;
+        //}
+
+        //public void Empaquetar(MemoryStream ms)
+        //{
+        //    BinaryWriter bw = new BinaryWriter(ms);
+        //    bw.Write((byte)TipoPaquete);
+        //    bw.Write(MacOrigen.Address);
+        //    bw.Write(MacDestino.Address);
+        //    bw.Write(Payload);
+
+        //    if (Payload.Length > ushort.MaxValue)
+        //        throw new Exception("Paquete excede tamaño maximo de " + ushort.MaxValue.FormatearBytes());
+
+        //    bw.Write((ushort)Payload.Length);
+        //}
 
         public void Dispose()
         {

@@ -20,32 +20,37 @@ namespace NanoKernel.Ayudantes
 
         public void Write(ushort value)
         {
-            WriteInternal(BitConverter.GetBytes(value), 0, sizeof(ushort));
+            WriteStream(BitConverter.GetBytes(value), 0, sizeof(ushort));
         }
 
         public void Write(int value)
         {
-            WriteInternal(BitConverter.GetBytes(value), 0, sizeof(int));
+            WriteStream(BitConverter.GetBytes(value), 0, sizeof(int));
         }
 
         public void Write(long value)
         {
-            WriteInternal(BitConverter.GetBytes(value), 0, sizeof(long));
+            WriteStream(BitConverter.GetBytes(value), 0, sizeof(long));
         }
 
         public void Write(double value)
         {
-            WriteInternal(BitConverter.GetBytes(value), 0, sizeof(double));
+            WriteStream(BitConverter.GetBytes(value), 0, sizeof(double));
         }
 
         public void Write(float value)
         {
-            WriteInternal(BitConverter.GetBytes(value), 0, sizeof(float));
+            WriteStream(BitConverter.GetBytes(value), 0, sizeof(float));
         }
 
         public void Write(byte[] buffer)
         {
             Write(buffer, 0, buffer.Length);
+        }
+
+        public void Write(string value)
+        {
+            Write(Encoding.UTF8.GetBytes(value));
         }
 
         public void Write(byte[] buffer, int index, int count)
@@ -55,15 +60,10 @@ namespace NanoKernel.Ayudantes
             if (index < 0 || count < 0 || index + count > buffer.Length)
                 throw new ArgumentOutOfRangeException();
 
-            WriteInternal(buffer, index, count);
+            WriteStream(buffer, index, count);
         }
 
-        public void Write(string value)
-        {
-            Write(Encoding.UTF8.GetBytes(value));
-        }
-
-        private void WriteInternal(byte[] buffer, int index, int count)
+        private void WriteStream(byte[] buffer, int index, int count)
         {
             _stream.Write(buffer, index, count);
         }
