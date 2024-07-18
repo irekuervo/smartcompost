@@ -5,9 +5,9 @@ VisualStudioVersion = 17.7.34009.444
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NanoKernel", "NanoKernel\NanoKernel.nfproj", "{CC0E298D-E675-4C5B-8E41-B7E1139F3699}"
 EndProject
-Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NodoMedidor", "NodoMedidor\NodoMedidor.nfproj", "{9696AF3C-B54C-4065-B510-1313FD56B410}"
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Nodos.Medidor", "NodoMedidor\Nodos.Medidor.nfproj", "{9696AF3C-B54C-4065-B510-1313FD56B410}"
 EndProject
-Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NodoAP", "NodoAP\NodoAP.nfproj", "{D420C53F-63AC-45E3-8430-38E619EAA187}"
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Nodos.AP", "NodoAP\Nodos.AP.nfproj", "{D420C53F-63AC-45E3-8430-38E619EAA187}"
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "NodoTest", "NodoTest\NodoTest.nfproj", "{F95A9A31-351E-4D0B-97B0-CDCD0C99D453}"
 EndProject

@@ -1,6 +1,11 @@
 
 *** BITACORA ***
 
+- 17/07/24:
+    -Despues de dejar el AP intensivo andando muchisimo tiempo, perdi control del equipo totalmente. Tuve que borrar la flash.
+    Sospecho que puede ser un problema de memoria a falta de buen manejo de los objetos instanciados.
+- 16/07/24:
+    -Commit 217160ae87b424fcee333c081b594b6003504400: ANDA TODO!
 - 03/07/24:
     -Tenemos un problema de sobrecalentamiento del switching del NODO AP
     -Tenemo un problema de CRC del lora en el NODO AP:
