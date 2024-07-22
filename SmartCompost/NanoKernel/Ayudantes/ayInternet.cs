@@ -72,9 +72,9 @@ namespace NanoKernel.Ayudantes
             return new MacAddress(nis[0].PhysicalAddress);
         }
 
-        public static string DoPost(string endpointURL, object objeto)
+        public static string DoPost(string endpointURL, object objeto = null)
         {
-            string jsonPayload = aySerializacion.ToJson(objeto);
+            string jsonPayload = objeto == null ? "{}" : aySerializacion.ToJson(objeto);
 
             using (HttpClient client = new HttpClient())
             using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
@@ -137,7 +137,7 @@ namespace NanoKernel.Ayudantes
                     socket.ReceiveFrom(receiveBuffer, ref responseEndPoint);
                     if (receiveBuffer[20] == IcmpEchoReply)
                         return true;
-                    
+
                     return false;
                 }
                 catch (Exception ex)

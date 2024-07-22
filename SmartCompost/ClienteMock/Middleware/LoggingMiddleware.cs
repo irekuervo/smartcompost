@@ -9,7 +9,7 @@
 
     public async Task InvokeAsync(HttpContext context)
     {
-        Console.WriteLine($"{DateTime.UtcNow} | {context.Request.Method} | {context.Request.Path}");
+        Console.WriteLine($"{DateTime.Now} | {context.Request.Method} | {context.Request.Path}");
 
         await _next(context);
     }

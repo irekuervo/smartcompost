@@ -6,6 +6,12 @@ namespace MockSmartcompost.Controllers
     [Route("api/health")]
     public class HealthCheck : ControllerBase
     {
+        [HttpGet]
+        public IActionResult Alive()
+        {
+            return Ok();
+        }
+
         [HttpGet("ping")]
         public IActionResult Ping()
         {

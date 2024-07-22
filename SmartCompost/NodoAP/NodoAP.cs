@@ -7,6 +7,7 @@ using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -28,7 +29,13 @@ namespace NodoAP
         private const string WIFI_PASS = "Quericocompost";//"comandante123";
 
         private const string CLOUD_HOST = "181.88.245.34";
-        private string url = $"http://{CLOUD_HOST}:8080/api/nodes/{{}}/measurements";
+        private string URLaddMeasurments = $"http://{CLOUD_HOST}:8080/api/nodes/{{0}}/measurements";
+        private string URLkeepAlive = $"http://{CLOUD_HOST}:8080/api/nodes/{{0}}/alive";
+
+        private const int ACCESS_POINT_ID = 1; //ESTO DEBERIA QUEMARSE PARA CADA AP
+        private const int tamanioPaquete = 27;
+        private const int milisLoopColaMensajes = 1000;
+        private const int milisLoopAlive = 1000 * 60 * 5;
 
         public override void Setup()
         {
@@ -39,21 +46,25 @@ namespace NodoAP
             led.Write(PinValue.High);
 
             // Conectamos a internet
-            Hilo.Intentar(() => ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS), $"Wifi: {WIFI_SSID}-{WIFI_PASS}");
-            string ip = ayInternet.ObtenerIp();
-            if (ip == "0.0.0.0")
-                Logger.Error("No se pudo asignar la ip");
+            Hilo.Intentar(() =>
+            {
+                ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS);
 
-            // IP asignada
-            Logger.Log(ip);
+                string ip = ayInternet.ObtenerIp();
+                if (ip == "0.0.0.0")
+                    throw new Exception("No se pudo asignar la ip");
 
+                // IP asignada
+                Logger.Log(ip);
+            }, $"Wifi: {WIFI_SSID}-{WIFI_PASS}");
+            
             // Vemos si podemos pingear la api
             bool ping = ayInternet.Ping(CLOUD_HOST);
             if (ping == false)
                 Logger.Log("NO PUEDO LLEGAR AL SERVIDOR");
 
             // Levantamos el hilo de mensajes
-            hiloMensajes = MotorDeHilos.CrearHiloLoop("EnvioMensajes", LoopMensajes);
+            hiloMensajes = MotorDeHilos.CrearHiloLoop("EnvioMensajes", LoopColaMensajes);
             hiloMensajes.Iniciar();
 
             // Configuramos el Lora
@@ -68,10 +79,17 @@ namespace NodoAP
 
         public override void Loop(ref bool activo)
         {
-            Thread.Sleep(Timeout.Infinite); // Liberamos el thread, no necesitamos el loop
+            try
+            {
+                ayInternet.DoPost(CrearUrl(URLkeepAlive, ACCESS_POINT_ID));
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+            }
+            Thread.Sleep(milisLoopAlive);
         }
 
-        const int tamanioPaquete = 27;
         private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
             try
@@ -101,7 +119,7 @@ namespace NodoAP
         }
 
         MensajeMediciones m = new MensajeMediciones();
-        private void LoopMensajes(ref bool activo)
+        private void LoopColaMensajes(ref bool activo)
         {
             // TODO: falta agrupar los mensajes por id de origen (para multiples origenes)
             // falta un mecanismo para reencolar cuando hay errores
@@ -150,9 +168,7 @@ namespace NodoAP
                     mensajes++;
                 }
 
-                const int idMock = 1;
-                url = url.Replace("{}", idMock.ToString());
-                ayInternet.DoPost(url, m);
+                ayInternet.DoPost(CrearUrl(URLaddMeasurments, ACCESS_POINT_ID), m);
 
                 Blink(100);
                 Logger.Log($"{mensajes} enviados. {colaMensajes.Count()} encolados.");
@@ -163,9 +179,13 @@ namespace NodoAP
             }
             finally
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(milisLoopColaMensajes);
             }
         }
 
+        private string CrearUrl(string url, params object[] parameters)
+        {
+            return string.Format(url, parameters);
+        }
     }
 }
