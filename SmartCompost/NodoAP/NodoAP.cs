@@ -25,10 +25,10 @@ namespace NodoAP
         private GpioPin led;
         private LoRaDevice lora;
 
-        private const string WIFI_SSID = "SmartCompost";//"Bondiola 2.4";
-        private const string WIFI_PASS = "Quericocompost";//"comandante123";
+        private const string WIFI_SSID = "Bondiola 2.4";//"SmartCompost";
+        private const string WIFI_PASS = "conpapafritas";//"Quericocompost";
 
-        private const string CLOUD_HOST = "181.88.245.34";
+        private const string CLOUD_HOST = "192.168.1.6";//"181.88.245.34";
         private string URLaddMeasurments = $"http://{CLOUD_HOST}:8080/api/nodes/{{0}}/measurements";
         private string URLkeepAlive = $"http://{CLOUD_HOST}:8080/api/nodes/{{0}}/alive";
 

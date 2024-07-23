@@ -31,7 +31,7 @@ namespace NodoMedidor
             led.Write(PinValue.High);
 
             // Configuramos el Lora
-            lora = new LoRaDevice();
+            lora = new LoRaDevice(/*pinLoraDatos: 4*/); // el pin 4 lo uso en la protoboard
             // Intentamos conectarnos al lora
             Hilo.Intentar(() => lora.Iniciar(), "Lora");
 
@@ -39,7 +39,8 @@ namespace NodoMedidor
             led.Write(PinValue.Low);
         }
 
-        // Este loop se corre una sola vez, por el deep sleep
+        const int tamanioPaquete = 27;
+        readonly byte[] paquete = new byte[tamanioPaquete];
         public override void Loop(ref bool activo)
         {
             // Mido la bateria
@@ -50,8 +51,6 @@ namespace NodoMedidor
             float humedad = (float)random.NextDouble() * 100;
 
             // Mandamos el paquete
-            const int tamanioPaquete = 27;
-            byte[] paquete = new byte[tamanioPaquete];
             using (MemoryStream ms = new MemoryStream(paquete))
             {
                 var fecha = DateTime.UtcNow.Ticks;
@@ -76,7 +75,8 @@ namespace NodoMedidor
             }
 
             // Nos vamos a mimir
-            aySleep.DeepSleepSegundos(segundosSleep);
+            //Thread.Sleep(5000);
+            //aySleep.DeepSleepSegundos(segundosSleep);
         }
 
         private void Blink(int time)

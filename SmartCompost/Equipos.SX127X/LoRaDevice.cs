@@ -24,7 +24,7 @@ namespace Equipos.SX127X
             int pinCLOCK = Gpio.IO18,
             int pinNSS = Gpio.IO05,
             int pinLoraDatos = Gpio.IO25,
-            int pinLoraReset = Gpio.IO14,
+            int pinLoraReset = Gpio.IO14, //pin14 para la protoboard
             int SPI_BUS = 1)
         {
             Configuration.SetPinFunction(pinMISO, DeviceFunction.SPI1_MISO);
@@ -41,7 +41,7 @@ namespace Equipos.SX127X
             spi = new SpiDevice(spiSender);
             gpio = new GpioController();
 
-            device = new SX127XDevice(spi, gpio, dio0Pin: pinLoraDatos);
+            device = new SX127XDevice(spi, gpio, dio0Pin: pinLoraDatos, resetPin: pinLoraReset);
             device.OnReceive += (object sender, OnDataReceivedEventArgs e) => OnReceive?.Invoke(sender, e);
             device.OnTransmit += (object sender, OnDataTransmitedEventArgs e) => OnTransmit?.Invoke(sender, e);
         }
