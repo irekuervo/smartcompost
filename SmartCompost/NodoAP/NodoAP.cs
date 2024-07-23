@@ -129,6 +129,8 @@ namespace NodoAP
                     return;
 
                 m.last_updated = DateTime.UtcNow;
+                m.node_measurements.Clear();
+
                 MacAddress idOrigen = null;
                 int mensajes = 0;
                 while (colaMensajes.IsEmpty() == false)
@@ -145,7 +147,6 @@ namespace NodoAP
                         var humedad = br.ReadSingle();
                         var fecha = new DateTime(ticksMedicion);
 
-                        m.node_measurements.Clear();
                         m.node_measurements.Add(new Medicion()
                         {
                             timestamp = fecha,
