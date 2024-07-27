@@ -31,7 +31,7 @@ namespace NodoMedidor
             led.Write(PinValue.High);
 
             // Configuramos el Lora
-            lora = new LoRaDevice(/*pinLoraDatos: 4*/); // el pin 4 lo uso en la protoboard
+            lora = new LoRaDevice(pinLoraDatos: 4); // el pin 4 lo uso en la protoboard
             // Intentamos conectarnos al lora
             Hilo.Intentar(() => lora.Iniciar(), "Lora");
 

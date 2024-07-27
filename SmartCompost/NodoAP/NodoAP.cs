@@ -128,14 +128,14 @@ namespace NodoAP
                 if (colaMensajes.IsEmpty())
                     return;
 
-                m.last_updated = DateTime.UtcNow;
                 m.node_measurements.Clear();
 
                 MacAddress idOrigen = null;
                 int mensajes = 0;
-                while (colaMensajes.IsEmpty() == false)
+                var mediciones = colaMensajes.DequeueAll();
+                foreach (var item in mediciones)
                 {
-                    byte[] mensaje = (byte[])colaMensajes.Dequeue();
+                    byte[] mensaje = (byte[])item;
                     using (MemoryStream ms = new MemoryStream(mensaje))
                     using (BinaryReader br = new BinaryReader(ms))
                     {
@@ -169,6 +169,7 @@ namespace NodoAP
                     mensajes++;
                 }
 
+                m.last_updated = DateTime.UtcNow;
                 ayInternet.DoPost(CrearUrl(URLaddMeasurments, ACCESS_POINT_ID), m);
 
                 Blink(100);

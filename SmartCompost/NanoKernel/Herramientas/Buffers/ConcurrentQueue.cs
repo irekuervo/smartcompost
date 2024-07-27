@@ -51,6 +51,14 @@ namespace NanoKernel.Ayudantes
             }
         }
 
+        public ArrayList DequeueAll()
+        {
+            lock (_lockObject)
+            {
+                throw new NotImplementedException("Terminar");
+            }
+        }
+
         public bool IsEmpty()
         {
             lock (_lockObject)
