@@ -16,7 +16,9 @@ namespace NodoMedidor
         public override string IdSmartCompost => "Medidor";
         public override TiposNodo tipoNodo => TiposNodo.Medidor;
 
+        private const bool MODO_LOOP = true; // En false se va a dormir
         private const int segundosSleep = 15;
+
         private Random random = new Random();
         private GpioController gpio;
         private GpioPin led;
@@ -65,7 +67,6 @@ namespace NodoMedidor
                 try
                 {
                     lora.Enviar(paquete);
-                    Blink(100);
                     Logger.Log($"Paquete {fecha} enviado");
                 }
                 catch (Exception ex)
@@ -74,9 +75,14 @@ namespace NodoMedidor
                 }
             }
 
-            // Nos vamos a mimir
-            //Thread.Sleep(5000);
-            //aySleep.DeepSleepSegundos(segundosSleep);
+            if (MODO_LOOP)
+            {
+                Thread.Sleep(5000);
+            }
+            else
+            {
+                aySleep.DeepSleepSegundos(segundosSleep);
+            }
         }
 
         private void Blink(int time)

@@ -1,28 +1,27 @@
-﻿using nanoFramework.Json;
-using NanoKernel.Ayudantes;
+﻿using NanoKernel.Ayudantes;
 using System.Collections;
 using System.IO;
-using System.Text;
 
 namespace NanoKernel.Herramientas.Repositorios
 {
     /// <summary>
     /// Herramienta para manejar un repo en la unidad I: propia del micro
-    /// Esto usa la memoria EEPROM, NO ADMITE ACTUALMENTE DIRECTORIOS (podria implementarse un mecanismo)
+    /// Esto usa la memoria EEPROM
     /// </summary>
     public class RepositorioClaveValorInterno : IRepositorioClaveValor
     {
-        private const string unidadBase = @"I:\";
+        public const string direccionDB = @"I:\db\";
+        private const string formatoDB = ".json";
 
         private string pathDb;
 
         private CacheClaveValor cache = new CacheClaveValor();
 
-        public RepositorioClaveValorInterno(string direccion)
+        public RepositorioClaveValorInterno(string nombre)
         {
-            pathDb = unidadBase + direccion;
+            pathDb = direccionDB + nombre + formatoDB;
 
-            Inicializar();
+            InicializarDb();
         }
 
         public void Update(string id, string value)
@@ -52,34 +51,30 @@ namespace NanoKernel.Herramientas.Repositorios
         {
             lock (lockDrive)
             {
-                File.Create(pathDb).Close();
-
-                byte[] buffer = Encoding.UTF8.GetBytes(cache.Tabla.ToJson());
-
-                using (FileStream fs = new FileStream(pathDb, FileMode.Open, FileAccess.ReadWrite))
-                {
-                    fs.Write(buffer, 0, buffer.Length);
-                }
+                File.WriteAllText(pathDb, cache.Tabla.ToJson());
             }
         }
 
-        private void Inicializar()
+        private void InicializarDb()
         {
+            // Si no existe creo el archivo nada mas
             if (File.Exists(pathDb) == false)
             {
+                if(Directory.Exists(direccionDB) == false)
+                    Directory.CreateDirectory(direccionDB);
+
                 ActualizarRepositorio();
                 return;
             }
 
-            byte[] fileContent;
-            using (FileStream fs2 = new FileStream(pathDb, FileMode.Open, FileAccess.Read))
-            {
-                fileContent = new byte[fs2.Length];
-                fs2.Read(fileContent, 0, (int)fs2.Length);
-            }
-            var texto = Encoding.UTF8.GetString(fileContent, 0, fileContent.Length);
-            var datos = (Hashtable)aySerializacion.FromJson(texto, typeof(Hashtable));
+            // Si existe levanto todo al cache
+            var datos = (Hashtable)File.ReadAllText(pathDb).FromJson(typeof(Hashtable));
             cache = new CacheClaveValor(datos);
+        }
+
+        public void Dispose()
+        {
+            cache.Dispose();
         }
     }
 }

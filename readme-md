@@ -4,14 +4,27 @@ Version 1.0.0 - 02/07/2024
 
 Stack: 
     SDK: .net 8
-    IDE: visual studio 2022
+    IDE: visual studio 2022 17.10.5
     Nanoff: .NET nanoFramework Firmware Flasher v2.5.90+c66e018c48
-    VsExtension: .NET nanoFramwork Extension 2022.3.0.86
-    Firmware: ESP32_PSRAM_REV0 1.9.1.247 
+    VsExtension: .NET nanoFramwork Extension 2022.3.0.93
+    Firmware: ESP32_PSRAM_REV0 1.10.0.49
 
 Deploy:
 
-    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM24 --fwversion 1.9.1.247
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM3 --fwversion 1.10.0.49
+
+Deploy borrando eeprom:
+
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM3 --masserase --fwversion 1.10.0.49
+
+Deploy con archivo:
+
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM3 --masserase --fwversion 1.10.0.49  --filedeployment C:\path\deploy.json
+
+Subir solo archivo:
+
+    nanoff --serialport COM3 --filedeployment C:\path\deploy.json
+
 
 Limpiar flash entera:  
 
