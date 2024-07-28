@@ -10,8 +10,7 @@ namespace NanoKernel.Herramientas.Repositorios
     /// </summary>
     public class RepositorioClaveValorInterno : IRepositorioClaveValor
     {
-        public const string direccionDB = @"I:\db\";
-        private const string formatoDB = ".json";
+        public const string DireccionDbClaveValor = ayArchivos.DIR_INTERNO + @"db_clave_valor\";
 
         private string pathDb;
 
@@ -19,7 +18,7 @@ namespace NanoKernel.Herramientas.Repositorios
 
         public RepositorioClaveValorInterno(string nombre)
         {
-            pathDb = direccionDB + nombre + formatoDB;
+            pathDb = DireccionDbClaveValor + nombre;
 
             InicializarDb();
         }
@@ -51,7 +50,7 @@ namespace NanoKernel.Herramientas.Repositorios
         {
             lock (lockDrive)
             {
-                File.WriteAllText(pathDb, cache.Tabla.ToJson());
+                cache.Tabla.GuardarArchivo(pathDb);
             }
         }
 
@@ -60,15 +59,16 @@ namespace NanoKernel.Herramientas.Repositorios
             // Si no existe creo el archivo nada mas
             if (File.Exists(pathDb) == false)
             {
-                if(Directory.Exists(direccionDB) == false)
-                    Directory.CreateDirectory(direccionDB);
+                if (Directory.Exists(DireccionDbClaveValor) == false)
+                    Directory.CreateDirectory(DireccionDbClaveValor);
 
                 ActualizarRepositorio();
                 return;
             }
 
             // Si existe levanto todo al cache
-            var datos = (Hashtable)File.ReadAllText(pathDb).FromJson(typeof(Hashtable));
+            var datos = (Hashtable)ayArchivos.Abrir(pathDb, typeof(Hashtable));
+
             cache = new CacheClaveValor(datos);
         }
 

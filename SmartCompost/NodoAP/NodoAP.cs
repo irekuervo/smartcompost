@@ -7,7 +7,6 @@ using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
-using System.Diagnostics;
 using System.IO;
 using System.Threading;
 
@@ -15,8 +14,7 @@ namespace NodoAP
 {
     public class NodoAP : NodoBase
     {
-        public override string IdSmartCompost => "NODO AP TEST";
-        public override TiposNodo tipoNodo => TiposNodo.AccessPoint;
+        public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
         private ConcurrentQueue colaMensajes = new ConcurrentQueue(50);
         private Hilo hiloMensajes;
@@ -57,7 +55,7 @@ namespace NodoAP
                 // IP asignada
                 Logger.Log(ip);
             }, $"Wifi: {WIFI_SSID}-{WIFI_PASS}");
-            
+
             // Vemos si podemos pingear la api
             bool ping = ayInternet.Ping(CLOUD_HOST);
             if (ping == false)

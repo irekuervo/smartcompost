@@ -13,8 +13,7 @@ namespace PruebaAP
 {
     public class NodoAP : NodoBase
     {
-        public override string IdSmartCompost => "NODO AP TEST";
-        public override TiposNodo tipoNodo => TiposNodo.AccessPoint;
+        public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
         private ConcurrentQueue colaMensajes = new ConcurrentQueue(50);
         private Hilo hiloMensajes;

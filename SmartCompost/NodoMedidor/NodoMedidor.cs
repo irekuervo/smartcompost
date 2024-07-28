@@ -13,8 +13,7 @@ namespace NodoMedidor
 {
     public class NodoMedidor : NodoBase
     {
-        public override string IdSmartCompost => "Medidor";
-        public override TiposNodo tipoNodo => TiposNodo.Medidor;
+        public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
         private const bool MODO_LOOP = true; // En false se va a dormir
         private const int segundosSleep = 15;

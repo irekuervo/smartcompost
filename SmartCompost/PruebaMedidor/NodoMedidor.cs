@@ -12,8 +12,7 @@ namespace PruebaMedidor
 {
     public class NodoMedidor : NodoBase
     {
-        public override string IdSmartCompost => "Medidor";
-        public override TiposNodo tipoNodo => TiposNodo.Medidor;
+        public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
         private GpioController gpio;
         private GpioPin led;

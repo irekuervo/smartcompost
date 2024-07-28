@@ -10,8 +10,7 @@ namespace NodoAP
 {
     public class NodoSensores : NodoBase
     {
-        public override string IdSmartCompost => "AP-FIUBA-AP00000001";
-        public override TiposNodo tipoNodo => TiposNodo.AccessPoint;
+        public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
         OneWireHost oneWire;
         Ds18b20 ds18b20;
         AdcController adc;

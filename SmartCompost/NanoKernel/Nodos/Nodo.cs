@@ -1,5 +1,6 @@
 ﻿using nanoFramework.Hardware.Esp32;
 using NanoKernel.Ayudantes;
+using NanoKernel.Dominio;
 using NanoKernel.Herramientas.Repositorios;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
@@ -10,29 +11,44 @@ namespace NanoKernel.Nodos
 {
     public abstract class NodoBase : IDisposable
     {
-        public abstract string IdSmartCompost { get; }
+        public readonly IRepositorioClaveValor Config;
+        public readonly MacAddress MacAddress;
+        public readonly InfoNodo InfoNodo;
+
         public abstract TiposNodo tipoNodo { get; }
 
-        public readonly MacAddress MacAddress;
-        private readonly IRepositorioClaveValor config;
         private readonly Hilo loopThread;
 
         private const string LOGO = "\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n";
 
         public NodoBase()
         {
-            loopThread = MotorDeHilos.CrearHiloLoop($"{IdSmartCompost}-MAIN", Loop);
-            config = new RepositorioClaveValorInterno("config");
+            loopThread = MotorDeHilos.CrearHiloLoop($"MAIN", Loop);
+            Config = new RepositorioClaveValorInterno("config");
             MacAddress = ayInternet.GetMacAddress();
+            try
+            {
+                InfoNodo = (InfoNodo)ayArchivos.Abrir(ayArchivos.DIR_INTERNO + "infoNodo.json", typeof(InfoNodo));
+                if (InfoNodo.TipoNodo.EquivaleA(tipoNodo.GetDescripcion()) == false)
+                    throw new Exception($"EL TIPO {tipoNodo.GetDescripcion()} NO COINCIDE CON EL DEL infoNodo.json {InfoNodo.TipoNodo}");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("NO SE PUDO CARGAR LA INFO DEL NODO: " + ex.Message);
+            }
         }
 
-        public abstract void Setup();
         public abstract void Loop(ref bool activo);
+        public abstract void Setup();
 
         public void Iniciar()
         {
             Logger.Log(LOGO);
-            Logger.Log($"{IdSmartCompost}-{tipoNodo}");
+            if (InfoNodo != null)
+            {
+                Logger.Log($"{InfoNodo.NumeroSerie}-{InfoNodo.TipoNodo}");
+            }
+
             Logger.Log($"MAC: {MacAddress}");
 
             Sleep.WakeupCause cause = Sleep.GetWakeupCause();

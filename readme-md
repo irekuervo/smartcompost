@@ -13,6 +13,10 @@ Deploy:
 
     nanoff --update --target ESP32_PSRAM_REV0 --serialport COM3 --fwversion 1.10.0.49
 
+Deploy Imagen Especifica:
+
+    nanoff --update --target ESP32_PSRAM_REV0 --serialport COM3 --fwversion 1.10.0.49 --image "...\bin\Debug\Blinky.bin"
+
 Deploy borrando eeprom:
 
     nanoff --update --target ESP32_PSRAM_REV0 --serialport COM3 --masserase --fwversion 1.10.0.49
