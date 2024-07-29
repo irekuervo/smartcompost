@@ -2,7 +2,7 @@
    "files": [
       {         
          "DestinationFilePath": "I:\\infoNodo.json",
-         "SourceFilePath": "C:\\tmp\\infoNodo.json"
+         "SourceFilePath": "C:\\tmp\\infoNodoAP.json"
       }
    ]
 }

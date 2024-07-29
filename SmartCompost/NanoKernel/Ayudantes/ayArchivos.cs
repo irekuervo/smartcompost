@@ -52,5 +52,6 @@ namespace NanoKernel.Ayudantes
             return dir;
         }
 
+        public static bool ArchivoExiste(string filePath) => File.Exists(filePath);
     }
 }

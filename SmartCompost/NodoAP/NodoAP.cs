@@ -2,13 +2,12 @@
 using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
+using NanoKernel.Herramientas.Comunicacion;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 
 namespace NodoAP
@@ -17,30 +16,27 @@ namespace NodoAP
     {
         public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
-        private const string WIFI_SSID = "Bondiola 2.4";//"SmartCompost";
-        private const string WIFI_PASS = "conpapafritas";//"Quericocompost";
-
-        private const string SMARTCOMPOST_HOST = "192.168.1.6";//"181.88.245.34";
-        private string URLaddMeasurments = $"http://{SMARTCOMPOST_HOST}:8080/api/ap/{{0}}/measurements";
-        private string URLkeepAlive = $"http://{SMARTCOMPOST_HOST}:8080/api/nodes/{{0}}/alive";
-
+        private const int segundosKeepAlive = 60;
         private const int milisLoopColaMensajes = 5000;
-        private int secondsKeepAlive = 60;
+        private const int intentosEnvioMediciones = 3;
+        private const int milisIntentoEnvioMediciones = 1000;
 
-        private ApMedicionesDto apMediciones = new ApMedicionesDto();
-        private ConcurrentQueue colaMediciones = new ConcurrentQueue(50);
-        private object lockMensaje = new object();
-        private Hilo hiloMensajes;
-        private GpioController gpio;
         private GpioPin led;
         private LoRaDevice lora;
-        private HttpClient client = new HttpClient();
-        private DateTime ultimoRequest = DateTime.MinValue;
+        private SmartCompostClient cliente;
+        private Hilo hiloMensajes;
+
+        private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(50);
+
+        private MedicionesApDto medicionesAp = new MedicionesApDto();
+        private object lockMensaje = new object();
+        private string medicionesApJson;
+        private bool enviandoMediciones = false;
 
         public override void Setup()
         {
             // Configuramos el LED
-            gpio = new GpioController();
+            var gpio = new GpioController();
             led = gpio.OpenPin(2, PinMode.Output);
             // Prendemos el led para avisar que estamos configurando
             led.Write(PinValue.High);
@@ -48,7 +44,7 @@ namespace NodoAP
             // Conectamos a internet
             Hilo.Intentar(() =>
             {
-                ayInternet.ConectarsePorWifi(WIFI_SSID, WIFI_PASS);
+                ayInternet.ConectarsePorWifi(Config.RouterSSID, Config.RouterPassword);
 
                 string ip = ayInternet.ObtenerIp();
                 if (ip == "0.0.0.0")
@@ -56,15 +52,20 @@ namespace NodoAP
 
                 // IP asignada
                 Logger.Log(ip);
-            }, $"Wifi: {WIFI_SSID}-{WIFI_PASS}");
+            }, $"Config Wifi: {Config.RouterSSID}");
 
             // Vemos si podemos pingear la api
-            bool ping = ayInternet.Ping(SMARTCOMPOST_HOST);
+            bool ping = ayInternet.Ping(Config.SmartCompostHost);
             if (ping == false)
-                Logger.Log("NO PUEDO LLEGAR AL SERVIDOR");
+                Logger.Log("NO HAY PING AL SERVIDOR");
 
-            // Configuramos el cliente
-            //client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+            // Cliente
+            cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort);
+
+            Hilo.Intentar(() =>
+            {
+                cliente.NodeStartup(Config.NumeroSerie);
+            }, "Startup");
 
             // Levantamos el hilo de mensajes
             hiloMensajes = MotorDeHilos.CrearHiloLoop("EnvioMensajes", LoopColaMensajes);
@@ -86,8 +87,11 @@ namespace NodoAP
         {
             try
             {
-                if ((DateTime.UtcNow - ultimoRequest).TotalSeconds > secondsKeepAlive)
-                    DoPost(CrearUrl(URLkeepAlive, NumeroSerie));
+                if ((DateTime.UtcNow - cliente.UltimoRequest).TotalSeconds > segundosKeepAlive && !enviandoMediciones)
+                {
+                    cliente.NodeAlive(Config.NumeroSerie);
+                    Logger.Debug("Alive");
+                }
             }
             catch (Exception ex)
             {
@@ -104,8 +108,8 @@ namespace NodoAP
 
                 lock (lockMensaje)
                 {
-                    if (colaMediciones.Enqueue(e.Data) != null)
-                        Logger.Debug("Se perdieron mediciones");
+                    if (colaMedicionesNodo.Enqueue(e.Data) != null)
+                        Logger.Debug("Cola mediciones desbordada");
                 }
             }
             catch (Exception ex)
@@ -114,36 +118,53 @@ namespace NodoAP
             }
         }
 
+        int medicionesNodo = 0;
         private void LoopColaMensajes(ref bool activo)
         {
             try
             {
-                if (colaMediciones.IsEmpty())
+                // Si no hay mensajes encolados no hacemos nada
+                if (colaMedicionesNodo.IsEmpty())
                     return;
 
-                apMediciones.nodes_measurements.Clear();
+                // Por si acaso limpiamos el dto
+                medicionesAp.nodes_measurements.Clear();
 
+                // Lockeamos para poder levantar los mensajes, en ese tiempo se pueden perder interrupciones!
                 lock (lockMensaje)
                 {
-                    foreach (var item in colaMediciones.GetItems())
+                    medicionesNodo = colaMedicionesNodo.Count();
+                    Logger.Debug($"Desencolando {medicionesNodo} medicionesNodo");
+                    foreach (var item in colaMedicionesNodo.GetItems())
                     {
-                        apMediciones.AgregarMediciones((byte[])item);
+                        medicionesAp.AgregarMediciones((byte[])item);
                     }
 
-                    colaMediciones.Clear();
+                    colaMedicionesNodo.Clear();
                 }
+                medicionesAp.last_updated = DateTime.UtcNow;
 
-                apMediciones.last_updated = DateTime.UtcNow;
-                Hilo.Intentar(
-                    () => DoPost(CrearUrl(URLaddMeasurments, this.NumeroSerie), apMediciones),
-                    nombreIntento: "Envio mediciones",
-                    milisIntento: 1000,
-                    intentos: 3);
+                // Pasamos al payload asi liberamos memoria rapido
+                medicionesApJson = medicionesAp.ToJson();
+                medicionesAp.nodes_measurements.Clear();
 
-                apMediciones.nodes_measurements.Clear();
+                // Flag para no pisarnos con el keep alive
+                enviandoMediciones = true;
+                bool enviado = Hilo.Intentar(
+                    () => cliente.AddApMeasurments(Config.NumeroSerie, medicionesApJson),
+                    nombreIntento: "Envio mediciones AP",
+                    milisIntento: milisIntentoEnvioMediciones,
+                    intentos: intentosEnvioMediciones);
 
-                Blink(100);
-                Logger.Debug($"Mediciones enviadas");
+                if (enviado)
+                {
+                    Blink(100);
+                    Logger.Debug($"Se enviaron {medicionesNodo} medicionesNodo");
+                }
+                else
+                {
+                    Logger.Error($"Se perdieron {medicionesNodo} medicionesNodo");
+                }
             }
             catch (Exception e)
             {
@@ -151,6 +172,7 @@ namespace NodoAP
             }
             finally
             {
+                enviandoMediciones = false;
                 Thread.Sleep(milisLoopColaMensajes);
             }
         }
@@ -158,21 +180,6 @@ namespace NodoAP
         private string CrearUrl(string url, params object[] parameters)
         {
             return string.Format(url, parameters);
-        }
-
-        private void DoPost(string url, object payload = null)
-        {
-            string jsonPayload = payload == null ? "{}" : payload.ToJson();
-            using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
-            using (HttpResponseMessage response = client.Post(url, content))
-            {
-                ultimoRequest = DateTime.UtcNow;
-                if (response.IsSuccessStatusCode == false)
-                {
-                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                    Logger.Error(error);
-                }
-            }
         }
 
         private void Blink(int time)

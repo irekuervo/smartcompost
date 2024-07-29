@@ -18,6 +18,12 @@ namespace MockSmartcompost.Controllers
             return Ok();
         }
 
+        [HttpPost("{serialNumber}/startup")]
+        public IActionResult Strartup([FromRoute] string serialNumber)
+        {
+            return Ok();
+        }
+
         [HttpPost("{serialNumber}/measurements")]
         public IActionResult PostMeasurement([FromRoute] string serialNumber, [FromBody] MedicionesNodoDto medicion)
         {

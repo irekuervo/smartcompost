@@ -66,7 +66,7 @@ namespace NodoMedidor
                 var fecha = DateTime.UtcNow.Ticks;
                 
                 bw.Write((byte)TipoPaqueteEnum.Medicion); // 1 byte
-                bw.Write(InfoNodo.NumeroSerie); // Largo variable
+                bw.Write(Config.NumeroSerie); // Largo variable
                 bw.Write(fecha); // 8 bytes (lo voy a usar como id de paquete)
                 bw.Write(bateria); // 4 bytes
                 bw.Write(temperatura);  // 4 bytes

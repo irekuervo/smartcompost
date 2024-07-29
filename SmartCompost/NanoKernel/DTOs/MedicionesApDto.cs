@@ -7,7 +7,7 @@ using System.IO;
 
 namespace NanoKernel.DTOs
 {
-    public class ApMedicionesDto
+    public class MedicionesApDto
     {
         public DateTime last_updated { get; set; }
         public ArrayList nodes_measurements { get; set; } = new ArrayList();
