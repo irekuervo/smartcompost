@@ -7,6 +7,8 @@ using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 
 namespace NodoAP
@@ -32,6 +34,7 @@ namespace NodoAP
         private GpioController gpio;
         private GpioPin led;
         private LoRaDevice lora;
+        private HttpClient client = new HttpClient();
         private DateTime ultimoRequest = DateTime.MinValue;
 
         public override void Setup()
@@ -59,6 +62,9 @@ namespace NodoAP
             bool ping = ayInternet.Ping(SMARTCOMPOST_HOST);
             if (ping == false)
                 Logger.Log("NO PUEDO LLEGAR AL SERVIDOR");
+
+            // Configuramos el cliente
+            //client.DefaultRequestHeaders.Add("Connection", "keep-alive");
 
             // Levantamos el hilo de mensajes
             hiloMensajes = MotorDeHilos.CrearHiloLoop("EnvioMensajes", LoopColaMensajes);
@@ -156,8 +162,17 @@ namespace NodoAP
 
         private void DoPost(string url, object payload = null)
         {
-            ayInternet.DoPost(url, payload);
-            ultimoRequest = DateTime.UtcNow;
+            string jsonPayload = payload == null ? "{}" : payload.ToJson();
+            using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
+            using (HttpResponseMessage response = client.Post(url, content))
+            {
+                ultimoRequest = DateTime.UtcNow;
+                if (response.IsSuccessStatusCode == false)
+                {
+                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                    Logger.Error(error);
+                }
+            }
         }
 
         private void Blink(int time)

@@ -33,6 +33,7 @@ namespace NanoKernel.DTOs
                 }
 
                 var now = DateTime.UtcNow;
+                nodo.last_updated = now;
 
                 nodo.measurements.Add(new Medicion()
                 {
