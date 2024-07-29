@@ -24,14 +24,12 @@ namespace MockSmartcompost.Controllers
             if (medicion == null)
                 return BadRequest("Medicion is null");
 
+            Console.WriteLine(JsonSerializer.Serialize(medicion));
+
             if (mensajesPorNodo.ContainsKey(serialNumber) == false)
-            {
                 mensajesPorNodo.TryAdd(serialNumber, new List<MedicionesNodoDto>());
-            }
 
             mensajesPorNodo[serialNumber].Add(medicion);
-
-            Console.WriteLine(JsonSerializer.Serialize(medicion));
 
             ultimoMensajeRecibido = DateTime.Now;
 

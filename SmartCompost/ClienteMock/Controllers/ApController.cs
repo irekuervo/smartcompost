@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MockSmartcompost.Dto;
 using System.Collections.Concurrent;
+using System.Text.Json;
 
 namespace MockSmartcompost.Controllers
 {
@@ -14,7 +15,18 @@ namespace MockSmartcompost.Controllers
         [HttpPost("{serialNumber}/measurements")]
         public IActionResult PostMeasurements([FromRoute] string serialNumber, [FromBody] ApMedicionesDto medicion)
         {
-            //TERMINAR
+            if (medicion == null)
+                return BadRequest("Medicion is null");
+
+            Console.WriteLine(JsonSerializer.Serialize(medicion));
+
+            if (mensajesPorNodo.ContainsKey(serialNumber) == false)
+                mensajesPorNodo.TryAdd(serialNumber, new List<ApMedicionesDto>());
+
+            mensajesPorNodo[serialNumber].Add(medicion);
+
+            ultimoMensajeRecibido = DateTime.Now;
+
             return Ok();
         }
 

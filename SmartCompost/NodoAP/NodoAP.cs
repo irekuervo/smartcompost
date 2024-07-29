@@ -1,5 +1,6 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
+using NanoKernel.Dominio;
 using NanoKernel.DTOs;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
@@ -30,7 +31,7 @@ namespace NodoAP
         private string URLaddMeasurments = $"http://{SMARTCOMPOST_HOST}:8080/api/ap/{{0}}/measurements";
         private string URLkeepAlive = $"http://{SMARTCOMPOST_HOST}:8080/api/nodes/{{0}}/alive";
 
-        private const int milisLoopColaMensajes = 1000;
+        private const int milisLoopColaMensajes = 5000;
         private int milisLoopAlive = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
 
         public override void Setup()
@@ -110,7 +111,7 @@ namespace NodoAP
         {
             try
             {
-                if (apMediciones.nodes.Count == 0)
+                if (colaMediciones.IsEmpty())
                     return;
 
                 apMediciones.nodes.Clear();
@@ -121,6 +122,8 @@ namespace NodoAP
                     {
                         apMediciones.AgregarMediciones((byte[])item);
                     }
+
+                    colaMediciones.Clear();
                 }
 
                 apMediciones.last_updated = DateTime.UtcNow;

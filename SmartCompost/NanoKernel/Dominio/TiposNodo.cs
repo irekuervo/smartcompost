@@ -1,4 +1,4 @@
-﻿namespace NanoKernel.Nodos
+﻿namespace NanoKernel.Dominio
 {
     public enum TiposNodo
     {

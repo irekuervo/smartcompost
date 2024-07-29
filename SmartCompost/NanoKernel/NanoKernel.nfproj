@@ -61,7 +61,7 @@
     <Compile Include="Modulos\ModuloHilos.cs" />
     <Compile Include="Modulos\ModuloHost.cs" />
     <Compile Include="Modulos\ServicioAttribute.cs" />
-    <Compile Include="Nodos\TiposNodo.cs" />
+    <Compile Include="Dominio\TiposNodo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Herramientas\Repositorios\CacheClaveValor.cs" />
     <Compile Include="Herramientas\Repositorios\IRepositorioClaveValor.cs" />

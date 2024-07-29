@@ -5,6 +5,7 @@ using System.Threading;
 using System;
 using nanoFramework.Hardware.Esp32;
 using System.Device.Adc;
+using NanoKernel.Dominio;
 
 namespace NodoAP
 {

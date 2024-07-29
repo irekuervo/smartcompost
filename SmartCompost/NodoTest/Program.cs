@@ -1,3 +1,4 @@
+using NanoKernel.Dominio;
 using NanoKernel.Nodos;
 
 namespace NodoTest

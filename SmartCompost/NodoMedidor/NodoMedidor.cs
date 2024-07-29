@@ -1,6 +1,7 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
 using NanoKernel.Comunicacion;
+using NanoKernel.Dominio;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
@@ -19,6 +20,7 @@ namespace NodoMedidor
         private const bool DEEPSLEEP = false;
         private const bool ES_PROTOBOARD = true;
         private const int segundosSleep = 15;
+        private const int milisLoop = 1000;
         // ---------------------------------------------------------------
         private Random random = new Random();
         private GpioController gpio;
@@ -34,13 +36,13 @@ namespace NodoMedidor
             led.Write(PinValue.High);
 
             // Configuramos el Lora
-            if (ES_PROTOBOARD)
-                lora = new LoRaDevice(pinLoraDatos: 4, pinLoraReset: 15);
-            else
-                lora = new LoRaDevice();
-
-            // Intentamos conectarnos al lora
-            Hilo.Intentar(() => lora.Iniciar(), "Lora");
+            Hilo.Intentar(() => {
+                if (ES_PROTOBOARD)
+                    lora = new LoRaDevice(pinLoraDatos: 4, pinLoraReset: 15);
+                else
+                    lora = new LoRaDevice();
+                lora.Iniciar();
+            }, "Lora");
 
             // Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
@@ -85,7 +87,7 @@ namespace NodoMedidor
             if (DEEPSLEEP)
                 aySleep.DeepSleepSegundos(segundosSleep);
             else
-                Thread.Sleep(5000);
+                Thread.Sleep(milisLoop);
         }
 
         private void Blink(int milis = 100)

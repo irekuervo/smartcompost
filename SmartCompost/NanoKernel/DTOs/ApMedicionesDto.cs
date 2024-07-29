@@ -27,7 +27,10 @@ namespace NanoKernel.DTOs
 
                 var nodo = BuscarMedicion(numeroSerie);
                 if (nodo == null)
+                {
                     nodo = new MedicionesNodoDto() { serial_number = numeroSerie };
+                    nodes.Add(nodo);
+                }
 
                 var now = DateTime.UtcNow;
 

@@ -1,5 +1,6 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
+using NanoKernel.Dominio;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
