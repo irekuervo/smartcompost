@@ -15,15 +15,6 @@ namespace NodoAP
     {
         public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
-        ApMedicionesDto apMediciones = new ApMedicionesDto();
-        ConcurrentQueue colaMediciones = new ConcurrentQueue(50);
-        private object lockMensaje = new object();
-        private Hilo hiloMensajes;
-
-        private GpioController gpio;
-        private GpioPin led;
-        private LoRaDevice lora;
-
         private const string WIFI_SSID = "Bondiola 2.4";//"SmartCompost";
         private const string WIFI_PASS = "conpapafritas";//"Quericocompost";
 
@@ -32,7 +23,16 @@ namespace NodoAP
         private string URLkeepAlive = $"http://{SMARTCOMPOST_HOST}:8080/api/nodes/{{0}}/alive";
 
         private const int milisLoopColaMensajes = 5000;
-        private int milisLoopAlive = (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
+        private int secondsKeepAlive = 60;
+
+        private ApMedicionesDto apMediciones = new ApMedicionesDto();
+        private ConcurrentQueue colaMediciones = new ConcurrentQueue(50);
+        private object lockMensaje = new object();
+        private Hilo hiloMensajes;
+        private GpioController gpio;
+        private GpioPin led;
+        private LoRaDevice lora;
+        private DateTime ultimoRequest = DateTime.MinValue;
 
         public override void Setup()
         {
@@ -80,13 +80,14 @@ namespace NodoAP
         {
             try
             {
-                ayInternet.DoPost(CrearUrl(URLkeepAlive, NumeroSerie));
+                if ((DateTime.UtcNow - ultimoRequest).TotalSeconds > secondsKeepAlive)
+                    DoPost(CrearUrl(URLkeepAlive, NumeroSerie));
             }
             catch (Exception ex)
             {
                 Logger.Log(ex);
             }
-            Thread.Sleep(milisLoopAlive);
+            Thread.Sleep(1000);
         }
 
         private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
@@ -114,7 +115,7 @@ namespace NodoAP
                 if (colaMediciones.IsEmpty())
                     return;
 
-                apMediciones.nodes.Clear();
+                apMediciones.nodes_measurements.Clear();
 
                 lock (lockMensaje)
                 {
@@ -128,10 +129,12 @@ namespace NodoAP
 
                 apMediciones.last_updated = DateTime.UtcNow;
                 Hilo.Intentar(
-                    () => ayInternet.DoPost(CrearUrl(URLaddMeasurments, this.NumeroSerie), apMediciones),
+                    () => DoPost(CrearUrl(URLaddMeasurments, this.NumeroSerie), apMediciones),
                     nombreIntento: "Envio mediciones",
                     milisIntento: 1000,
                     intentos: 3);
+
+                apMediciones.nodes_measurements.Clear();
 
                 Blink(100);
                 Logger.Debug($"Mediciones enviadas");
@@ -149,6 +152,12 @@ namespace NodoAP
         private string CrearUrl(string url, params object[] parameters)
         {
             return string.Format(url, parameters);
+        }
+
+        private void DoPost(string url, object payload = null)
+        {
+            ayInternet.DoPost(url, payload);
+            ultimoRequest = DateTime.UtcNow;
         }
 
         private void Blink(int time)

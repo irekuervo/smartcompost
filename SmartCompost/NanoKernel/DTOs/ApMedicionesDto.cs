@@ -10,7 +10,7 @@ namespace NanoKernel.DTOs
     public class ApMedicionesDto
     {
         public DateTime last_updated { get; set; }
-        public ArrayList nodes { get; set; } = new ArrayList();
+        public ArrayList nodes_measurements { get; set; } = new ArrayList();
 
 
         public bool AgregarMediciones(byte[] data)
@@ -29,7 +29,7 @@ namespace NanoKernel.DTOs
                 if (nodo == null)
                 {
                     nodo = new MedicionesNodoDto() { serial_number = numeroSerie };
-                    nodes.Add(nodo);
+                    nodes_measurements.Add(nodo);
                 }
 
                 var now = DateTime.UtcNow;
@@ -53,13 +53,14 @@ namespace NanoKernel.DTOs
                     value = humedad
                 });
             }
-
+            //Liberamos memoria
+            data = null;
             return true;
         }
 
         private MedicionesNodoDto BuscarMedicion(string numeroSerial)
         {
-            foreach (var item in nodes)
+            foreach (var item in nodes_measurements)
             {
                 var nodo = item as MedicionesNodoDto;
                 if (nodo != null && nodo.serial_number == numeroSerial)
