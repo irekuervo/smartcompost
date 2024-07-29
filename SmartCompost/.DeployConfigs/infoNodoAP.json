@@ -1,0 +1,11 @@
+{
+  "FechaCompilacion": "2024-07-28T12:34:56",
+  "CommitHash": "a14f29b306db274af21f82d8f4a07cccbf8b2ded",
+  "HostCompilacion": "ErikPC",
+  "NumeroSerie": "SC000002",
+  "TipoNodo": "Access Point Lora",
+  "RouterSSID": "SmartCompost",
+  "RouterPassword": "Quericocompost",
+  "SmartCompostHost": "181.88.245.34",
+  "SmartCompostPort": "8080"
+}

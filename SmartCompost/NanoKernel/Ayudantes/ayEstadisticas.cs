@@ -2,7 +2,7 @@
 
 namespace NanoKernel.Ayudantes
 {
-    public class ayEstadisticas
+    public static class ayEstadisticas
     {
         public static double ObtenerDesvioEstandar(float cantidadMuestras, float sumaCuadratica, float suma, float promedio)
         {

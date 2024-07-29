@@ -24,7 +24,7 @@ namespace Equipos.SX127X
             int pinCLOCK = Gpio.IO18,
             int pinNSS = Gpio.IO05,
             int pinLoraDatos = Gpio.IO25,
-            int pinLoraReset = Gpio.IO14, //pin14 para la protoboard
+            int pinLoraReset = Gpio.IO14,
             int SPI_BUS = 1)
         {
             Configuration.SetPinFunction(pinMISO, DeviceFunction.SPI1_MISO);

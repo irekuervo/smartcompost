@@ -48,8 +48,11 @@ namespace NanoKernel.Ayudantes
             Write(buffer, 0, buffer.Length);
         }
 
-        public void Write(string value)
+        public void Write(string value, bool variableLength = true)
         {
+            if(variableLength)
+                Write((ushort) value.Length);
+
             Write(Encoding.UTF8.GetBytes(value));
         }
 

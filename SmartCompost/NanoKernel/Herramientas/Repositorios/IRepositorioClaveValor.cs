@@ -1,6 +1,8 @@
-﻿namespace NanoKernel.Herramientas.Repositorios
+﻿using System;
+
+namespace NanoKernel.Herramientas.Repositorios
 {
-    public interface IRepositorioClaveValor
+    public interface IRepositorioClaveValor : IDisposable
     {
         public string[] GetAll();
 

@@ -63,5 +63,10 @@ namespace NanoKernel.Herramientas.Repositorios
                     Tabla[id] = value;
             }
         }
+
+        public void Dispose()
+        {
+            Tabla.Clear();
+        }
     }
 }

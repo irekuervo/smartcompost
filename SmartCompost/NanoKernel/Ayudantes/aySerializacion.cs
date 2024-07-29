@@ -10,7 +10,7 @@ namespace NanoKernel.Ayudantes
             return JsonConvert.SerializeObject(obj);
         }
 
-        public static object FromJson(string json, Type type)
+        public static object FromJson(this string json, Type type)
         { 
             return JsonConvert.DeserializeObject(json, type);
         }

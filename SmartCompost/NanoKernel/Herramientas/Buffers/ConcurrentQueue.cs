@@ -16,6 +16,9 @@ namespace NanoKernel.Ayudantes
             _maxSize = maxSize;
         }
 
+
+        public ArrayList GetItems() => _items;
+
         public int Count()
         { 
             return _items.Count;

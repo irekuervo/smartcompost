@@ -1,5 +1,6 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
+using NanoKernel.Dominio;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
@@ -12,8 +13,7 @@ namespace PruebaMedidor
 {
     public class NodoMedidor : NodoBase
     {
-        public override string IdSmartCompost => "Medidor";
-        public override TiposNodo tipoNodo => TiposNodo.Medidor;
+        public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
         private GpioController gpio;
         private GpioPin led;

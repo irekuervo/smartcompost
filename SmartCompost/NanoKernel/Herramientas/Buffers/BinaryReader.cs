@@ -61,8 +61,11 @@ namespace NanoKernel.Ayudantes
             return result;
         }
 
-        public string ReadString(int length)
+        public string ReadString(int length = -1)
         {
+            if (length < 1)
+                length = ReadUInt16();
+
             return Encoding.UTF8.GetString(ReadBytes(length), 0, length);
         }
 

@@ -281,9 +281,9 @@ namespace Equipos.SX127X
 			SetMode(RegOpModeMode.Sleep);
 
 			// Configure RF Carrier frequency 
-			if (frequency != FrequencyDefault)
+			if (_frequency != FrequencyDefault)
 			{
-				byte[] bytes = BitConverter.GetBytes((long)(frequency / SX127X_FSTEP));
+				byte[] bytes = BitConverter.GetBytes((long)(_frequency / SX127X_FSTEP));
 				_registerManager.WriteByte((byte)Registers.RegFrMsb, bytes[2]);
 				_registerManager.WriteByte((byte)Registers.RegFrMid, bytes[1]);
 				_registerManager.WriteByte((byte)Registers.RegFrLsb, bytes[0]);

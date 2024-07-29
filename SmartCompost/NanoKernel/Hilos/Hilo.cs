@@ -129,21 +129,22 @@ namespace NanoKernel.Hilos
                 throw new Exception($"No se pudo detener {this}");
         }
 
-        public static void Intentar(Action accion, string nombreIntento = "", int milisIntento = 1000, uint intentos = uint.MaxValue)
+        public static bool Intentar(Action accion, string nombreIntento = "", int milisIntento = 1000, uint intentos = uint.MaxValue)
         {
-            Logger.Log("Intentando " + nombreIntento);
+            Logger.Debug("Intentando " + nombreIntento);
             var ok = false;
             while (!ok && intentos > 0)
             {
                 try
                 {
                     accion.Invoke();
-                    Logger.Log($"{nombreIntento} OK");
+                    Logger.Debug($"{nombreIntento} OK");
                     ok = true;
+                    return true;
                 }
                 catch (Exception)
                 {
-                    Logger.Log("Reintentando");
+                    Logger.Debug("Reintentando");
                     Thread.Sleep(milisIntento);
                     ok = false;
                 }
@@ -152,6 +153,8 @@ namespace NanoKernel.Hilos
                     intentos--;
                 }
             }
+
+            return false;
         }
 
         public override string ToString()

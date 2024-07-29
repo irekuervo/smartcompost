@@ -72,10 +72,10 @@ namespace NanoKernel.Ayudantes
             return new MacAddress(nis[0].PhysicalAddress);
         }
 
-        public static string DoPost(string endpointURL, object objeto = null)
+        public static string DoPost(string endpointURL, object payload = null)
         {
-            string jsonPayload = objeto == null ? "{}" : aySerializacion.ToJson(objeto);
-
+            string jsonPayload = payload == null ? "{}" : aySerializacion.ToJson(payload);
+            Logger.Debug("Request a: " + endpointURL + jsonPayload);
             using (HttpClient client = new HttpClient())
             using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
             using (HttpResponseMessage response = client.Post(endpointURL, content))
