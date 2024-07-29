@@ -75,7 +75,7 @@ namespace NanoKernel.Ayudantes
         public static string DoPost(string endpointURL, object objeto = null)
         {
             string jsonPayload = objeto == null ? "{}" : aySerializacion.ToJson(objeto);
-
+            Logger.Debug("Request a: " +endpointURL + jsonPayload);
             using (HttpClient client = new HttpClient())
             using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
             using (HttpResponseMessage response = client.Post(endpointURL, content))

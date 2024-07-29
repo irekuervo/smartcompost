@@ -16,6 +16,7 @@ namespace NanoKernel.Nodos
         public readonly InfoNodo InfoNodo;
 
         public abstract TiposNodo tipoNodo { get; }
+        public string NumeroSerie => InfoNodo.NumeroSerie;
 
         private readonly Hilo loopThread;
 
@@ -28,12 +29,13 @@ namespace NanoKernel.Nodos
             MacAddress = ayInternet.GetMacAddress();
             try
             {
-                InfoNodo = (InfoNodo)ayArchivos.Abrir(ayArchivos.DIR_INTERNO + "infoNodo.json", typeof(InfoNodo));
+                InfoNodo = (InfoNodo)ayArchivos.AbrirJson(ayArchivos.DIR_INTERNO + "infoNodo.json", typeof(InfoNodo));
                 if (InfoNodo.TipoNodo.EquivaleA(tipoNodo.GetDescripcion()) == false)
                     throw new Exception($"EL TIPO {tipoNodo.GetDescripcion()} NO COINCIDE CON EL DEL infoNodo.json {InfoNodo.TipoNodo}");
             }
             catch (Exception ex)
             {
+                InfoNodo = InfoNodo.Default();
                 Logger.Error("NO SE PUDO CARGAR LA INFO DEL NODO: " + ex.Message);
             }
         }
@@ -44,10 +46,7 @@ namespace NanoKernel.Nodos
         public void Iniciar()
         {
             Logger.Log(LOGO);
-            if (InfoNodo != null)
-            {
-                Logger.Log($"{InfoNodo.NumeroSerie}-{InfoNodo.TipoNodo}");
-            }
+            Logger.Log($"{InfoNodo.NumeroSerie}-{InfoNodo.TipoNodo}");
 
             Logger.Log($"MAC: {MacAddress}");
 

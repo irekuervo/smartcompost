@@ -20,7 +20,11 @@
   <ItemGroup>
     <Compile Include="Ayudantes\ayArrays.cs" />
     <Compile Include="Dominio\InfoNodo.cs" />
-    <Compile Include="Dominio\Medicion.cs" />
+    <Compile Include="Dominio\TiposMediciones.cs" />
+    <Compile Include="DTOs\ApMedicionesDto.cs" />
+    <Compile Include="DTOs\CreateNodeRequestDto.cs" />
+    <Compile Include="DTOs\MedicionesNodoDto.cs" />
+    <Compile Include="DTOs\NodoDto.cs" />
     <Compile Include="Herramientas\Buffers\BinaryWriter.cs" />
     <Compile Include="Herramientas\Buffers\BinaryReader.cs" />
     <Compile Include="Herramientas\Buffers\ConcurrentQueue.cs" />

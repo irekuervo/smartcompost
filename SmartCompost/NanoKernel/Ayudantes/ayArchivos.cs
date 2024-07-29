@@ -8,7 +8,7 @@ namespace NanoKernel.Ayudantes
         public const string DIR_INTERNO = @"I:\";
         public const string FORMATO_ARCHIVO = ".json";
 
-        public static void GuardarArchivo(this object obj, string filePath)
+        public static void GuardarJson(this object obj, string filePath)
         {
             if (filePath.EndsWith(FORMATO_ARCHIVO) == false)
                 filePath += FORMATO_ARCHIVO;
@@ -18,7 +18,7 @@ namespace NanoKernel.Ayudantes
             File.WriteAllText(filePath, obj.ToJson());
         }
 
-        public static object Abrir(string filePath, Type type)
+        public static object AbrirJson(string filePath, Type type)
         {
             if (filePath.EndsWith(FORMATO_ARCHIVO) == false)
                 filePath += FORMATO_ARCHIVO;

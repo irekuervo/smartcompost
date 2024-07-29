@@ -12,19 +12,20 @@ namespace MockSmartcompost.Controllers
         private static DateTime ultimoMensajeRecibido = DateTime.MinValue;
         private static ConcurrentDictionary<string, List<MedicionesNodoDto>> mensajesPorNodo = new ConcurrentDictionary<string, List<MedicionesNodoDto>>();
 
-        [HttpPost("{serialNumber:string}/alive")]
-        public IActionResult Alive(string serialNumber)
+        [HttpPost("{serialNumber}/alive")]
+        public IActionResult Alive([FromRoute] string serialNumber)
         {
             return Ok();
         }
 
-        [HttpPost("{serialNumber:string}/measurements")]
-        public IActionResult PostMeasurement(string serialNumber, [FromBody] MedicionesNodoDto medicion)
+        [HttpPost("{serialNumber}/measurements")]
+        public IActionResult PostMeasurement([FromRoute] string serialNumber, [FromBody] MedicionesNodoDto medicion)
         {
             if (medicion == null)
                 return BadRequest("Medicion is null");
 
-            if(mensajesPorNodo.ContainsKey(serialNumber) == false) {
+            if (mensajesPorNodo.ContainsKey(serialNumber) == false)
+            {
                 mensajesPorNodo.TryAdd(serialNumber, new List<MedicionesNodoDto>());
             }
 
@@ -47,7 +48,7 @@ namespace MockSmartcompost.Controllers
         [HttpGet("last-measurement")]
         public IActionResult UltimaMedicion()
         {
-            
+
             return Ok(ultimoMensajeRecibido.ToString());
         }
 

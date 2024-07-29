@@ -50,7 +50,7 @@ namespace NanoKernel.Herramientas.Repositorios
         {
             lock (lockDrive)
             {
-                cache.Tabla.GuardarArchivo(pathDb);
+                cache.Tabla.GuardarJson(pathDb);
             }
         }
 
@@ -67,7 +67,7 @@ namespace NanoKernel.Herramientas.Repositorios
             }
 
             // Si existe levanto todo al cache
-            var datos = (Hashtable)ayArchivos.Abrir(pathDb, typeof(Hashtable));
+            var datos = (Hashtable)ayArchivos.AbrirJson(pathDb, typeof(Hashtable));
 
             cache = new CacheClaveValor(datos);
         }

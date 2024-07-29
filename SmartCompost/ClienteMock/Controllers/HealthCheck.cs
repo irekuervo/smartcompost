@@ -7,9 +7,9 @@ namespace MockSmartcompost.Controllers
     public class HealthCheck : ControllerBase
     {
         [HttpGet]
-        public IActionResult Alive()
+        public IActionResult Check()
         {
-            return Ok();
+            return Ok("Server Up");
         }
 
         [HttpGet("ping")]

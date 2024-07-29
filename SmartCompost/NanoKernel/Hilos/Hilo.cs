@@ -131,19 +131,19 @@ namespace NanoKernel.Hilos
 
         public static void Intentar(Action accion, string nombreIntento = "", int milisIntento = 1000, uint intentos = uint.MaxValue)
         {
-            Logger.Log("Intentando " + nombreIntento);
+            Logger.Debug("Intentando " + nombreIntento);
             var ok = false;
             while (!ok && intentos > 0)
             {
                 try
                 {
                     accion.Invoke();
-                    Logger.Log($"{nombreIntento} OK");
+                    Logger.Debug($"{nombreIntento} OK");
                     ok = true;
                 }
                 catch (Exception)
                 {
-                    Logger.Log("Reintentando");
+                    Logger.Debug("Reintentando");
                     Thread.Sleep(milisIntento);
                     ok = false;
                 }

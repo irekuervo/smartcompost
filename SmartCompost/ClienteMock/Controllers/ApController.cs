@@ -11,8 +11,8 @@ namespace MockSmartcompost.Controllers
         private static DateTime ultimoMensajeRecibido = DateTime.MinValue;
         private static ConcurrentDictionary<string, List<ApMedicionesDto>> mensajesPorNodo = new ConcurrentDictionary<string, List<ApMedicionesDto>>();
 
-        [HttpPost("{serialNumber:string}/measurements")]
-        public IActionResult PostMeasurements(string serialNumber, [FromBody] ApMedicionesDto medicion)
+        [HttpPost("{serialNumber}/measurements")]
+        public IActionResult PostMeasurements([FromRoute] string serialNumber, [FromBody] ApMedicionesDto medicion)
         {
             //TERMINAR
             return Ok();

@@ -16,6 +16,9 @@ namespace NanoKernel.Ayudantes
             _maxSize = maxSize;
         }
 
+
+        public ArrayList GetItems() => _items;
+
         public int Count()
         { 
             return _items.Count;
@@ -48,14 +51,6 @@ namespace NanoKernel.Ayudantes
                 var item = _items[0];
                 _items.RemoveAt(0);
                 return item;
-            }
-        }
-
-        public ArrayList DequeueAll()
-        {
-            lock (_lockObject)
-            {
-                throw new NotImplementedException("Terminar");
             }
         }
 

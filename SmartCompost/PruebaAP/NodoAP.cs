@@ -1,10 +1,10 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
-using NanoKernel.Dominio;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
+using System.Collections;
 using System.Device.Gpio;
 using System.Diagnostics;
 using System.Threading;
@@ -139,4 +139,18 @@ namespace PruebaAP
         }
 
     }
+
+    public class MensajeMediciones
+    {
+        public DateTime last_updated { get; set; }
+        public ArrayList node_measurements { get; set; } = new ArrayList();
+    }
+
+    public class Medicion
+    {
+        public float value { get; set; }
+        public DateTime timestamp { get; set; }
+        public string type { get; set; }
+    }
+
 }

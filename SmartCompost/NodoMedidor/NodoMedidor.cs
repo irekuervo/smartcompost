@@ -15,9 +15,11 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const bool MODO_LOOP = true; // En false se va a dormir
+        // ---------------------------------------------------------------
+        private const bool DEEPSLEEP = false;
+        private const bool ES_PROTOBOARD = true;
         private const int segundosSleep = 15;
-
+        // ---------------------------------------------------------------
         private Random random = new Random();
         private GpioController gpio;
         private GpioPin led;
@@ -32,7 +34,11 @@ namespace NodoMedidor
             led.Write(PinValue.High);
 
             // Configuramos el Lora
-            lora = new LoRaDevice(pinLoraDatos: 4); // el pin 4 lo uso en la protoboard
+            if (ES_PROTOBOARD)
+                lora = new LoRaDevice(pinLoraDatos: 4, pinLoraReset: 15);
+            else
+                lora = new LoRaDevice();
+
             // Intentamos conectarnos al lora
             Hilo.Intentar(() => lora.Iniciar(), "Lora");
 
@@ -40,8 +46,7 @@ namespace NodoMedidor
             led.Write(PinValue.Low);
         }
 
-        const int tamanioPaquete = 27;
-        readonly byte[] paquete = new byte[tamanioPaquete];
+        readonly byte[] buffer = new byte[50];
         public override void Loop(ref bool activo)
         {
             // Mido la bateria
@@ -52,12 +57,14 @@ namespace NodoMedidor
             float humedad = (float)random.NextDouble() * 100;
 
             // Mandamos el paquete
-            using (MemoryStream ms = new MemoryStream(paquete))
+            using (MemoryStream ms = new MemoryStream(buffer))
             {
-                var fecha = DateTime.UtcNow.Ticks;
                 BinaryWriter bw = new BinaryWriter(ms);
+
+                var fecha = DateTime.UtcNow.Ticks;
+                
                 bw.Write((byte)TipoPaqueteEnum.Medicion); // 1 byte
-                bw.Write(ayInternet.GetMacAddress().Address); // 6 bytes
+                bw.Write(InfoNodo.NumeroSerie); // Largo variable
                 bw.Write(fecha); // 8 bytes (lo voy a usar como id de paquete)
                 bw.Write(bateria); // 4 bytes
                 bw.Write(temperatura);  // 4 bytes
@@ -65,8 +72,9 @@ namespace NodoMedidor
 
                 try
                 {
-                    lora.Enviar(paquete);
-                    Logger.Log($"Paquete {fecha} enviado");
+                    lora.Enviar(ms.ToArray());
+                    Blink();
+                    Logger.Debug($"Paquete {fecha} enviado");
                 }
                 catch (Exception ex)
                 {
@@ -74,21 +82,19 @@ namespace NodoMedidor
                 }
             }
 
-            if (MODO_LOOP)
-            {
-                Thread.Sleep(5000);
-            }
-            else
-            {
+            if (DEEPSLEEP)
                 aySleep.DeepSleepSegundos(segundosSleep);
-            }
+            else
+                Thread.Sleep(5000);
         }
 
-        private void Blink(int time)
+        private void Blink(int milis = 100)
         {
+#if DEBUG
             led.Write(PinValue.High);
-            Thread.Sleep(time);
-            led.Write(PinValue.Low);
+            Thread.Sleep(milis);
+            led.Write(PinValue.Low); 
+#endif
         }
     }
 }

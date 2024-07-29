@@ -1,34 +1,34 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace NanoKernel.Logging
 {
     public static class Logger
     {
-        public const bool LogDebug = true;
+        public static void Debug(string mensaje)
+        {
+#if DEBUG
+            LogInternal(mensaje);
+#endif
+        }
 
         public static void Log(string mensaje)
         {
-            if (LogDebug)
-            {
-                Debug.WriteLine($"{DateTime.UtcNow} | {mensaje}");
-            }
+            LogInternal(mensaje);
         }
 
         public static void Error(string mensaje)
         {
-            if (LogDebug)
-            {
-                Debug.WriteLine($"{DateTime.UtcNow} | ERROR: {mensaje}");
-            }
+            LogInternal($"ERROR: {mensaje}");
         }
 
         public static void Log(Exception ex)
         {
-            if (LogDebug)
-            {
-                Debug.WriteLine($"{DateTime.UtcNow} | {ex.Message}");
-            }
+            LogInternal($"{ex.Message} \r\n {ex.StackTrace}");
+        }
+
+        public static void LogInternal(string mensaje)
+        {
+            Console.WriteLine($"{DateTime.UtcNow} | {mensaje}");
         }
     }
 }

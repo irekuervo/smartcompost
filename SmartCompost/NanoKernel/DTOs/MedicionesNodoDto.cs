@@ -1,14 +1,13 @@
-﻿using NanoKernel.Ayudantes;
-using NanoKernel.Comunicacion;
-using System;
+﻿using System;
 using System.Collections;
 
-namespace NanoKernel.Dominio
+namespace NanoKernel.DTOs
 {
-    public class MensajeMediciones
+    public class MedicionesNodoDto
     {
+        public string serial_number { get; set; }
         public DateTime last_updated { get; set; }
-        public ArrayList node_measurements { get; set; } = new ArrayList();
+        public ArrayList measurements { get; set; } = new ArrayList();
     }
 
     public class Medicion

@@ -1,5 +1,4 @@
-﻿using NanoKernel.Nodos;
-using System;
+﻿using System;
 
 namespace NanoKernel.Dominio
 {
@@ -9,5 +8,10 @@ namespace NanoKernel.Dominio
         public string HostCompilacion { get; set; }
         public string NumeroSerie { get; set; }
         public string TipoNodo { get; set; }
+
+        public static InfoNodo Default()
+        {
+            return new InfoNodo() { NumeroSerie = "SC000000", TipoNodo = "DESCONOCIDO" };
+        }
     }
 }
