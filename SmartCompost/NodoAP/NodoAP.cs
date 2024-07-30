@@ -19,6 +19,7 @@ namespace NodoAP
         public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
         // ---------------------------------------------------------------
+        // CONFIGURACION TUNEADA PARA DONGLE 4G + 10 paquetes por segundo
         private const int tamanioCola = 100;
         private const int tamanioDesencolados = 15; // Desencolamos de a pedazos, no todo junto, json es matador
         private const int segundosLoopColaMensajes = 5;
@@ -196,16 +197,18 @@ namespace NodoAP
                 }
                 else
                 {
-                    // Si podemos volvemos a meterlo en la cola
+                    // Si podemos volvemos a meterlo en la cola, sino los tiro para dejar lugar a nuevos mensajes
+                    int remaining = colaMedicionesNodo.Size() - colaMedicionesNodo.Count();
+                    int reencolados = 0;
                     lock (lockColaMedicionesNodo)
                     {
-                        int remaining = colaMedicionesNodo.Size() - colaMedicionesNodo.Count();
                         for (int i = 0; i < remaining && i < desencolados.Count; i++)
                         {
                             colaMedicionesNodo.Enqueue(desencolados[i]);
+                            reencolados++;
                         }
-                        mensajesTirados += desencolados.Count - remaining;
                     }
+                    mensajesTirados += desencolados.Count - reencolados;
                     Logger.Debug($"Reencolados {desencolados.Count} medicionesNodo");
                 }
 
