@@ -203,9 +203,18 @@ namespace NodoAP
 
                 Logger.Log($"Enviados: {m.ContadoTotal("enviados")} | Tirados: {m.ContadoTotal("tirados")}");
 
-                int sleep = (int)(cliente.UltimoRequest.AddSeconds(segundosLoopColaMensajes) - DateTime.UtcNow).TotalMilliseconds;
-                if (sleep > 0)
-                    Thread.Sleep(sleep);
+                if (colaMedicionesNodo.IsEmpty())
+                {
+                    // Si no hay nada en la cola, espero
+                    Thread.Sleep(segundosLoopColaMensajes * 1000);
+                }
+                else
+                {
+                    // Si en el medio se encolaron cosas, me fijo si hace falta esperar
+                    int sleep = (int)(cliente.UltimoRequest.AddSeconds(segundosLoopColaMensajes) - DateTime.UtcNow).TotalMilliseconds;
+                    if (sleep > 0)
+                        Thread.Sleep(sleep);
+                }
             }
         }
 

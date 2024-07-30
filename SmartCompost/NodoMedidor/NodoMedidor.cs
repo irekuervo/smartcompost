@@ -1,6 +1,5 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
-using NanoKernel.Comunicacion.Old;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
 using NanoKernel.Hilos;
@@ -18,8 +17,7 @@ namespace NodoMedidor
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
         // ---------------------------------------------------------------
-        private const bool DEEPSLEEP = false;
-        private const bool ES_PROTOBOARD = true;
+        private const bool ES_PROTOBOARD = true; // Tiene otro pinout, y se porta distinto para hacer purebas
         private const int segundosSleep = 15;
         private const int milisLoop = 1000;
         // ---------------------------------------------------------------
@@ -63,6 +61,9 @@ namespace NodoMedidor
                 float temperatura = (float)random.NextDouble() * 5 + 25;
                 float humedad = (float)random.NextDouble() * 100;
 
+                if (ES_PROTOBOARD)
+                    dto.serial_number = "Serial-" + random.Next(10);
+
                 dto.AgregarMedicion(bateria, TiposMediciones.Bateria);
                 dto.AgregarMedicion(temperatura, TiposMediciones.Temperatura);
                 dto.AgregarMedicion(humedad, TiposMediciones.Humedad);
@@ -84,10 +85,10 @@ namespace NodoMedidor
                 buffer.Position = 0;
                 LimpiarMemoria();
 
-                if (DEEPSLEEP)
-                    aySleep.DeepSleepSegundos(segundosSleep);
+                if (ES_PROTOBOARD)
+                    Thread.Sleep(milisLoop + (int)(random.NextDouble() * 500));
                 else
-                    Thread.Sleep(milisLoop);
+                    aySleep.DeepSleepSegundos(segundosSleep);
             }
         }
 
