@@ -17,14 +17,14 @@ namespace NodoAP
     {
         public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
+        // ---------------------------------------------------------------
         private const int segundosKeepAlive = 60;
-
         private const int tamanioCola = 25;
-
         private const int segundosLoopColaMensajes = 10;
         private const int intentosEnvioMediciones = 1;
         private const int milisIntentoEnvioMediciones = 100;
         private const int clientTimeoutSeconds = 5;
+        // ---------------------------------------------------------------
 
         private GpioPin led;
         private LoRaDevice lora;
