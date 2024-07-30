@@ -8,6 +8,7 @@ using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
+using System.Collections;
 using System.Device.Gpio;
 using System.Threading;
 
@@ -18,12 +19,14 @@ namespace NodoAP
         public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
         // ---------------------------------------------------------------
-        private const int segundosKeepAlive = 60;
-        private const int tamanioCola = 25;
-        private const int segundosLoopColaMensajes = 10;
+        private const int tamanioCola = 100;
+        private const int tamanioDesencolados = 15; // Desencolamos de a pedazos, no todo junto, json es matador
+        private const int segundosLoopColaMensajes = 5;
         private const int intentosEnvioMediciones = 1;
         private const int milisIntentoEnvioMediciones = 100;
+
         private const int clientTimeoutSeconds = 5;
+        private const int segundosKeepAlive = 60;
         // ---------------------------------------------------------------
 
         private GpioPin led;
@@ -34,7 +37,7 @@ namespace NodoAP
         private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
 
         private MedicionesApDto medicionesAp = new MedicionesApDto();
-        private object lockMensaje = new object();
+        private object lockColaMedicionesNodo = new object();
         private string medicionesApJson;
         private bool enviandoMediciones = false;
         private int mensajesTirados = 0;
@@ -99,7 +102,7 @@ namespace NodoAP
             {
                 if ((DateTime.UtcNow - cliente.UltimoRequest).TotalSeconds > segundosKeepAlive && !enviandoMediciones)
                 {
-                    lock (lockMensaje)
+                    lock (lockColaMedicionesNodo)
                     {
                         medicionBateria.timestamp = DateTime.UtcNow;
                         //TODO: MEDIR DE VERDAD
@@ -121,10 +124,19 @@ namespace NodoAP
             {
                 Logger.Debug($"PacketSNR: {e.PacketSnr}, PacketRSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
 
-                lock (lockMensaje)
+                //if (enviandoMediciones && mensajesTirados > 0)
+                //{
+                //    Logger.Debug("Mensaje ignorado hasta envio de mensaje");
+                //    e.Data = null;
+                //    return;
+                //}
+
+                lock (lockColaMedicionesNodo)
                 {
-                    if (colaMedicionesNodo.Enqueue(e.Data) != null)
+                    var mensaje = colaMedicionesNodo.Enqueue(e.Data);
+                    if (mensaje != null)
                     {
+                        mensaje = null;
                         mensajesTirados++;
                         Logger.Debug("Cola mediciones desbordada");
                     }
@@ -136,7 +148,7 @@ namespace NodoAP
             }
         }
 
-        int medicionesNodo = 0;
+        private ArrayList desencolados = new ArrayList();
         private void LoopColaMensajes(ref bool activo)
         {
             try
@@ -146,24 +158,26 @@ namespace NodoAP
                     return;
 
                 // Lockeamos para poder levantar los mensajes, en ese tiempo se pueden perder interrupciones!
-                lock (lockMensaje)
+                int tamanioCola = 0;
+                lock (lockColaMedicionesNodo)
                 {
-                    medicionesNodo = colaMedicionesNodo.Count();
-                    Logger.Debug($"Desencolando {medicionesNodo} medicionesNodo");
-                    foreach (var item in colaMedicionesNodo.GetItems())
+                    tamanioCola = colaMedicionesNodo.Count();
+                    for (int i = 0; i < tamanioDesencolados && !colaMedicionesNodo.IsEmpty(); i++)
                     {
-                        medicionesAp.AgregarMediciones((byte[])item);
+                        desencolados.Add((byte[])colaMedicionesNodo.Dequeue()); ;
                     }
-
-                    colaMedicionesNodo.Clear();
                 }
-                medicionesAp.last_updated = DateTime.UtcNow;
+                Logger.Debug($"Desencolando {desencolados.Count}/{tamanioCola} medicionesNodo");
 
-                // Pasamos al payload asi liberamos memoria rapido
+                // Armamos el mensaje
+                foreach (byte[] item in desencolados)
+                    medicionesAp.AgregarMediciones(item);
+                medicionesAp.last_updated = DateTime.UtcNow;
                 medicionesApJson = medicionesAp.ToJson();
+
+                // Limpiamos el dto porque ya tenemos el json
                 medicionesAp.nodes_measurements.Clear();
 
-                // Flag para no pisarnos con el keep alive
                 enviandoMediciones = true;
                 bool enviado = Hilo.Intentar(
                     () => cliente.AddApMeasurments(Config.NumeroSerie, medicionesApJson),
@@ -171,18 +185,28 @@ namespace NodoAP
                     milisIntento: milisIntentoEnvioMediciones,
                     intentos: intentosEnvioMediciones);
 
-                // Limpiamos memoria
+                // Limpiamos el json
                 medicionesApJson = null;
 
                 if (enviado)
                 {
                     Blink(100);
-                    m.Contar("enviados", medicionesNodo);
-                    Logger.Log($"Se enviaron {medicionesNodo} medicionesNodo");
+                    m.Contar("enviados", desencolados.Count);
+                    Logger.Log($"Se enviaron {desencolados.Count} medicionesNodo");
                 }
                 else
                 {
-                    mensajesTirados += medicionesNodo;
+                    // Si podemos volvemos a meterlo en la cola
+                    lock (lockColaMedicionesNodo)
+                    {
+                        int remaining = colaMedicionesNodo.Size() - colaMedicionesNodo.Count();
+                        for (int i = 0; i < remaining && i < desencolados.Count; i++)
+                        {
+                            colaMedicionesNodo.Enqueue(desencolados[i]);
+                        }
+                        mensajesTirados += desencolados.Count - remaining;
+                    }
+                    Logger.Debug($"Reencolados {desencolados.Count} medicionesNodo");
                 }
 
                 if (mensajesTirados > 0)
@@ -198,22 +222,16 @@ namespace NodoAP
             }
             finally
             {
+                desencolados.Clear();
                 LimpiarMemoria();
                 enviandoMediciones = false;
 
-                Logger.Log($"Enviados: {m.ContadoTotal("enviados")} | Tirados: {m.ContadoTotal("tirados")}");
+                Logger.Log($"Enviados: {m.ContadoTotal("enviados")} | Tirados: {m.ContadoTotal("tirados")} | Encolados: {colaMedicionesNodo.Count()}");
 
                 if (colaMedicionesNodo.IsEmpty())
                 {
                     // Si no hay nada en la cola, espero
                     Thread.Sleep(segundosLoopColaMensajes * 1000);
-                }
-                else
-                {
-                    // Si en el medio se encolaron cosas, me fijo si hace falta esperar
-                    int sleep = (int)(cliente.UltimoRequest.AddSeconds(segundosLoopColaMensajes) - DateTime.UtcNow).TotalMilliseconds;
-                    if (sleep > 0)
-                        Thread.Sleep(sleep);
                 }
             }
         }
