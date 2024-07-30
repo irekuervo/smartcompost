@@ -127,6 +127,7 @@ namespace NanoKernel.Ayudantes
 
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Icmp))
             {
+                
                 socket.SendTo(buffer, buffer.Length, SocketFlags.None, endPoint);
 
                 byte[] receiveBuffer = new byte[256];
@@ -134,6 +135,7 @@ namespace NanoKernel.Ayudantes
 
                 try
                 {
+                    socket.SendTimeout = 15000;
                     socket.ReceiveFrom(receiveBuffer, ref responseEndPoint);
                     if (receiveBuffer[20] == IcmpEchoReply)
                         return true;

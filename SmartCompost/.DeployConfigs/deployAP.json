@@ -1,8 +1,8 @@
 {
    "files": [
       {         
-         "DestinationFilePath": "I:\\infoNodo.json",
-         "SourceFilePath": "C:\\tmp\\infoNodoAP.json"
+         "DestinationFilePath": "I:\\configNodo.json",
+         "SourceFilePath": "C:\\tmp\\configAP.json"
       }
    ]
 }

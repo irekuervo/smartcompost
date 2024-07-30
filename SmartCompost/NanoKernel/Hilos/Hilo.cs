@@ -140,21 +140,22 @@ namespace NanoKernel.Hilos
                     accion.Invoke();
                     Logger.Debug($"{nombreIntento} OK");
                     ok = true;
-                    return true;
                 }
                 catch (Exception)
                 {
                     Logger.Debug("Reintentando");
-                    Thread.Sleep(milisIntento);
                     ok = false;
                 }
                 finally
                 {
                     intentos--;
+
+                    if (!ok && intentos > 0)
+                        Thread.Sleep(milisIntento);
                 }
             }
 
-            return false;
+            return ok;
         }
 
         public override string ToString()

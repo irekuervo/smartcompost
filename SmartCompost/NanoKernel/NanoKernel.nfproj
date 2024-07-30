@@ -19,6 +19,7 @@
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
     <Compile Include="Ayudantes\ayArrays.cs" />
+    <Compile Include="Ayudantes\AyMemoria.cs" />
     <Compile Include="Dominio\ConfigNodo.cs" />
     <Compile Include="Dominio\TiposMediciones.cs" />
     <Compile Include="Herramientas\Comunicacion\SmartCompostClient.cs" />

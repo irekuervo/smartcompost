@@ -43,10 +43,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartDeploy", "SmartDeploy\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".DeployConfigs", ".DeployConfigs", "{33BC25F7-8A13-4453-8357-5905897B186B}"
 	ProjectSection(SolutionItems) = preProject
+		.DeployConfigs\configAP.json = .DeployConfigs\configAP.json
+		.DeployConfigs\configMedidor.json = .DeployConfigs\configMedidor.json
 		.DeployConfigs\deployAP.json = .DeployConfigs\deployAP.json
 		.DeployConfigs\deployMedidor.json = .DeployConfigs\deployMedidor.json
-		.DeployConfigs\infoNodoAP.json = .DeployConfigs\infoNodoAP.json
-		.DeployConfigs\infoNodoMedidor.json = .DeployConfigs\infoNodoMedidor.json
 	EndProjectSection
 EndProject
 Global

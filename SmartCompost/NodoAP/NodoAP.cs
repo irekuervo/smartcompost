@@ -3,6 +3,7 @@ using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
 using NanoKernel.Herramientas.Comunicacion;
+using NanoKernel.Herramientas.Medidores;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
 using NanoKernel.Nodos;
@@ -17,21 +18,28 @@ namespace NodoAP
         public override TiposNodo tipoNodo => TiposNodo.AccessPointLora;
 
         private const int segundosKeepAlive = 60;
-        private const int milisLoopColaMensajes = 5000;
-        private const int intentosEnvioMediciones = 3;
-        private const int milisIntentoEnvioMediciones = 1000;
+
+        private const int tamanioCola = 25;
+
+        private const int segundosLoopColaMensajes = 10;
+        private const int intentosEnvioMediciones = 1;
+        private const int milisIntentoEnvioMediciones = 100;
+        private const int clientTimeoutSeconds = 5;
 
         private GpioPin led;
         private LoRaDevice lora;
         private SmartCompostClient cliente;
         private Hilo hiloMensajes;
 
-        private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(50);
+        private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
 
         private MedicionesApDto medicionesAp = new MedicionesApDto();
         private object lockMensaje = new object();
         private string medicionesApJson;
         private bool enviandoMediciones = false;
+        private int mensajesTirados = 0;
+
+        private Medidor m = new Medidor();
 
         public override void Setup()
         {
@@ -60,7 +68,7 @@ namespace NodoAP
                 Logger.Log("NO HAY PING AL SERVIDOR");
 
             // Cliente
-            cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort);
+            cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort, clientTimeoutSeconds);
 
             Hilo.Intentar(() =>
             {
@@ -83,14 +91,20 @@ namespace NodoAP
             led.Write(PinValue.Low);
         }
 
+        Random rnd = new Random();
+        MedicionDto medicionBateria = new MedicionDto() { type = TiposMediciones.Bateria.GetString() };
         public override void Loop(ref bool activo)
         {
             try
             {
                 if ((DateTime.UtcNow - cliente.UltimoRequest).TotalSeconds > segundosKeepAlive && !enviandoMediciones)
                 {
-                    cliente.NodeAlive(Config.NumeroSerie);
-                    Logger.Debug("Alive");
+                    lock (lockMensaje)
+                    {
+                        medicionBateria.timestamp = DateTime.UtcNow;
+                        medicionBateria.value = (float)rnd.NextDouble();
+                        medicionesAp.AgregarMedicion(Config.NumeroSerie, medicionBateria);
+                    }
                 }
             }
             catch (Exception ex)
@@ -109,7 +123,10 @@ namespace NodoAP
                 lock (lockMensaje)
                 {
                     if (colaMedicionesNodo.Enqueue(e.Data) != null)
+                    {
+                        mensajesTirados++;
                         Logger.Debug("Cola mediciones desbordada");
+                    }
                 }
             }
             catch (Exception ex)
@@ -126,9 +143,6 @@ namespace NodoAP
                 // Si no hay mensajes encolados no hacemos nada
                 if (colaMedicionesNodo.IsEmpty())
                     return;
-
-                // Por si acaso limpiamos el dto
-                medicionesAp.nodes_measurements.Clear();
 
                 // Lockeamos para poder levantar los mensajes, en ese tiempo se pueden perder interrupciones!
                 lock (lockMensaje)
@@ -156,14 +170,25 @@ namespace NodoAP
                     milisIntento: milisIntentoEnvioMediciones,
                     intentos: intentosEnvioMediciones);
 
+                // Limpiamos memoria
+                medicionesApJson = null;
+
                 if (enviado)
                 {
                     Blink(100);
-                    Logger.Debug($"Se enviaron {medicionesNodo} medicionesNodo");
+                    m.Contar("enviados", medicionesNodo);
+                    Logger.Log($"Se enviaron {medicionesNodo} medicionesNodo");
                 }
                 else
                 {
-                    Logger.Error($"Se perdieron {medicionesNodo} medicionesNodo");
+                    mensajesTirados += medicionesNodo;
+                }
+
+                if (mensajesTirados > 0)
+                {
+                    m.Contar("tirados", mensajesTirados);
+                    Logger.Error($"Se perdieron {mensajesTirados} medicionesNodo");
+                    mensajesTirados = 0;
                 }
             }
             catch (Exception e)
@@ -172,8 +197,14 @@ namespace NodoAP
             }
             finally
             {
+                LimpiarMemoria();
                 enviandoMediciones = false;
-                Thread.Sleep(milisLoopColaMensajes);
+
+                Logger.Log($"Enviados: {m.ContadoTotal("enviados")} | Tirados: {m.ContadoTotal("tirados")}");
+
+                int sleep = (int)(cliente.UltimoRequest.AddSeconds(segundosLoopColaMensajes) - DateTime.UtcNow).TotalMilliseconds;
+                if (sleep > 0)
+                    Thread.Sleep(sleep);
             }
         }
 

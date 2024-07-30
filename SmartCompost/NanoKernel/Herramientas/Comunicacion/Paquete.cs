@@ -11,7 +11,7 @@ namespace NanoKernel.Comunicacion
         // De payload
         Texto = 10,
         Json = 11,
-        Medicion = 12,
+        MedicionNodo = 12,
     }
 
     public class Paquete : IDisposable

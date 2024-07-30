@@ -1,9 +1,28 @@
 ﻿namespace NanoKernel.Dominio
 {
-    public static class TiposMediciones
+    public enum TiposMediciones
     {
-        public static string TIPO_HUMEDAD = "hum";
-        public static string TIPO_BATERIA = "bat";
-        public static string TIPO_TEMPERATURA = "tmp";
+        Humedad,
+        Bateria,
+        Temperatura
+    }
+
+    public static class ayTiposMediciones
+    {
+        public static string GetString(this TiposMediciones tipo)
+        {
+            switch (tipo)
+            {
+                case TiposMediciones.Humedad:
+                    return "hum";
+                case TiposMediciones.Bateria:
+                    return "bat";
+                case TiposMediciones.Temperatura:
+                    return "temp";
+                default:
+                    return "gen";
+            }
+        }
     }
 }
+

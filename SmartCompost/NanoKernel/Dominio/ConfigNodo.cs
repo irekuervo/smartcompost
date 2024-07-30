@@ -4,12 +4,14 @@ namespace NanoKernel.Dominio
 {
     public class ConfigNodo
     {
+        public const string NombreArchivo = "configNodo.json";
+
         private const string DEFAULT_SSID = "SmartCompost"; //"Bondiola 2.4";
         private const string DEFAULT_PASSWORD = "Quericocompost"; //"conpapafritas";
         private const string SMARTCOMPOST_HOST = "181.88.245.34"; //"192.168.1.6";
         private const string SMARTCOMPOST_PORT = "8080";
         private const string NUMERO_SERIE_DEFAULT = "0";
-
+      
         public DateTime FechaCompilacion { get; set; }
         public string HostCompilacion { get; set; }
         public string CommitHash { get; set; }

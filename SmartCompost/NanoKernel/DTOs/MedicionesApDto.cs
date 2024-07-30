@@ -1,9 +1,5 @@
-﻿using NanoKernel.Ayudantes;
-using NanoKernel.Comunicacion;
-using NanoKernel.Dominio;
-using System;
+﻿using System;
 using System.Collections;
-using System.IO;
 
 namespace NanoKernel.DTOs
 {
@@ -13,50 +9,36 @@ namespace NanoKernel.DTOs
         public ArrayList nodes_measurements { get; set; } = new ArrayList();
 
 
-        public bool AgregarMediciones(byte[] data)
+        public void AgregarMedicion(string numeroSerie, MedicionDto medicion)
         {
-            using (MemoryStream ms = new MemoryStream(data))
-            using (BinaryReader br = new BinaryReader(ms))
+            var nodo = BuscarMedicion(numeroSerie);
+            if (nodo == null)
             {
-                var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
-                var numeroSerie = br.ReadString();
-                var ticksMedicion = br.ReadInt64(); //Es la fecha, pero no la usamos porque no viene correcto
-                var bateria = br.ReadSingle();
-                var temperatura = br.ReadSingle();
-                var humedad = br.ReadSingle();
-
-                var nodo = BuscarMedicion(numeroSerie);
-                if (nodo == null)
-                {
-                    nodo = new MedicionesNodoDto() { serial_number = numeroSerie };
-                    nodes_measurements.Add(nodo);
-                }
-
-                var now = DateTime.UtcNow;
-                nodo.last_updated = now;
-
-                nodo.measurements.Add(new Medicion()
-                {
-                    timestamp = now,
-                    type = TiposMediciones.TIPO_BATERIA,
-                    value = bateria
-                });
-                nodo.measurements.Add(new Medicion()
-                {
-                    timestamp = now,
-                    type = TiposMediciones.TIPO_TEMPERATURA,
-                    value = temperatura
-                });
-                nodo.measurements.Add(new Medicion()
-                {
-                    timestamp = now,
-                    type = TiposMediciones.TIPO_HUMEDAD,
-                    value = humedad
-                });
+                nodo = new MedicionesNodoDto() { serial_number = numeroSerie };
+                nodes_measurements.Add(nodo);
             }
-            //Liberamos memoria
+            nodo.measurements.Add(medicion);
+
+            nodo.last_updated = DateTime.UtcNow;
+        }
+
+        public void AgregarMediciones(byte[] data)
+        {
+            MedicionesNodoDto medicionesNodo = MedicionesNodoDto.FromBytes(data);
             data = null;
-            return true;
+
+            var nodo = BuscarMedicion(medicionesNodo.serial_number);
+            if (nodo == null)
+            {
+                nodes_measurements.Add(medicionesNodo);
+            }
+            else
+            {
+                foreach (var item in medicionesNodo.measurements)
+                {
+                    nodo.measurements.Add(item);
+                }
+            }
         }
 
         private MedicionesNodoDto BuscarMedicion(string numeroSerial)

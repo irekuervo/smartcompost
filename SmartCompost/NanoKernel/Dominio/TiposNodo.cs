@@ -9,7 +9,7 @@
 
     public static class ayTiposNodo
     {
-        public static string GetDescripcion(this TiposNodo tipo)
+        public static string GetString(this TiposNodo tipo)
         {
             switch (tipo)
             {

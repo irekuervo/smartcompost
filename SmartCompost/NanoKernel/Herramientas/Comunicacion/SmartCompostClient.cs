@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NanoKernel.Herramientas.Comunicacion
 {
-    public class SmartCompostClient : IDisposable
+    public class SmartCompostClient
     {
         public DateTime UltimoRequest => ultimoRequest;
 
@@ -19,15 +19,14 @@ namespace NanoKernel.Herramientas.Comunicacion
         private const string POST_startup = NodesApi + "{0}/startup";
 
         // Readonly Variables
-        private readonly HttpClient client;
         private readonly string baseUrl;
 
         // Variables
         private DateTime ultimoRequest = DateTime.MinValue;
-
-        public SmartCompostClient(string host, string port)
+        private TimeSpan clientTimeout;
+        public SmartCompostClient(string host, string port, int timeoutSeconds)
         {
-            this.client = new HttpClient();
+            this.clientTimeout = TimeSpan.FromSeconds(timeoutSeconds);
             this.baseUrl = string.Format("http://{0}:{1}/api/", host, port);
         }
 
@@ -50,24 +49,23 @@ namespace NanoKernel.Herramientas.Comunicacion
         {
             jsonBody = jsonBody ?? "{}";
             method = methodParams == null ? method : string.Format(method, methodParams);
-
             string url = baseUrl + method;
 
-            using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
-            using (HttpResponseMessage response = client.Post(url, content))
+            using (HttpClient client = new HttpClient())
             {
-                ultimoRequest = DateTime.UtcNow;
-                if (response.IsSuccessStatusCode == false)
+                client.Timeout = clientTimeout;
+                using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
+                using (HttpResponseMessage response = client.Post(url, content))
                 {
-                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                    Logger.Error(error);
+                    ultimoRequest = DateTime.UtcNow;
+                    if (response.IsSuccessStatusCode == false)
+                    {
+                        string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                        Logger.Error(error);
+                    }
                 }
             }
         }
 
-        public void Dispose()
-        {
-            client.Dispose();
-        }
     }
 }
