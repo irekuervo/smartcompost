@@ -102,6 +102,7 @@ namespace NodoAP
                     lock (lockMensaje)
                     {
                         medicionBateria.timestamp = DateTime.UtcNow;
+                        //TODO: MEDIR DE VERDAD
                         medicionBateria.value = (float)rnd.NextDouble();
                         medicionesAp.AgregarMedicion(Config.NumeroSerie, medicionBateria);
                     }
@@ -206,11 +207,6 @@ namespace NodoAP
                 if (sleep > 0)
                     Thread.Sleep(sleep);
             }
-        }
-
-        private string CrearUrl(string url, params object[] parameters)
-        {
-            return string.Format(url, parameters);
         }
 
         private void Blink(int time)

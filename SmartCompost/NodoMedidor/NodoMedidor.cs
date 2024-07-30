@@ -58,11 +58,9 @@ namespace NodoMedidor
         {
             try
             {
-                // Mido la bateria
+                // TODO: MEDIR DE VERDAD
                 float bateria = (float)random.NextDouble() * 100;
-                // Mido la temperatura
                 float temperatura = (float)random.NextDouble() * 5 + 25;
-                // Mido la humedad
                 float humedad = (float)random.NextDouble() * 100;
 
                 dto.AgregarMedicion(bateria, TiposMediciones.Bateria);
