@@ -9,7 +9,10 @@
             _logger = new FileLogger(@"C:\SmartCompost\");
         }
 
-        public static void Log(string msg) => _logger.Log(msg);
+        public static void Log(string msg) {
+            Console.WriteLine(msg);
+            _logger.Log(msg);
+        } 
 
     }
 }
