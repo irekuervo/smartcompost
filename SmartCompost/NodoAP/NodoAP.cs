@@ -21,7 +21,7 @@ namespace NodoAP
         // ---------------------------------------------------------------
         // CONFIGURACION TUNEADA PARA DONGLE 4G + 10 paquetes por segundo
         private const int tamanioCola = 100;
-        private const int tamanioDesencolados = 15; // Desencolamos de a pedazos, no todo junto, json es matador
+        private const int ventanaDesencolamiento = 15; // Desencolamos de a pedazos, no todo junto, json es matador
         private const int segundosLoopColaMensajes = 5;
         private const int intentosEnvioMediciones = 1;
         private const int milisIntentoEnvioMediciones = 100;
@@ -125,22 +125,17 @@ namespace NodoAP
             {
                 Logger.Debug($"PacketSNR: {e.PacketSnr}, PacketRSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
 
-                //if (enviandoMediciones && mensajesTirados > 0)
-                //{
-                //    Logger.Debug("Mensaje ignorado hasta envio de mensaje");
-                //    e.Data = null;
-                //    return;
-                //}
-
+                byte[] mensajeDesbordado = null;
                 lock (lockColaMedicionesNodo)
                 {
-                    var mensaje = colaMedicionesNodo.Enqueue(e.Data);
-                    if (mensaje != null)
-                    {
-                        mensaje = null;
-                        mensajesTirados++;
-                        Logger.Debug("Cola mediciones desbordada");
-                    }
+                    mensajeDesbordado = (byte[])colaMedicionesNodo.Enqueue(e.Data);
+                }
+
+                if (mensajeDesbordado != null)
+                {
+                    mensajeDesbordado = null; // lo liberamos de la memoria
+                    mensajesTirados++;
+                    Logger.Debug("Cola mediciones desbordada");
                 }
             }
             catch (Exception ex)
@@ -163,7 +158,7 @@ namespace NodoAP
                 lock (lockColaMedicionesNodo)
                 {
                     tamanioCola = colaMedicionesNodo.Count();
-                    for (int i = 0; i < tamanioDesencolados && !colaMedicionesNodo.IsEmpty(); i++)
+                    for (int i = 0; i < ventanaDesencolamiento && !colaMedicionesNodo.IsEmpty(); i++)
                     {
                         desencolados.Add((byte[])colaMedicionesNodo.Dequeue()); ;
                     }
@@ -231,11 +226,8 @@ namespace NodoAP
 
                 Logger.Log($"Enviados: {m.ContadoTotal("enviados")} | Tirados: {m.ContadoTotal("tirados")} | Encolados: {colaMedicionesNodo.Count()}");
 
-                if (colaMedicionesNodo.IsEmpty())
-                {
-                    // Si no hay nada en la cola, espero
+                if (colaMedicionesNodo.Count() < ventanaDesencolamiento)
                     Thread.Sleep(segundosLoopColaMensajes * 1000);
-                }
             }
         }
 
