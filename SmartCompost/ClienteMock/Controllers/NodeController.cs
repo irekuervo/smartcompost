@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MockSmartcompost.Dto;
+using MockSmartcompost.Utils;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
@@ -30,7 +31,7 @@ namespace MockSmartcompost.Controllers
             if (medicion == null)
                 return BadRequest("Medicion is null");
 
-            Console.WriteLine(JsonSerializer.Serialize(medicion));
+            AppLogger.Log(JsonSerializer.Serialize(medicion));
 
             if (mensajesPorNodo.ContainsKey(serialNumber) == false)
                 mensajesPorNodo.TryAdd(serialNumber, new List<MedicionesNodoDto>());
