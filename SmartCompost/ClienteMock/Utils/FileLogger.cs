@@ -20,8 +20,8 @@ namespace MockSmartcompost.Utils
         public void IntegridadLogs() => TimerAutoborradoLog_Elapsed(null);
 
         const int minimumByteSizeFile = 1;
-        const int defaultMaxByteSizeFile = 5;
-        const int defaultMaxByteSizeAllFiles = 50;
+        const int defaultMaxByteSizeFile = 100;
+        const int defaultMaxByteSizeAllFiles = 1000;
         const int defaultSegundosAutoguardado = 1;
 
         private int maxMbFileSize;
