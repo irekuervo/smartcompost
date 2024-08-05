@@ -11,7 +11,7 @@ namespace NanoKernel.Dominio
         private const string SMARTCOMPOST_HOST = "181.88.245.34"; //"192.168.1.6";
         private const string SMARTCOMPOST_PORT = "8080";
         private const string NUMERO_SERIE_DEFAULT = "0";
-      
+
         public DateTime FechaCompilacion { get; set; }
         public string HostCompilacion { get; set; }
         public string CommitHash { get; set; }
@@ -20,6 +20,15 @@ namespace NanoKernel.Dominio
         public string RouterPassword { get; set; }
         public string SmartCompostHost { get; set; }
         public string SmartCompostPort { get; set; }
+
+        public override string ToString()
+        {
+            return $"NumeroSerie: {NumeroSerie} \r\n " +
+                $"ComitHash: {CommitHash} \r\n" +
+                $"HostCompilacion: {HostCompilacion} \r\n" +
+                $"FechaCompilacion: {FechaCompilacion} \r\n" +
+                $"HostCompilacion: {HostCompilacion}:{SmartCompostPort}\r\n";
+        }
 
         public static ConfigNodo Default()
         {

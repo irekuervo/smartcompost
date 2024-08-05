@@ -20,13 +20,14 @@ namespace NanoKernel.Herramientas.Comunicacion
 
         // Readonly Variables
         private readonly string baseUrl;
+        private readonly HttpClient client;
 
         // Variables
         private DateTime ultimoRequest = DateTime.MinValue;
-        private TimeSpan clientTimeout;
         public SmartCompostClient(string host, string port, int timeoutSeconds)
         {
-            this.clientTimeout = TimeSpan.FromSeconds(timeoutSeconds);
+            this.client = new HttpClient();
+            this.client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
             this.baseUrl = string.Format("http://{0}:{1}/api/", host, port);
         }
 
@@ -51,21 +52,16 @@ namespace NanoKernel.Herramientas.Comunicacion
             method = methodParams == null ? method : string.Format(method, methodParams);
             string url = baseUrl + method;
 
-            using (HttpClient client = new HttpClient())
+            using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
+            using (HttpResponseMessage response = client.Post(url, content))
             {
-                client.Timeout = clientTimeout;
-                using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
-                using (HttpResponseMessage response = client.Post(url, content))
+                ultimoRequest = DateTime.UtcNow;
+                if (response.IsSuccessStatusCode == false)
                 {
-                    ultimoRequest = DateTime.UtcNow;
-                    if (response.IsSuccessStatusCode == false)
-                    {
-                        string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                        Logger.Error(error);
-                    }
+                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                    Logger.Error(error);
                 }
             }
         }
-
     }
 }

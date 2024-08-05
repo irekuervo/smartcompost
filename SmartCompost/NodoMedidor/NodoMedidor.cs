@@ -19,7 +19,7 @@ namespace NodoMedidor
         // ---------------------------------------------------------------
         private const bool ES_PROTOBOARD = true; // Tiene otro pinout, y se porta distinto para hacer purebas
         private const int segundosSleep = 15;
-        private const int milisLoop = 10000;
+        private const int milisLoop = 1000;
         // ---------------------------------------------------------------
         private Random random = new Random();
         private GpioController gpio;
@@ -86,7 +86,7 @@ namespace NodoMedidor
                 LimpiarMemoria();
 
                 if (ES_PROTOBOARD)
-                    Thread.Sleep(milisLoop + (int)(random.NextDouble() * 500));
+                    Thread.Sleep(milisLoop);
                 else
                     aySleep.DeepSleepSegundos(segundosSleep);
             }
