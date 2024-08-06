@@ -50,10 +50,10 @@ namespace NodoAP
         public override void Setup()
         {
             // ES: BORRAR!!!!!! Estoy probando en mi casa
-            Config.RouterSSID = "Bondiola 2.4";
-            Config.RouterPassword = "conpapafritas";
-            Config.SmartCompostHost = "192.168.1.6";
-            Config.SmartCompostPort = "8080";
+            //Config.RouterSSID = "Bondiola 2.4";
+            //Config.RouterPassword = "conpapafritas";
+            //Config.SmartCompostHost = "192.168.1.6";
+            //Config.SmartCompostPort = "8080";
 
             /// Configuramos el LED
             var gpio = new GpioController();

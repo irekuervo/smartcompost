@@ -1,5 +1,9 @@
 
 *** BITACORA ***
+- 05/08/24: Prueba intensiva, paquetes cada 1 seg
+    -Venia teniendo un problema con crash espontaneo por falta de memoria
+    -Resulta que es muy muy probable que estuve poniendo mal el firmware a las placas
+    -Los firmwares tienen distinto tamaño de memoria para alocar, yo venia poniendo que tenian ram extendida...no tienen
 - 18/07/24: Prueba Nodos 5v Paquetes posta, sleep 15s
     -PRUEBA EXITOSA, sin errores, el AP duro 14hs, el Medidor le quedaba jugo todavia.
     -TODO: Se pierden paquetes cuando no se puede hacer un POST, hay que reencolar!
