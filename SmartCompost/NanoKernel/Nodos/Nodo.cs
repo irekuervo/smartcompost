@@ -1,6 +1,7 @@
 ﻿using nanoFramework.Hardware.Esp32;
 using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
+using NanoKernel.Herramientas.Estadisticas;
 using NanoKernel.Logging;
 using System;
 
@@ -8,10 +9,9 @@ namespace NanoKernel.Nodos
 {
     public abstract class NodoBase : IDisposable
     {
-        public MacAddress MacAddress { get; private set; }
         public ConfigNodo Config { get; private set; }
 
-        //public readonly EstadisticaEscalar EstadisticaRAM;
+        public readonly EstadisticaEscalar EstadisticaRAM = new EstadisticaEscalar();
 
         public abstract TiposNodo tipoNodo { get; }
 
@@ -33,11 +33,6 @@ namespace NanoKernel.Nodos
             Logger.Log("Wakeup cause: " + cause.ToString());
 
             Logger.Log("------------Setup------------");
-
-            MacAddress = ayInternet.GetMacAddress();
-            Logger.Log($"MAC: {MacAddress}");
-
-            //EstadisticaRAM = new EstadisticaEscalar();
 
             try
             {
@@ -73,7 +68,10 @@ namespace NanoKernel.Nodos
 
         protected void LimpiarMemoria()
         {
-            uint freeMemory = AyMemoria.GC_Run(true);
+            //AyMemoria.GetMemory(out uint totalsize, out uint totalfree, out uint largest);
+            //Logger.Debug($"Total: {totalsize} Free: {totalfree}");
+            //uint freeMemory = AyMemoria.GC_Run(false);
+            //Logger.Debug($"Total GC freed: {freeMemory}");
             //EstadisticaRAM.AgregarMuestra(freeMemory);
             //Logger.Debug($"Free RAM: {EstadisticaRAM.UltimaMuestra} | Max: {EstadisticaRAM.Maximo} | Min: {EstadisticaRAM.Minimo} | mu: {EstadisticaRAM.Promedio()} sigma: {EstadisticaRAM.Desvio()} ");
         }

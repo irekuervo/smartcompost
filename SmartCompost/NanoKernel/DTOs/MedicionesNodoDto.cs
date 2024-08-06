@@ -55,7 +55,10 @@ namespace NanoKernel.DTOs
                     MedicionDto m = new MedicionDto();
                     m.value = br.ReadSingle();
                     br.ReadInt64(); // Leemos el valor para avanzar el buffer, pero no nos sirve la fecha que viene
-                    m.timestamp = DateTime.UtcNow; // Mentimos y decimos que la fecha es esta, le pifiamos por pocos segundos
+                   
+                    // TODO: deberia venir del lora, mentimos y le pifiamos por poco
+                    m.timestamp = DateTime.UtcNow; 
+                    
                     m.type = br.ReadString();
                     medicionesNodoDto.measurements.Add(m);
                 }

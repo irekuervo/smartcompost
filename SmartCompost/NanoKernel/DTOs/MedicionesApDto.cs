@@ -22,11 +22,8 @@ namespace NanoKernel.DTOs
             nodo.last_updated = DateTime.UtcNow;
         }
 
-        public void AgregarMediciones(byte[] data)
+        public void AgregarMediciones(MedicionesNodoDto medicionesNodo)
         {
-            MedicionesNodoDto medicionesNodo = MedicionesNodoDto.FromBytes(data);
-            data = null;
-
             var nodo = BuscarMedicion(medicionesNodo.serial_number);
             if (nodo == null)
             {
