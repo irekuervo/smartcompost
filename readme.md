@@ -9,7 +9,7 @@ Stack:
     Firmware: 
         -ESP WROOM: ESP32_REV0 1.12.0.32 (no tiene memoria expandible)
         -ESP CAM:   ESP32_PSRAM_REV0 (tiene memoria expandible)
-        -ESP MINI:  XIAO_ESP32C3 (es de la familia de ESP32C)
+        -ESP MINI:  XIAO_ESP32C3 1.12.0.32 (es de la familia de ESP32C)
 
 Procedimiento de Deploy:
 

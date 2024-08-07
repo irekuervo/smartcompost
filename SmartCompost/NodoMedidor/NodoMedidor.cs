@@ -18,6 +18,7 @@ namespace NodoMedidor
 
         // ---------------------------------------------------------------
         private const bool ES_PROTOBOARD = true; // Tiene otro pinout, y se porta distinto para hacer purebas
+        private const bool ES_SUPERMINI = true; //solo para protoboard
         private const int segundosSleep = 15;
         private const int milisLoop = 1000;
         // ---------------------------------------------------------------
@@ -27,11 +28,17 @@ namespace NodoMedidor
         private LoRaDevice lora;
         private MedicionesNodoDto dto;
 
+        private const int pinLedOnboard = 2;
+        private const int pinLedOnboardMini = 1;
+
         public override void Setup()
         {
             // Configuramos el LED
             gpio = new GpioController();
-            led = gpio.OpenPin(2, PinMode.Output);
+            if (ES_PROTOBOARD)
+                led = gpio.OpenPin(pinLedOnboard, PinMode.Output);
+            else
+                led = gpio.OpenPin(pinLedOnboardMini, PinMode.Output);
             // Prendemos el led para avisar que estamos configurando
             led.Write(PinValue.High);
 
@@ -39,7 +46,16 @@ namespace NodoMedidor
             Hilo.Intentar(() =>
             {
                 if (ES_PROTOBOARD)
-                    lora = new LoRaDevice(pinLoraDatos: 4, pinLoraReset: 15);
+                { 
+                    if(ES_SUPERMINI) lora = new LoRaDevice(
+                        pinMISO:9, 
+                        pinMOSI:10,
+                        pinCLOCK:8,
+                        pinSlaveSelect:5,
+                        pinLoraDatos:4,
+                        pinLoraReset: 3);
+                    else lora = new LoRaDevice(pinLoraDatos: 4, pinLoraReset: 15);
+                }
                 else
                     lora = new LoRaDevice();
                 lora.Iniciar();
@@ -63,7 +79,7 @@ namespace NodoMedidor
 
                 if (ES_PROTOBOARD)
                     dto.serial_number = "Serial-" + random.Next(10);
-
+                                                                                
                 dto.AgregarMedicion(bateria, TiposMediciones.Bateria);
                 dto.AgregarMedicion(temperatura, TiposMediciones.Temperatura);
                 dto.AgregarMedicion(humedad, TiposMediciones.Humedad);

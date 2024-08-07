@@ -22,6 +22,7 @@
     <Compile Include="Ayudantes\AyMemoria.cs" />
     <Compile Include="Dominio\ConfigNodo.cs" />
     <Compile Include="Dominio\TiposMediciones.cs" />
+    <Compile Include="Herramientas\Buffers\ObjectPool.cs" />
     <Compile Include="Herramientas\Comunicacion\SmartCompostClient.cs" />
     <Compile Include="DTOs\MedicionesApDto.cs" />
     <Compile Include="DTOs\CreateNodeRequestDto.cs" />

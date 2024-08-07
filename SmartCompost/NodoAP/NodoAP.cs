@@ -2,6 +2,7 @@
 using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
+using NanoKernel.Herramientas.Buffers;
 using NanoKernel.Herramientas.Comunicacion;
 using NanoKernel.Hilos;
 using NanoKernel.Logging;
@@ -40,6 +41,7 @@ namespace NodoAP
         private SmartCompostClient cliente;
 
         private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
+        private ObjectPool poolMediciones;
 
         private MedicionesApDto medicionesAp = new MedicionesApDto();
         private ArrayList desencolados = new ArrayList();
@@ -104,6 +106,9 @@ namespace NodoAP
             }, "Lora");
             lora.OnReceive += Device_OnReceive;
 
+            /// Pool mediciones
+            poolMediciones = new ObjectPool(typeof(MedicionesNodoDto), tamanioCola);
+
             /// Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
         }
@@ -121,7 +126,7 @@ namespace NodoAP
                 {
                     try
                     {
-                        medicionDesbordada = (MedicionesNodoDto)colaMedicionesNodo.Enqueue(MedicionesNodoDto.FromBytes(e.Data));
+                        medicionDesbordada = (MedicionesNodoDto)colaMedicionesNodo.Enqueue(MedicionesNodoDto.FromBytes(e.Data, (MedicionesNodoDto)poolMediciones.Rent()));
                     }
                     catch (Exception ex)
                     {
@@ -136,8 +141,8 @@ namespace NodoAP
 
                 if (medicionDesbordada != null)
                 {
-                    /// lo liberamos de la memoria
-                    medicionDesbordada = null;
+                    /// lo devolvemos al pool
+                    poolMediciones.Return(medicionDesbordada);
                     mensajesTiradosPeriodo++;
                     Logger.Debug("Cola mediciones desbordada");
                 }
@@ -205,19 +210,29 @@ namespace NodoAP
                 }
                 else
                 {
-                    /// Si podemos volvemos a meterlo en la cola, sino los tiro para dejar lugar a nuevos mensajes
-                    int remaining = colaMedicionesNodo.Size() - colaMedicionesNodo.Count();
-                    int reencolados = 0;
-                    lock (lockColaMedicionesNodo)
-                    {
-                        for (int i = 0; i < remaining && i < desencolados.Count; i++)
-                        {
-                            colaMedicionesNodo.Enqueue(desencolados[i]);
-                            reencolados++;
-                        }
-                    }
-                    mensajesTiradosPeriodo += desencolados.Count - reencolados;
-                    Logger.Debug($"Reencolados {desencolados.Count} medicionesNodo");
+                   //// Tratamos de reencolar los fallidos
+                   // lock (lockColaMedicionesNodo)
+                   // {
+                   //     //if (colaMedicionesNodo.IsFull())
+                   //     //{
+                   //     //    foreach (MedicionesNodoDto item in desencolados)
+                   //     //    {
+                   //     //        poolMediciones.Return(item);
+                   //     //        mensajesTiradosPeriodo++;
+                   //     //    }
+                   //     //}
+                        
+                   //         while (colaMedicionesNodo.IsFull() == false)
+                   //         {
+                   //         colaMedicionesNodo.Enqueue(desencolados[i]);
+                   //     }
+                       
+                   // }
+                }
+
+                foreach (MedicionesNodoDto item in desencolados)
+                {
+                    poolMediciones.Return(item);
                 }
 
                 if (mensajesTiradosPeriodo > 0)

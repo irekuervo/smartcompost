@@ -47,19 +47,26 @@ namespace PruebaAP
 
         private void DoPost(string method, string jsonBody, params string[] methodParams)
         {
-            jsonBody = jsonBody ?? "{}";
-            method = methodParams == null ? method : string.Format(method, methodParams);
-            string url = baseUrl + method;
-
-            using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
-            using (HttpResponseMessage response = client.Post(url, content))
+            try
             {
-                ultimoRequest = DateTime.UtcNow;
-                if (response.IsSuccessStatusCode == false)
+                jsonBody = jsonBody ?? "{}";
+                method = methodParams == null ? method : string.Format(method, methodParams);
+                string url = baseUrl + method;
+
+                using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
+                using (HttpResponseMessage response = client.Post(url, content))
                 {
-                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                    Logger.Error(error);
+                    ultimoRequest = DateTime.UtcNow;
+                    if (response.IsSuccessStatusCode == false)
+                    {
+                        string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                        Logger.Error(error);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
             }
         }
     }

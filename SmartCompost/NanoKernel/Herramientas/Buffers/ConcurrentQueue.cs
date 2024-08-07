@@ -57,6 +57,14 @@ namespace NanoKernel.Ayudantes
             }
         }
 
+        public bool IsFull()
+        {
+            lock (_lockObject)
+            {
+                return _items.Count == _maxSize;
+            }
+        }
+
         public bool IsEmpty()
         {
             lock (_lockObject)

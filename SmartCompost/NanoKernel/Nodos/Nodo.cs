@@ -11,8 +11,6 @@ namespace NanoKernel.Nodos
     {
         public ConfigNodo Config { get; private set; }
 
-        public readonly EstadisticaEscalar EstadisticaRAM = new EstadisticaEscalar();
-
         public abstract TiposNodo tipoNodo { get; }
 
         private const string LOGO = "\r\n\r\n  ______  _____  _                        _ \r\n |  ____|/ ____|| |                      | |\r\n | |__  | (___  | | _____ _ __ _ __   ___| |\r\n |  __|  \\___ \\ | |/ / _ \\ '__| '_ \\ / _ \\ |\r\n | |____ ____) ||   <  __/ |  | | | |  __/ |\r\n |______|_____(_)_|\\_\\___|_|  |_| |_|\\___|_|\r\n                                            \r\n                                            \r\n\r\n";

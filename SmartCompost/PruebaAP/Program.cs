@@ -59,7 +59,7 @@ namespace PruebaAP
             // ES: BORRAR!!!!!! Estoy probando en mi casa
             Config.RouterSSID = "SmartCompost"; //"Bondiola 2.4";
             Config.RouterPassword = "Quericocompost"; //"conpapafritas";
-            Config.SmartCompostHost = "181.88.245.34"; //"192.168.1.6";
+            Config.SmartCompostHost = "smartcompost.net"; //"181.88.245.34"; //"192.168.1.6";
             Config.SmartCompostPort = "8080";
 
             /// Configuramos el LED
@@ -82,9 +82,9 @@ namespace PruebaAP
             }, $"Config Wifi: {Config.RouterSSID}");
 
             /// Vemos si podemos pingear la api
-            bool ping = ayInternet.Ping(Config.SmartCompostHost);
-            if (ping == false)
-                Logger.Log("NO HAY PING AL SERVIDOR");
+            //bool ping = ayInternet.Ping(Config.SmartCompostHost);
+            //if (ping == false)
+            //    Logger.Log("NO HAY PING AL SERVIDOR");
 
             /// Cliente
             cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort, clientTimeoutSeconds);
@@ -136,12 +136,14 @@ namespace PruebaAP
                 medicionesAp.last_updated = DateTime.UtcNow;
                 medicionesApJson = medicionesAp.ToJson();
 
+                Logger.Debug(medicionesApJson);
+
                 /// Limpiamos el dto porque ya tenemos el json
                 medicionesAp.nodes_measurements.Clear();
 
                 enviandoMediciones = true;
                 bool enviado = Intentar(
-                    () => cliente.AddApMeasurments(Config.NumeroSerie, medicionesApJson),
+                    () => cliente.AddApMeasurments("7e0674f0-5451-11ef-92ae-0242ac140004"/*Config.NumeroSerie*/, medicionesApJson),
                     nombreIntento: "Envio mediciones AP",
                     milisIntento: milisIntentoEnvioMediciones,
                     intentos: intentosEnvioMediciones);

@@ -55,6 +55,7 @@ namespace PruebaAP
                     return null;
 
                 medicionesNodoDto.serial_number = br.ReadString();
+                medicionesNodoDto.serial_number = "7e0674f0-5451-11ef-92ae-0242ac140004"; // MOCK
                 medicionesNodoDto.last_updated = new DateTime(br.ReadInt64());
 
                 var mediciones = br.ReadUInt16();

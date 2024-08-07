@@ -36,9 +36,11 @@ namespace NanoKernel.DTOs
             return buffer.ToArray();
         }
 
-        public static MedicionesNodoDto FromBytes(byte[] data)
+        public static MedicionesNodoDto FromBytes(byte[] data, MedicionesNodoDto medicionesNodoDto = null)
         {
-            MedicionesNodoDto medicionesNodoDto = new MedicionesNodoDto();
+            if (medicionesNodoDto == null)
+                medicionesNodoDto = new MedicionesNodoDto();
+
             using (MemoryStream ms = new MemoryStream(data))
             using (BinaryReader br = new BinaryReader(ms))
             {
@@ -55,10 +57,10 @@ namespace NanoKernel.DTOs
                     MedicionDto m = new MedicionDto();
                     m.value = br.ReadSingle();
                     br.ReadInt64(); // Leemos el valor para avanzar el buffer, pero no nos sirve la fecha que viene
-                   
+
                     // TODO: deberia venir del lora, mentimos y le pifiamos por poco
-                    m.timestamp = DateTime.UtcNow; 
-                    
+                    m.timestamp = DateTime.UtcNow;
+
                     m.type = br.ReadString();
                     medicionesNodoDto.measurements.Add(m);
                 }

@@ -22,7 +22,7 @@ namespace Equipos.SX127X
             int pinMISO = Gpio.IO19,
             int pinMOSI = Gpio.IO23,
             int pinCLOCK = Gpio.IO18,
-            int pinNSS = Gpio.IO05,
+            int pinSlaveSelect = Gpio.IO05, // Puede ser cualquier GPIO
             int pinLoraDatos = Gpio.IO25,
             int pinLoraReset = Gpio.IO14,
             int SPI_BUS = 1)
@@ -31,7 +31,7 @@ namespace Equipos.SX127X
             Configuration.SetPinFunction(pinMOSI, DeviceFunction.SPI1_MOSI);
             Configuration.SetPinFunction(pinCLOCK, DeviceFunction.SPI1_CLOCK);
 
-            var spiSender = new SpiConnectionSettings(SPI_BUS, pinNSS)
+            var spiSender = new SpiConnectionSettings(SPI_BUS, pinSlaveSelect)
             {
                 ClockFrequency = 1_000_000,
                 Mode = SpiMode.Mode0,// From SemTech docs pg 80 CPOL=0, CPHA=0
