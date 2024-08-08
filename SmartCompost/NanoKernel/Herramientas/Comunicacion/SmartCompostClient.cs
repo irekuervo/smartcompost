@@ -52,7 +52,7 @@ namespace NanoKernel.Herramientas.Comunicacion
             method = methodParams == null ? method : string.Format(method, methodParams);
             string url = baseUrl + method;
 
-            Logger.Log($"Post: {url} [{jsonBody.Length}]bytes\r\n \t{jsonBody}");
+            Logger.Debug($"Post: {url} [{jsonBody.Length}]bytes\r\n \t{jsonBody}");
 
             using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
             using (HttpResponseMessage response = client.Post(url, content))
