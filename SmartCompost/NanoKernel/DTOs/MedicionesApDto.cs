@@ -24,6 +24,9 @@ namespace NanoKernel.DTOs
 
         public void AgregarMediciones(MedicionesNodoDto medicionesNodo)
         {
+            if (medicionesNodo == null)
+                return;
+
             var nodo = BuscarMedicion(medicionesNodo.serial_number);
             if (nodo == null)
             {

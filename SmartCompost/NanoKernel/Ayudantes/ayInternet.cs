@@ -122,19 +122,20 @@ namespace NanoKernel.Ayudantes
         private const int IcmpEchoReply = 0;
         public static bool Ping(string address)
         {
-            byte[] buffer = CreatePingPacket();
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(address), 0);
-
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Icmp))
+            try
             {
-                
-                socket.SendTo(buffer, buffer.Length, SocketFlags.None, endPoint);
+                byte[] buffer = CreatePingPacket();
+                IPEndPoint endPoint = new IPEndPoint(IPAddress.Parse(address), 0);
 
-                byte[] receiveBuffer = new byte[256];
-                EndPoint responseEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
-                try
+                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.Icmp))
                 {
+
+                    socket.SendTo(buffer, buffer.Length, SocketFlags.None, endPoint);
+
+                    byte[] receiveBuffer = new byte[256];
+                    EndPoint responseEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+
                     socket.SendTimeout = 15000;
                     socket.ReceiveFrom(receiveBuffer, ref responseEndPoint);
                     if (receiveBuffer[20] == IcmpEchoReply)
@@ -142,10 +143,10 @@ namespace NanoKernel.Ayudantes
 
                     return false;
                 }
-                catch (Exception ex)
-                {
-                    return false;
-                }
+            }
+            catch (Exception ex)
+            {
+                return false;
             }
         }
 

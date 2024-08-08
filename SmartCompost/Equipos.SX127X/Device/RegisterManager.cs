@@ -27,7 +27,10 @@ namespace Equipos.SX127X
 
 		private readonly SpiDevice _spiDevice = null;
 
-		public RegisterManager(SpiDevice spiDevice, byte registerAddressReadMask, byte registerAddressWriteMask)
+        private byte[] readBuffer = new byte[100];
+        private byte[] writeBuffer = new byte[100];
+
+        public RegisterManager(SpiDevice spiDevice, byte registerAddressReadMask, byte registerAddressWriteMask)
 		{
 			_spiDevice = spiDevice;
 
@@ -67,11 +70,9 @@ namespace Equipos.SX127X
 
 		public byte[] ReadBytes(byte address, byte length)
 		{
-			byte[] writeBuffer = new byte[length + 1];
-			byte[] readBuffer = new byte[writeBuffer.Length];
 			byte[] replyBuffer = new byte[length];
 
-			writeBuffer[0] = address &= _registerAddressReadMask;
+			this.writeBuffer[0] = address &= _registerAddressReadMask;
 
 			_spiDevice.TransferFullDuplex(writeBuffer, readBuffer);
 

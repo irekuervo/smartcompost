@@ -1,6 +1,7 @@
 ﻿using NanoKernel.Ayudantes;
 using NanoKernel.Comunicacion;
 using NanoKernel.Dominio;
+using NanoKernel.Logging;
 using System;
 using System.Collections;
 using System.IO;
@@ -36,36 +37,46 @@ namespace NanoKernel.DTOs
             return buffer.ToArray();
         }
 
-        public static MedicionesNodoDto FromBytes(byte[] data, MedicionesNodoDto medicionesNodoDto = null)
+        public static MedicionesNodoDto FromBytes(byte[] data)
         {
-            if (medicionesNodoDto == null)
-                medicionesNodoDto = new MedicionesNodoDto();
+            if (data == null) return null;
 
-            using (MemoryStream ms = new MemoryStream(data))
-            using (BinaryReader br = new BinaryReader(ms))
+            try
             {
-                var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
-                if (tipoPaquete != TipoPaqueteEnum.MedicionNodo)
-                    return null;
+                var medicionesNodoDto = new MedicionesNodoDto();
 
-                medicionesNodoDto.serial_number = br.ReadString();
-                medicionesNodoDto.last_updated = new DateTime(br.ReadInt64());
-
-                var mediciones = br.ReadUInt16();
-                for (int i = 0; i < mediciones; i++)
+                using (MemoryStream ms = new MemoryStream(data))
+                using (BinaryReader br = new BinaryReader(ms))
                 {
-                    MedicionDto m = new MedicionDto();
-                    m.value = br.ReadSingle();
-                    br.ReadInt64(); // Leemos el valor para avanzar el buffer, pero no nos sirve la fecha que viene
+                    var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
+                    if (tipoPaquete != TipoPaqueteEnum.MedicionNodo)
+                        return null;
 
-                    // TODO: deberia venir del lora, mentimos y le pifiamos por poco
-                    m.timestamp = DateTime.UtcNow;
+                    medicionesNodoDto.serial_number = br.ReadString();
+                    medicionesNodoDto.serial_number = "b2c40a98-5534-11ef-92ae-0242ac140004"; // HARDCODEADO PARA PROBAR
+                    medicionesNodoDto.last_updated = new DateTime(br.ReadInt64());
 
-                    m.type = br.ReadString();
-                    medicionesNodoDto.measurements.Add(m);
+                    var mediciones = br.ReadUInt16();
+                    for (int i = 0; i < mediciones; i++)
+                    {
+                        MedicionDto m = new MedicionDto();
+                        m.value = br.ReadSingle();
+                        br.ReadInt64(); // Leemos el valor para avanzar el buffer, pero no nos sirve la fecha que viene
+
+                        // TODO: deberia venir del lora, mentimos y le pifiamos por poco
+                        m.timestamp = DateTime.UtcNow;
+
+                        m.type = br.ReadString();
+                        medicionesNodoDto.measurements.Add(m);
+                    }
+
+                    return medicionesNodoDto;
                 }
-
-                return medicionesNodoDto;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+                return null;
             }
         }
     }

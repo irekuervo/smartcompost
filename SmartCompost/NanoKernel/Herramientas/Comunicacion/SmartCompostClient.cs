@@ -24,7 +24,7 @@ namespace NanoKernel.Herramientas.Comunicacion
 
         // Variables
         private DateTime ultimoRequest = DateTime.MinValue;
-        public SmartCompostClient(string host, string port, int timeoutSeconds)
+        public SmartCompostClient(string host, string port, int timeoutSeconds = 15)
         {
             this.client = new HttpClient();
             this.client.Timeout = TimeSpan.FromSeconds(timeoutSeconds);
@@ -51,6 +51,8 @@ namespace NanoKernel.Herramientas.Comunicacion
             jsonBody = jsonBody ?? "{}";
             method = methodParams == null ? method : string.Format(method, methodParams);
             string url = baseUrl + method;
+
+            Logger.Log($"Post: {url} [{jsonBody.Length}]bytes\r\n \t{jsonBody}");
 
             using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
             using (HttpResponseMessage response = client.Post(url, content))
