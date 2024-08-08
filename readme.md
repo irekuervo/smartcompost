@@ -7,7 +7,7 @@ Stack:
     Nanoff: .NET nanoFramework Firmware Flasher v2.5.90+c66e018c48
     VsExtension: .NET nanoFramwork Extension 2022.3.0.93
     Firmware: 
-        -ESP WROOM: ESP32_REV0 1.12.0.32 (no tiene memoria expandible)
+        -ESP WROOM: ESP32_REV3 1.12.0.32 (no tiene memoria expandible, revision 3, sino es o PSRAM o REV0)
         -ESP CAM:   ESP32_PSRAM_REV0 (tiene memoria expandible)
         -ESP MINI:  XIAO_ESP32C3 1.12.0.32 (es de la familia de ESP32C)
 

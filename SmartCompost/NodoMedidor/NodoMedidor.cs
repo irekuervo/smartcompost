@@ -18,9 +18,9 @@ namespace NodoMedidor
 
         // ---------------------------------------------------------------
         private const bool ES_PROTOBOARD = true; // Tiene otro pinout, y se porta distinto para hacer purebas
-        private const bool ES_SUPERMINI = true; //solo para protoboard
+        private const bool ES_SUPERMINI = false; //solo para protoboard
         private const int segundosSleep = 15;
-        private const int milisLoop = 1000;
+        private const int milisLoop = 5000;
         // ---------------------------------------------------------------
         private Random random = new Random();
         private GpioController gpio;
