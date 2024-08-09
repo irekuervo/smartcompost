@@ -141,9 +141,9 @@ namespace NanoKernel.Hilos
                     Logger.Debug($"{nombreIntento} OK");
                     ok = true;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Logger.Debug("Reintentando");
+                    Logger.Log(ex);
                     ok = false;
                 }
                 finally

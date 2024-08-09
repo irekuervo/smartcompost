@@ -66,10 +66,10 @@ namespace NanoKernel.Nodos
 
         protected void LimpiarMemoria()
         {
-            //AyMemoria.GetMemory(out uint totalsize, out uint totalfree, out uint largest);
-            //Logger.Debug($"Total: {totalsize} Free: {totalfree}");
-            //uint freeMemory = AyMemoria.GC_Run(false);
-            //Logger.Debug($"Total GC freed: {freeMemory}");
+            AyMemoria.GetMemory(out uint totalsize, out uint totalfree, out uint largest);
+            Logger.Debug($"Total: {totalsize} Free: {totalfree}");
+            uint freeMemory = AyMemoria.GC_Run(false);
+            Logger.Debug($"Total GC freed: {freeMemory}");
             //EstadisticaRAM.AgregarMuestra(freeMemory);
             //Logger.Debug($"Free RAM: {EstadisticaRAM.UltimaMuestra} | Max: {EstadisticaRAM.Maximo} | Min: {EstadisticaRAM.Minimo} | mu: {EstadisticaRAM.Promedio()} sigma: {EstadisticaRAM.Desvio()} ");
         }

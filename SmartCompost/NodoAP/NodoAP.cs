@@ -125,6 +125,9 @@ namespace NodoAP
                 //Logger.Debug($"PacketSNR: {e.PacketSnr}, PacketRSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes");
                 Logger.Debug($"Paquete recibido: {e.Data.Length} bytes");
 
+                if (e.Data == null)
+                    return;
+
                 byte[] medicionDesbordada = null;
                 lock (lockColaMedicionesNodo)
                 {
@@ -247,7 +250,7 @@ namespace NodoAP
             {
                 desencolados.Clear();
 
-                //LimpiarMemoria();
+                LimpiarMemoria();
 
                 //Logger.Log($"Enviados: {m.ContadoTotal("enviados")} | Tirados: {m.ContadoTotal("tirados")} | Encolados: {colaMedicionesNodo.Count()}");
                 Logger.Log($"Enviados: {enviadosTotal} | Tirados: {tiradosTotal} | Encolados: {colaMedicionesNodo.Count()}");
@@ -259,11 +262,9 @@ namespace NodoAP
 
         private void Blink(int time)
         {
-#if DEBUG
             led.Write(PinValue.High);
             Thread.Sleep(time);
             led.Write(PinValue.Low);
-#endif
         }
     }
 }
