@@ -36,7 +36,7 @@ namespace NodoAP
         /// ---------------------------------------------------------------
         /// CONFIGURACION TUNEADA PARA DONGLE 4G
         private const int tamanioCola = 50;
-        private const int ventanaDesencolamiento = 20; /// Desencolamos de a pedazos, no todo junto, json es matador
+        private const int ventanaDesencolamiento = 15; /// Desencolamos de a pedazos, no todo junto, json es matador
         private const int segundosLoopColaMensajes = 5;
         private const int intentosEnvioMediciones = 1;
         private const int milisIntentoEnvioMediciones = 100;

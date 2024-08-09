@@ -6,78 +6,90 @@ namespace NanoKernel.Ayudantes
 {
     public class ConcurrentQueue
     {
-        private readonly ArrayList _items;
-        private readonly object _lockObject = new object();
-        private readonly int _maxSize;
-
-        public ConcurrentQueue(int maxSize)
+        private readonly ArrayList items;
+        private readonly object lockObject = new object();
+        private readonly int maxSize;
+        private readonly bool fifo = true; // false =FILO
+        public ConcurrentQueue(int maxSize, bool fifo = true)
         {
-            _items = new ArrayList();
-            _maxSize = maxSize;
+            this.items = new ArrayList();
+            this.maxSize = maxSize;
+            this.fifo = fifo;
         }
 
-        public int Size() => _maxSize;
-        public ArrayList GetItems() => _items;
+        public int Size() => maxSize;
+        public ArrayList GetItems() => items;
 
         public int Count()
         {
-            lock (_lockObject)
+            lock (lockObject)
             {
-                return _items.Count; 
+                return items.Count; 
             }
         }
 
         public object Enqueue(object item)
         {
-            lock (_lockObject)
+            lock (lockObject)
             {
                 object discardedItem = null;
-                if (_items.Count >= _maxSize)
+                if (items.Count >= maxSize)
                 {
-                    discardedItem = _items[0];
-                    _items.RemoveAt(0);
+                    discardedItem = items[0];
+                    items.RemoveAt(0);
                 }
-                _items.Add(item);
+                items.Add(item);
                 return discardedItem;
             }
         }
 
         public object Dequeue()
         {
-            lock (_lockObject)
+            lock (lockObject)
             {
-                if (_items.Count == 0)
+                if (items.Count == 0)
                 {
                     return null;
                 }
 
-                var item = _items[0];
-                _items.RemoveAt(0);
-                return item;
+                Object removedItem;
+
+                if (fifo)
+                {
+                    removedItem = items[0];
+                    items.RemoveAt(0);
+                }
+                else
+                {
+                    removedItem = items[items.Count - 1];
+                    items.RemoveAt(items.Count - 1);
+                }
+
+                return removedItem;
             }
         }
 
         public bool IsFull()
         {
-            lock (_lockObject)
+            lock (lockObject)
             {
-                return _items.Count == _maxSize;
+                return items.Count == maxSize;
             }
         }
 
         public bool IsEmpty()
         {
-            lock (_lockObject)
+            lock (lockObject)
             {
-                return _items.Count == 0;
+                return items.Count == 0;
             }
         }
 
         public void Clear()
         {
-            lock (_lockObject)
+            lock (lockObject)
             {
-                _items.Clear();
+                items.Clear();
             }
         }
     }
