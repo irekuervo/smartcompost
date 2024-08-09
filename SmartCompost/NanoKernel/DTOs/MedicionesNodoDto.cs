@@ -19,22 +19,23 @@ namespace NanoKernel.DTOs
             measurements.Add(new MedicionDto() { value = value, timestamp = DateTime.UtcNow, type = tipo.GetString() });
         }
 
-        public byte[] ToBytes(MemoryStream buffer)
+        public long ToBytes(byte[] buffer)
         {
-            BinaryWriter bw = new BinaryWriter(buffer);
-
-            bw.Write((byte)TipoPaqueteEnum.MedicionNodo);
-            bw.Write(serial_number);
-            bw.Write(last_updated.Ticks);
-            bw.Write((ushort)measurements.Count);
-            foreach (MedicionDto item in measurements)
+            using (MemoryStream ms = new MemoryStream(buffer))
             {
-                bw.Write(item.value);
-                bw.Write(item.timestamp.Ticks);
-                bw.Write(item.type);
+                BinaryWriter bw = new BinaryWriter(ms);
+                bw.Write((byte)TipoPaqueteEnum.MedicionNodo);
+                bw.Write(serial_number);
+                bw.Write(last_updated.Ticks);
+                bw.Write((ushort)measurements.Count);
+                foreach (MedicionDto item in measurements)
+                {
+                    bw.Write(item.value);
+                    bw.Write(item.timestamp.Ticks);
+                    bw.Write(item.type);
+                }
+                return ms.Position;
             }
-
-            return buffer.ToArray();
         }
 
         public static MedicionesNodoDto FromBytes(byte[] data)

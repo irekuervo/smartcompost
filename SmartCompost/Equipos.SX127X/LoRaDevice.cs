@@ -62,12 +62,14 @@ namespace Equipos.SX127X
             iniciado = true;
         }
 
-        public void Enviar(byte[] data)
+        public void Enviar(byte[] data) => Enviar(data, 0, data.Length);
+
+        public void Enviar(byte[] data, int index, int length)
         {
             if (!iniciado)
                 throw new Exception("El device no esta iniciado");
 
-            device.Send(data);
+            device.Send(data, index, length);
 
             // Me parece que esto jode
             //device.Receive();

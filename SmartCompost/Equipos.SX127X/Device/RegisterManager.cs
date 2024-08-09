@@ -78,18 +78,22 @@ namespace Equipos.SX127X
             }
         }
 
-        public void WriteBytes(byte address, byte[] bytes)
+        public void WriteBytes(byte address, byte[] bytes) => WriteBytes(address, bytes, 0, bytes.Length);
+
+        public void WriteBytes(byte address, byte[] dataBuffer, int index, int length)
         {
-            if (bytes == null || bytes.Length == 0)
+            if (dataBuffer == null || dataBuffer.Length == 0)
                 return;
 
             lock (spiLock)
             {
+                // Los datos que mandamos tienen la direccion en la pos 0, por eso length + 1
                 writeBuffer[0] = address |= _registerAddressWriteMask;
-                Array.Copy(bytes, 0, writeBuffer, 1, bytes.Length);
+                Array.Copy(dataBuffer, index, writeBuffer, 1, length);
 
-                var write = new SpanByte(writeBuffer, 0, bytes.Length + 1);
+                var write = new SpanByte(writeBuffer, 0, length + 1);
 
+                // No nos interesa leer nada de la respuesta
                 TransferData(write, SpanByte.Empty);
             }
         }

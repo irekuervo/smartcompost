@@ -707,7 +707,9 @@ namespace Equipos.SX127X
             SetMode(RegOpModeMode.ReceiveContinuous);
         }
 
-        public void Send(byte[] messageBytes)
+        public void Send(byte[] messageBytes) => Send(messageBytes, 0, messageBytes.Length);
+
+        public void Send(byte[] messageBytes, int index, int length)
         {
             Debug.Assert(messageBytes != null);
             Debug.Assert(messageBytes.Length >= MessageLengthMinimum);
@@ -720,7 +722,7 @@ namespace Equipos.SX127X
                 // Set the Register Fifo address pointer
                 _registerManager.WriteByte((byte)Registers.RegFifoAddrPtr, 0x0);
 
-                _registerManager.WriteBytes((byte)Registers.RegFifo, messageBytes);
+                _registerManager.WriteBytes((byte)Registers.RegFifo, messageBytes, index, length);
 
                 // Set the length of the message in the fifo
                 _registerManager.WriteByte((byte)Registers.RegPayloadLength, (byte)messageBytes.Length);

@@ -20,7 +20,7 @@ namespace NodoMedidor
         private const bool ES_PROTOBOARD = true; // Tiene otro pinout, y se porta distinto para hacer purebas
         private const bool ES_SUPERMINI = false; //solo para protoboard
         private const int segundosSleep = 15;
-        private const int milisLoop = 5000;
+        private const int milisLoop = 500;
         // ---------------------------------------------------------------
         private Random random = new Random();
         private GpioController gpio;
@@ -30,6 +30,8 @@ namespace NodoMedidor
 
         private const int pinLedOnboard = 2;
         private const int pinLedOnboardMini = 1;
+
+        private readonly byte[] buffer = new byte[100];
 
         public override void Setup()
         {
@@ -67,7 +69,7 @@ namespace NodoMedidor
             led.Write(PinValue.Low);
         }
 
-        private readonly MemoryStream buffer = new MemoryStream();
+        
         public override void Loop(ref bool activo)
         {
             try
@@ -85,10 +87,10 @@ namespace NodoMedidor
                 dto.AgregarMedicion(humedad, TiposMediciones.Humedad);
                 dto.last_updated = DateTime.UtcNow;
 
-                byte[] payload = dto.ToBytes(buffer);
-                lora.Enviar(payload);
+                long length = dto.ToBytes(buffer);
+                lora.Enviar(buffer, 0, (int)length);
 
-                Logger.Debug($"Paquete {dto.last_updated.Ticks} enviado, {payload.Length} bytes");
+                Logger.Debug($"Paquete {dto.last_updated.Ticks} enviado, {length} bytes");
                 Blink();
             }
             catch (Exception ex)
@@ -98,7 +100,7 @@ namespace NodoMedidor
             finally
             {
                 dto.measurements.Clear();
-                buffer.Position = 0;
+
                 LimpiarMemoria();
 
                 if (ES_PROTOBOARD)
