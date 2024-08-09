@@ -32,18 +32,20 @@ namespace NanoKernel.Nodos
 
             Logger.Log("------------Setup------------");
 
+            Config = ConfigNodo.Default();
+
             try
             {
-                Config = (ConfigNodo)ayArchivos.AbrirJson(dirConfigNodo, typeof(ConfigNodo));
+                if (ayArchivos.ArchivoExiste(dirConfigNodo))
+                    Config = (ConfigNodo)ayArchivos.AbrirJson(dirConfigNodo, typeof(ConfigNodo));
             }
             catch (Exception ex)
             {
-                Config = ConfigNodo.Default();
                 Logger.Error("No se pudo cargar la conf: " + ex.Message);
             }
 
             Logger.Log($"{Config.ToString()}");
-           
+
             Setup();
 
             Logger.Log("------------Loop------------");

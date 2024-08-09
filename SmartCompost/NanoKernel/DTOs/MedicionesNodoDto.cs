@@ -54,7 +54,6 @@ namespace NanoKernel.DTOs
                         return null;
 
                     medicionesNodoDto.serial_number = br.ReadString();
-                    medicionesNodoDto.serial_number = "b2c40a98-5534-11ef-92ae-0242ac140004"; // HARDCODEADO PARA PROBAR
                     medicionesNodoDto.last_updated = new DateTime(br.ReadInt64());
 
                     var mediciones = br.ReadUInt16();
@@ -62,11 +61,7 @@ namespace NanoKernel.DTOs
                     {
                         MedicionDto m = new MedicionDto();
                         m.value = br.ReadSingle();
-                        br.ReadInt64(); // Leemos el valor para avanzar el buffer, pero no nos sirve la fecha que viene
-
-                        // TODO: deberia venir del lora, mentimos y le pifiamos por poco
-                        m.timestamp = DateTime.UtcNow;
-
+                        m.timestamp = new DateTime(br.ReadInt64());
                         m.type = br.ReadString();
                         medicionesNodoDto.measurements.Add(m);
                     }

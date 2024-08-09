@@ -77,8 +77,8 @@ namespace Equipos.SX127X
 
         public void Dispose()
         {
-            gpio.Dispose();
-            spi.Dispose();
+            gpio?.Dispose();
+            spi?.Dispose();
         }
     }
 }

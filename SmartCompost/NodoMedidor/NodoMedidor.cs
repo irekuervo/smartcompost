@@ -7,7 +7,6 @@ using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Device.Gpio;
-using System.IO;
 using System.Threading;
 
 namespace NodoMedidor
@@ -31,7 +30,12 @@ namespace NodoMedidor
         private const int pinLedOnboard = 2;
         private const int pinLedOnboardMini = 1;
 
-        private readonly byte[] buffer = new byte[100];
+        private readonly byte[] buffer = new byte[128];
+
+        private readonly string[] codigos = new string[]{
+            "b2c40a98-5534-11ef-92ae-0242ac140004",
+            "282a2047-5668-11ef-92ae-0242ac140004",
+            "2cbf5e3f-5668-11ef-92ae-0242ac140004" };
 
         public override void Setup()
         {
@@ -48,13 +52,13 @@ namespace NodoMedidor
             Hilo.Intentar(() =>
             {
                 if (ES_PROTOBOARD)
-                { 
-                    if(ES_SUPERMINI) lora = new LoRaDevice(
-                        pinMISO:9, 
-                        pinMOSI:10,
-                        pinCLOCK:8,
-                        pinSlaveSelect:5,
-                        pinLoraDatos:4,
+                {
+                    if (ES_SUPERMINI) lora = new LoRaDevice(
+                        pinMISO: 9,
+                        pinMOSI: 10,
+                        pinCLOCK: 8,
+                        pinSlaveSelect: 5,
+                        pinLoraDatos: 4,
                         pinLoraReset: 3);
                     else lora = new LoRaDevice(pinLoraDatos: 4, pinLoraReset: 15);
                 }
@@ -69,7 +73,7 @@ namespace NodoMedidor
             led.Write(PinValue.Low);
         }
 
-        
+
         public override void Loop(ref bool activo)
         {
             try
@@ -80,8 +84,8 @@ namespace NodoMedidor
                 float humedad = (float)random.NextDouble() * 100;
 
                 if (ES_PROTOBOARD)
-                    dto.serial_number = "Serial-" + random.Next(10);
-                                                                                
+                    dto.serial_number = codigos[random.Next(3)]; // simulamos un nodo random
+
                 dto.AgregarMedicion(bateria, TiposMediciones.Bateria);
                 dto.AgregarMedicion(temperatura, TiposMediciones.Temperatura);
                 dto.AgregarMedicion(humedad, TiposMediciones.Humedad);

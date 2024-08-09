@@ -1,5 +1,6 @@
 ﻿using Equipos.SX127X;
 using NanoKernel.Ayudantes;
+using NanoKernel.Comunicacion;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
 using NanoKernel.Herramientas.Comunicacion;
@@ -9,6 +10,7 @@ using NanoKernel.Nodos;
 using System;
 using System.Collections;
 using System.Device.Gpio;
+using System.IO;
 using System.Threading;
 
 namespace NodoAP
@@ -110,7 +112,10 @@ namespace NodoAP
                 lora = new LoRaDevice();
                 lora.Iniciar();
                 Logger.Log("Lora conectado");
-            }, "Lora");
+            }, "Lora", accionException: () =>
+            {
+                lora.Dispose();
+            });
             lora.OnReceive += Device_OnReceive;
 
             /// Avisamos que terminamos de configurar
@@ -131,22 +136,15 @@ namespace NodoAP
                 byte[] medicionDesbordada = null;
                 lock (lockColaMedicionesNodo)
                 {
-                    try
-                    {
-                        medicionDesbordada = (byte[])colaMedicionesNodo.Enqueue(e.Data);
-                    }
-                    catch (Exception ex)
-                    {
-                        mensajesTiradosPeriodo++;
-                        Logger.Log(ex);
-                    }
-                    finally
-                    {
-                        e.Data = null;
-                    }
+                    medicionDesbordada = (byte[])colaMedicionesNodo.Enqueue(e.Data);
                 }
 
-                if (medicionDesbordada != null)
+                if (medicionDesbordada == null)
+                {
+                    // Si lo encolo, le pongo la fecha de ahora
+                    SetearTimestamp(e.Data);
+                }
+                else
                 {
                     medicionDesbordada = null;
                     mensajesTiradosPeriodo++;
@@ -156,6 +154,22 @@ namespace NodoAP
             catch (Exception ex)
             {
                 Logger.Log(ex.Message);
+            }
+        }
+
+        private static void SetearTimestamp(byte[] data)
+        {
+            // Le clavamos la hora de arrivo como la hora de medicion, es la mejor aproximacion que tenemos
+            using (MemoryStream ms = new MemoryStream(data))
+            using (BinaryReader br = new BinaryReader(ms))
+            {
+                //movemos la posicion del buffer hasta la fecha, y la cambiamos
+                var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
+                if (tipoPaquete == TipoPaqueteEnum.MedicionNodo)
+                {
+                    br.ReadString();
+                    Array.Copy(BitConverter.GetBytes(DateTime.UtcNow.Ticks), 0, data, (int)ms.Position, sizeof(long));
+                }
             }
         }
 
@@ -171,8 +185,6 @@ namespace NodoAP
 
             try
             {
-
-
                 /// Lockeamos para poder levantar los mensajes, en ese tiempo se pueden perder interrupciones!
                 int tamanioCola = 0;
                 lock (lockColaMedicionesNodo)

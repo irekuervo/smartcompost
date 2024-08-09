@@ -164,7 +164,7 @@ namespace Equipos.SX127X
                 Thread.Sleep(50);
             }
 
-            _registerManager = new RegisterManager(spiDevice);
+            _registerManager = new RegisterManager(spiDevice, MessageLengthMaximum);
 
             // Once the pins setup check that SX127X chip is present
             Byte regVersionValue = _registerManager.ReadByte((byte)Registers.RegVersion);
@@ -378,7 +378,8 @@ namespace Equipos.SX127X
                         regLnaValue |= (byte)RegLnaLnaBoost.LfOn;
                     }
                 }
-                _registerManager.WriteByte((byte)Registers.RegLna, regLnaValue);
+                //TODO: REVISAR!! EN EL LORA ORIGINAL TAMPOCO TE VUELVE EL MISMO VALOR
+                _registerManager.WriteByte((byte)Registers.RegLna, regLnaValue, validate: false);
             }
 
             // Set regModemConfig1 if any of the settings not defaults
@@ -712,8 +713,8 @@ namespace Equipos.SX127X
         public void Send(byte[] messageBytes, int index, int length)
         {
             Debug.Assert(messageBytes != null);
-            Debug.Assert(messageBytes.Length >= MessageLengthMinimum);
-            Debug.Assert(messageBytes.Length <= MessageLengthMaximum);
+            Debug.Assert(length >= MessageLengthMinimum);
+            Debug.Assert(length <= MessageLengthMaximum);
 
             lock (_regFifoLock)
             {
@@ -725,7 +726,7 @@ namespace Equipos.SX127X
                 _registerManager.WriteBytes((byte)Registers.RegFifo, messageBytes, index, length);
 
                 // Set the length of the message in the fifo
-                _registerManager.WriteByte((byte)Registers.RegPayloadLength, (byte)messageBytes.Length);
+                _registerManager.WriteByte((byte)Registers.RegPayloadLength, (byte)length);
             }
 
             _registerManager.WriteByte((byte)Registers.RegDioMapping1, (byte)RegDioMapping1.Dio0TxDone);

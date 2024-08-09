@@ -7,22 +7,28 @@ namespace Equipos.SX127X
 
     public sealed class RegisterManager
     {
-        private const int maxBufferSixe = 100;
         private const byte _registerAddressReadMask = 0X7f;
         private const byte _registerAddressWriteMask = 0x80;
 
         private readonly SpiDevice _spiDevice = null;
 
-        private byte[] readBuffer = new byte[maxBufferSixe];
-        private byte[] writeBuffer = new byte[maxBufferSixe];
+        private readonly byte[] readBuffer;
+        private readonly byte[] writeBuffer;
+        private readonly byte[] byteBuffer = new byte[1]; // para escribir solo 1 byte
 
-        private byte[] byteBuffer = new byte[1];
         private object byteLock = new object();
 
         private object spiLock = new object();
 
-        public RegisterManager(SpiDevice spiDevice)
+        private readonly int maxBufferSize;
+
+        public RegisterManager(SpiDevice spiDevice, int maxBufferSize = 128)
         {
+            this.maxBufferSize = maxBufferSize;
+
+            readBuffer = new byte[maxBufferSize];
+            writeBuffer = new byte[maxBufferSize];
+
             _spiDevice = spiDevice;
         }
 
@@ -33,7 +39,7 @@ namespace Equipos.SX127X
 
         public byte[] ReadBytes(byte registerAddress, byte length)
         {
-            if (length > maxBufferSixe || length == 0)
+            if (length > maxBufferSize || length == 0)
                 return null;
 
             lock (spiLock)
@@ -65,7 +71,7 @@ namespace Equipos.SX127X
         {
             lock (byteLock)
             {
-                byteBuffer = new byte[] { value };
+                byteBuffer[0] = value;
 
                 WriteBytes(address, byteBuffer);
 
