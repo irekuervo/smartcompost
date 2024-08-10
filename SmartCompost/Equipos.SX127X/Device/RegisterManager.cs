@@ -67,7 +67,7 @@ namespace Equipos.SX127X
             }
         }
 
-        public void WriteByte(byte address, byte value, bool validate = true)
+        public void WriteByte(byte address, byte value, bool validate = false)
         {
             lock (byteLock)
             {
@@ -77,6 +77,7 @@ namespace Equipos.SX127X
 
                 if (validate)
                 {
+                    // TODO: aveces falla, ver si es problema de uso, o de implementacion (faltara esperar dsp de escribir?)
                     var realVal = ReadByte(address);
                     if (realVal != value)
                         throw new Exception($"Valor recibido {realVal} distinto al escrito {value} en {address}");

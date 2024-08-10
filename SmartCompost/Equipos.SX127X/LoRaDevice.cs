@@ -21,17 +21,17 @@ namespace Equipos.SX127X
         public LoRaDevice(
             int pinMISO = Gpio.IO19,
             int pinMOSI = Gpio.IO23,
-            int pinCLOCK = Gpio.IO18,
-            int pinSlaveSelect = Gpio.IO05, // Puede ser cualquier GPIO
-            int pinLoraDatos = Gpio.IO25,
-            int pinLoraReset = Gpio.IO14,
+            int pinSCK = Gpio.IO18, // Clock
+            int pinNSS = Gpio.IO05, // Slave select: puede ser cualquier GPIO
+            int pinDI00 = Gpio.IO25, // Datos Lora: puede ser cualquier GPIO
+            int pinLoraReset = Gpio.IO14, // Puede ser cualquier GPIO
             int SPI_BUS = 1)
         {
             Configuration.SetPinFunction(pinMISO, DeviceFunction.SPI1_MISO);
             Configuration.SetPinFunction(pinMOSI, DeviceFunction.SPI1_MOSI);
-            Configuration.SetPinFunction(pinCLOCK, DeviceFunction.SPI1_CLOCK);
+            Configuration.SetPinFunction(pinSCK, DeviceFunction.SPI1_CLOCK);
 
-            var spiSender = new SpiConnectionSettings(SPI_BUS, pinSlaveSelect)
+            var spiSender = new SpiConnectionSettings(SPI_BUS, pinNSS)
             {
                 ClockFrequency = 1_000_000,
                 Mode = SpiMode.Mode0,// From SemTech docs pg 80 CPOL=0, CPHA=0
@@ -41,7 +41,7 @@ namespace Equipos.SX127X
             spi = new SpiDevice(spiSender);
             gpio = new GpioController();
 
-            device = new SX127XDevice(spi, gpio, dio0Pin: pinLoraDatos, resetPin: pinLoraReset);
+            device = new SX127XDevice(spi, gpio, dio0Pin: pinDI00, resetPin: pinLoraReset);
             device.OnReceive += (object sender, OnDataReceivedEventArgs e) => OnReceive?.Invoke(sender, e);
             device.OnTransmit += (object sender, OnDataTransmitedEventArgs e) => OnTransmit?.Invoke(sender, e);
         }

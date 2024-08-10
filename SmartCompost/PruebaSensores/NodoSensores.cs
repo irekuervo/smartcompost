@@ -1,4 +1,4 @@
-using Iot.Device.Ds18b20;
+﻿using Iot.Device.Ds18b20;
 using nanoFramework.Device.OneWire;
 using nanoFramework.Hardware.Esp32;
 using NanoKernel.Dominio;
@@ -31,13 +31,13 @@ namespace NodoAP
             /* DOCUMENTACION PARA VER PINOUT
           * https://docs.nanoframework.net/content/esp32/esp32_pin_out.html 
           */
-            //adc = new AdcController();
+            adc = new AdcController();
 
             /* HUMEDAD          -----> ADC Channel 4 - GPIO 32 */
-            //humedadAdc = adc.OpenChannel(4);
+            humedadAdc = adc.OpenChannel(4);
 
             /* BATERIA SENSOR   -----> ADC Channel 6 - GPIO 34 */
-            //bateriaAdcSensor = adc.OpenChannel(6);
+            bateriaAdcSensor = adc.OpenChannel(6);
 
             /* BATERIA AP       -----> ADC Channel 7 - GPIO 35 */
             // bateriaAdcAp = adc.OpenChannel(7);
@@ -72,6 +72,8 @@ namespace NodoAP
         public override void Loop(ref bool activo)
         {
             MedirTemperatura();
+            MedirHumedad();
+            MedirBateriaSensor();
 
             Thread.Sleep(1000);
         }
@@ -115,10 +117,18 @@ namespace NodoAP
         {
             int analogValue = bateriaAdcSensor.ReadValue();
             float vSensor = analogValue / 4095f * 3.3f;
-            double bateriaPorcentaje = 90.9 * vSensor - 354.5;
+
+            // Cuenta de la bateria, mapeando las cotas con el ADC
+            // y = a x + b
+            // 0 = a * 2.52 V + b
+            // 100 = a * 3.3 V + b
+            // y = 128.21 * x − 323.06
+            double bateriaPorcentaje = 128.21 * vSensor - 323.06;
+            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
             /*definir la matematica para devilver porcentaje*/
-            Console.WriteLine($"Bateria: {analogValue}");
+            Console.WriteLine($"Bateria: {bateriaPorcentaje}");
             return analogValue;
         }
 
