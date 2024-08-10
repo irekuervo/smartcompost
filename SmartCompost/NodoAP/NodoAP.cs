@@ -15,18 +15,11 @@ using System.Threading;
 
 namespace NodoAP
 {
-
     /// <summary>
-    /// 
-    /// 
-    ///     NO FUNCIONA BIEN!!! TERMINAR PRUEBASSS!!!
-    /// 
     /// 
     ///  TODO: Agregar medicion bateria
     ///  TODO: Arreglar frecuencia a una permitida por ENACOM
     ///  
-    /// 
-    /// 
     /// </summary>
 
     public class NodoAP : NodoBase
@@ -35,14 +28,14 @@ namespace NodoAP
 
         /// ---------------------------------------------------------------
         /// CONFIGURACION TUNEADA PARA DONGLE 4G
-        private const int tamanioCola = 50;
-        private const int ventanaDesencolamiento = 15; /// Desencolamos de a pedazos, no todo junto, json es matador
+        private const int tamanioCola = 75;
+        private const int ventanaDesencolamiento = 20; /// Desencolamos de a pedazos, no todo junto, json es matador
         private const int segundosLoopColaMensajes = 5;
+        private const int clientTimeoutSeconds = 20;
+
+        // Creo que no lo vamos a usar
         private const int intentosEnvioMediciones = 1;
         private const int milisIntentoEnvioMediciones = 100;
-
-        private const int clientTimeoutSeconds = 20;
-        private const int segundosKeepAlive = 60;
         /// ---------------------------------------------------------------
 
         private GpioPin led;
