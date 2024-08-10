@@ -45,7 +45,7 @@ namespace NodoAP
             ConfigurarSensorTemperatura();
         }
 
-        private static void ConfigurarSensorTemperatura()
+        private void ConfigurarSensorTemperatura()
         {
             Configuration.SetPinFunction(16, DeviceFunction.COM3_RX);
             Configuration.SetPinFunction(17, DeviceFunction.COM3_TX);
@@ -53,7 +53,7 @@ namespace NodoAP
             OneWireHost oneWire = new OneWireHost();
 
 
-            Ds18b20 ds18b20 = new Ds18b20(oneWire, null, false, TemperatureResolution.VeryHigh);
+            ds18b20 = new Ds18b20(oneWire, null, false, TemperatureResolution.VeryHigh);
 
             ds18b20.IsAlarmSearchCommandEnabled = false;
             if (ds18b20.Initialize())
