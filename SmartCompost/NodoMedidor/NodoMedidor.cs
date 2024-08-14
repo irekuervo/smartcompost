@@ -2,7 +2,6 @@
 using Equipos.SX127X;
 using nanoFramework.Device.OneWire;
 using nanoFramework.Hardware.Esp32;
-using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
 using NanoKernel.Hilos;
@@ -19,100 +18,94 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        // ---------------------------------------------------------------
         private const int segundosSleep = 5;
-        // ---------------------------------------------------------------
+
+        // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
-        // ---------------------------------------------------------------
+
+        private const int PIN_MISO = 19;
+        private const int PIN_MOSI = 23;
+        private const int PIN_CLK = 18;
+        private const int PIN_NSS = 5;
+        private const int PIN_DIO0 = 22;
+        private const int PIN_RESET = 21;
+        // -----LED---------------------------------------------------------
         private GpioController gpio;
         private GpioPin led;
-        private const int pinLedOnboard = 2;
-        // ---------------------------------------------------------------
+
+        private const int PIN_LED_ONBOARD = 2;
+        // -----SENSORES----------------------------------------------------
         private OneWireHost oneWire;
         private Ds18b20 ds18b20;
-        private const int pinUART_RX = 16;
-        private const int pinUART_TX = 17;
+        private GpioPin vccSensores;
         private AdcController adc;
         private AdcChannel humedadAdc;
         private AdcChannel bateriaAdcSensor;
         private AdcChannel bateriaAdcAp;
-        // ---------------------------------------------------------------
+
+        private const int ONE_WIRE_RX = 16;     // importante puentear RX y TX
+        private const int ONE_WIRE_TX = 17;
+        // https://docs.nanoframework.net/content/esp32/esp32_pin_out.html
+        private const int ADC_HUMEDAD = 0;  //pin 36        // ADC Channel 4 - GPIO 32
+        private const int ADC_BATERIA = 3;  //pin 39        // ADC Channel 6 - GPIO 34
+        private const float ERROR_TEMP = -100;
+        //private const int PIN_VCC_SENSORES = 22; // Pin digial, para alimentar sensores
+        // -----VARS--------------------------------------------------------
         private MedicionesNodoDto dto;
         private Random random = new Random();
 
-        private readonly byte[] bufferLora = new byte[128];
-
-        private readonly string[] codigos = new string[]{
+        private readonly byte[] bufferLora = new byte[LoRaDevice.MAX_LORA_PAYLOAD_BYTES];
+        private readonly string[] codigosMock = new string[]{
             "b2c40a98-5534-11ef-92ae-0242ac140004",
             "282a2047-5668-11ef-92ae-0242ac140004",
             "2cbf5e3f-5668-11ef-92ae-0242ac140004" };
 
         public override void Setup()
         {
-            // Configuramos el LED
+            // -----LED---------------------------------------------------------
             gpio = new GpioController();
-            led = gpio.OpenPin(pinLedOnboard, PinMode.Output);
-            // Prendemos el led para avisar que estamos configurando
-            led.Write(PinValue.High);
+            led = gpio.OpenPin(PIN_LED_ONBOARD, PinMode.Output);
+            led.Write(PinValue.High);   // Prendemos el led para avisar que estamos configurando
 
-            // Configuramos el Lora
+            // -----LORA--------------------------------------------------------
             Hilo.Intentar(() =>
             {
-                lora = new LoRaDevice();
+                lora = new LoRaDevice(
+                    pinMISO: PIN_MISO,
+                    pinMOSI: PIN_MOSI,
+                    pinSCK: PIN_CLK,
+                    pinNSS: PIN_NSS,
+                    pinDIO0: PIN_DIO0,
+                    pinReset: PIN_RESET);
                 lora.Iniciar();
             }, "Lora", accionException: () => { lora.Dispose(); });
 
-
-            //TODO: simulamos un nodo random, tiene que venir configurado
-            Config.NumeroSerie = codigos[random.Next(3)];
-            dto = new MedicionesNodoDto() { serial_number = Config.NumeroSerie};
-
-            // ------------------------------------------------------------------
-            // Sensores
-            // ------------------------------------------------------------------
-
+            // -----SENSORES----------------------------------------------------
             adc = new AdcController();
+            humedadAdc = adc.OpenChannel(ADC_HUMEDAD);
+            bateriaAdcSensor = adc.OpenChannel(ADC_BATERIA);
 
-            /* HUMEDAD          -----> ADC Channel 4 - GPIO 32 */
-            humedadAdc = adc.OpenChannel(4);
+            // TODO: Hay q pensarlo bien
+            //vccSensores = gpio.OpenPin(PIN_VCC_SENSORES, PinMode.Output);
 
-            /* BATERIA SENSOR   -----> ADC Channel 6 - GPIO 34 */
-            bateriaAdcSensor = adc.OpenChannel(6);
+            Configuration.SetPinFunction(ONE_WIRE_RX, DeviceFunction.COM3_RX);
+            Configuration.SetPinFunction(ONE_WIRE_TX, DeviceFunction.COM3_TX);
 
-            Configuration.SetPinFunction(pinUART_RX, DeviceFunction.COM3_RX);
-            Configuration.SetPinFunction(pinUART_TX, DeviceFunction.COM3_TX);
-
-            ConfigurarSensorTemperatura();
-
-            // Avisamos que terminamos de configurar
-            led.Write(PinValue.Low);
-        }
-
-        private void ConfigurarSensorTemperatura()
-        {
-            OneWireHost oneWire = new OneWireHost();
-
-            ds18b20 = new Ds18b20(oneWire, null, false, TemperatureResolution.VeryHigh);
-
+            ds18b20 = new Ds18b20(new OneWireHost(), null, false, TemperatureResolution.VeryHigh);
             ds18b20.IsAlarmSearchCommandEnabled = false;
+
             Hilo.Intentar(() =>
             {
-                if (ds18b20.Initialize())
-                {
-                    Console.WriteLine($"Is sensor parasite powered?:{ds18b20.IsParasitePowered}");
-                    string devAddrStr = "";
-                    foreach (var addrByte in ds18b20.Address)
-                    {
-                        devAddrStr += addrByte.ToString("X2");
-                    }
-
-                    Console.WriteLine($"Sensor address:{devAddrStr}");
-                }
-                else
-                {
+                if (!ds18b20.Initialize())
                     throw new Exception("No se pudo conectar al sensor de temperatura");
-                }
-            });
+            }, intentos: 3);
+
+            // -----DTO---------------------------------------------------------
+            // TODO: terminar
+            Config.NumeroSerie = codigosMock[random.Next(3)];
+            dto = new MedicionesNodoDto() { serial_number = Config.NumeroSerie };
+
+            led.Write(PinValue.Low);  // Avisamos que terminamos de configurar
         }
 
         public override void Loop(ref bool activo)
@@ -140,7 +133,9 @@ namespace NodoMedidor
 
                 LimpiarMemoria();
 
-                aySleep.DeepSleepSegundos(segundosSleep);
+                //aySleep.DeepSleepSegundos(segundosSleep);
+
+                Thread.Sleep(segundosSleep * 1000);
             }
         }
 
@@ -167,8 +162,8 @@ namespace NodoMedidor
         {
             if (!ds18b20.TryReadTemperature(out var currentTemperature))
             {
-                Logger.Debug("Can't read!");
-                return -1;
+                Logger.Error("Error de lectura!");
+                return ERROR_TEMP;
             }
             else
             {
@@ -196,6 +191,7 @@ namespace NodoMedidor
             return analogValue;
         }
 
+        // En modo release no quiero gastar bateria ni en el blink
         private void Blink(int milis = 100)
         {
 #if DEBUG

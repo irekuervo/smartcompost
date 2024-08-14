@@ -10,6 +10,8 @@ namespace Equipos.SX127X
     // Es un wrapper para simplificar la interaccion con el device
     public class LoRaDevice : IDisposable
     {
+        public const int MAX_LORA_PAYLOAD_BYTES = 128;
+
         public event onReceivedEventHandler OnReceive;
         public event onTransmittedEventHandler OnTransmit;
 
@@ -23,8 +25,8 @@ namespace Equipos.SX127X
             int pinMOSI = Gpio.IO23,
             int pinSCK = Gpio.IO18, // Clock
             int pinNSS = Gpio.IO05, // Slave select: puede ser cualquier GPIO
-            int pinDI00 = Gpio.IO25, // Datos Lora: puede ser cualquier GPIO
-            int pinLoraReset = Gpio.IO14, // Puede ser cualquier GPIO
+            int pinDIO0 = Gpio.IO25, // Datos Lora: puede ser cualquier GPIO
+            int pinReset = Gpio.IO14, // Puede ser cualquier GPIO
             int SPI_BUS = 1)
         {
             Configuration.SetPinFunction(pinMISO, DeviceFunction.SPI1_MISO);
@@ -41,7 +43,7 @@ namespace Equipos.SX127X
             spi = new SpiDevice(spiSender);
             gpio = new GpioController();
 
-            device = new SX127XDevice(spi, gpio, dio0Pin: pinDI00, resetPin: pinLoraReset);
+            device = new SX127XDevice(spi, gpio, dio0Pin: pinDIO0, resetPin: pinReset);
             device.OnReceive += (object sender, OnDataReceivedEventArgs e) => OnReceive?.Invoke(sender, e);
             device.OnTransmit += (object sender, OnDataTransmitedEventArgs e) => OnTransmit?.Invoke(sender, e);
         }

@@ -14,7 +14,7 @@ namespace PruebaWifi
     // Lan, alocando dentro del lopp = alocando fuera del loop
     public class Program
     {
-        static bool redLan = false;
+        static bool redLan = true;
 
         static string RouterSSID = "SmartCompost"; //"Bondiola 2.4";
         static string RouterPassword = "Quericocompost"; //"conpapafritas";
@@ -44,7 +44,7 @@ namespace PruebaWifi
 
             Hilo.Intentar(() => ayInternet.ConectarsePorWifi(ssid: RouterSSID, password: RouterPassword));
 
-            string idAp = "7e0674f0-5451-11ef-92ae-0242ac140004";
+            string idAp = "b2c40a98-5534-11ef-92ae-0242ac140004";
             string url = $"http://{SmartCompostHost}:{SmartCompostPort}/api/ap/{idAp}/measurements";
             _httpClient = new HttpClient();
 
