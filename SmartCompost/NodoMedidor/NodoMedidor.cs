@@ -2,6 +2,7 @@
 using Equipos.SX127X;
 using nanoFramework.Device.OneWire;
 using nanoFramework.Hardware.Esp32;
+using NanoKernel.Ayudantes;
 using NanoKernel.Dominio;
 using NanoKernel.DTOs;
 using NanoKernel.Hilos;
@@ -18,10 +19,11 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 5;
+        private const double segundosSleep = 0.5;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
+        private const double FRECUENCIA = 433e6; //920_000_000; //Banda libre (915 – 928) MHz Resolución N° 4653/19:
 
         private const int PIN_MISO = 19;
         private const int PIN_MOSI = 23;
@@ -78,7 +80,7 @@ namespace NodoMedidor
                     pinDIO0: PIN_DIO0,
                     pinReset: PIN_RESET);
                 lora.Iniciar();
-            }, "Lora", accionException: () => { lora.Dispose(); });
+            }, "Lora", accionException: () => { lora?.Dispose(); });
 
             // -----SENSORES----------------------------------------------------
             adc = new AdcController();
@@ -135,7 +137,7 @@ namespace NodoMedidor
 
                 //aySleep.DeepSleepSegundos(segundosSleep);
 
-                Thread.Sleep(segundosSleep * 1000);
+                Thread.Sleep((int)(segundosSleep * 1000));
             }
         }
 

@@ -12,7 +12,7 @@ namespace NanoKernel.Ayudantes
 {
     public static class ayInternet
     {
-        public static bool HayInternet(int timeout = 1500)
+        public static bool HayInternet(int timeout = 20000)
         {
             try
             {
@@ -26,8 +26,9 @@ namespace NanoKernel.Ayudantes
                     return true;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Logger.Log(ex);
                 return false;
             }
         }
@@ -52,7 +53,7 @@ namespace NanoKernel.Ayudantes
 
         public static bool ConectarsePorWifi(string ssid, string password)
         {
-            CancellationTokenSource cs = new(10_000);
+            CancellationTokenSource cs = new(20_000);
 
             var conectado = WifiNetworkHelper.ConnectDhcp(ssid, password, token: cs.Token);
             if (conectado == false)
@@ -60,6 +61,7 @@ namespace NanoKernel.Ayudantes
                 return false;
             }
 
+            Logger.Debug("Wifi Conectado");
             return ayInternet.HayInternet();
         }
 

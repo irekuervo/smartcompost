@@ -40,6 +40,8 @@ namespace NodoAP
 
         private GpioPin led;
         private LoRaDevice lora;
+        private const double FRECUENCIA = 433e6; //920_000_00;
+
         private SmartCompostClient cliente;
 
         private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
@@ -60,8 +62,8 @@ namespace NodoAP
         public override void Setup()
         {
             // ES: BORRAR!!!!!! Estoy probando en mi casa
-            Config.RouterSSID = "SmartCompost"; //"Bondiola 2.4";
-            Config.RouterPassword = "Quericocompost"; //"conpapafritas";
+            Config.RouterSSID = "Bondiola 2.4"; // "SmartCompost"; //
+            Config.RouterPassword = "conpapafritas";  //"Quericocompost"; //
             Config.SmartCompostHost = "smartcompost.net"; //"181.88.245.34"; //"192.168.1.6";
             Config.SmartCompostPort = "8080";
             Config.NumeroSerie = "7e0674f0-5451-11ef-92ae-0242ac140004";
@@ -75,7 +77,10 @@ namespace NodoAP
             /// Conectamos a internet
             Hilo.Intentar(() =>
             {
-                ayInternet.ConectarsePorWifi(Config.RouterSSID, Config.RouterPassword);
+                if (ayInternet.ConectarsePorWifi(Config.RouterSSID, Config.RouterPassword) == false)
+                {
+                    throw new Exception("No hay internet");
+                }
 
                 string ip = ayInternet.ObtenerIp();
                 if (ip == "0.0.0.0")
@@ -83,6 +88,7 @@ namespace NodoAP
 
                 /// IP asignada
                 Logger.Log($"Ip asignada: {ip}");
+
             }, $"Conectando Wifi {Config.RouterSSID} - {Config.RouterPassword}");
 
             /// Vemos si podemos pingear la api
@@ -93,12 +99,6 @@ namespace NodoAP
             /// Cliente
             cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort, clientTimeoutSeconds);
 
-            //Hilo.Intentar(() =>
-            //{
-            //    cliente.NodeStartup(Config.NumeroSerie);
-            //    Logger.Log($"Cliente creado a {Config.SmartCompostHost}:{Config.SmartCompostPort}");
-            //}, "Startup");
-
             /// Configuramos el Lora
             Hilo.Intentar(() =>
             {
@@ -107,7 +107,7 @@ namespace NodoAP
                 Logger.Log("Lora conectado");
             }, "Lora", accionException: () =>
             {
-                lora.Dispose();
+                lora?.Dispose();
             });
             lora.OnReceive += Device_OnReceive;
 
