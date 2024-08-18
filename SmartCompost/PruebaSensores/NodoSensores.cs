@@ -33,14 +33,14 @@ namespace NodoAP
           */
             adc = new AdcController();
 
-            /* HUMEDAD          -----> ADC Channel 4 - GPIO 32 */
-            humedadAdc = adc.OpenChannel(4);
+            /* HUMEDAD          -----> ADC Channel 7 - GPIO 35 */
+            humedadAdc = adc.OpenChannel(7);
 
             /* BATERIA SENSOR   -----> ADC Channel 6 - GPIO 34 */
             bateriaAdcSensor = adc.OpenChannel(6);
 
-            /* BATERIA AP       -----> ADC Channel 7 - GPIO 35 */
-            // bateriaAdcAp = adc.OpenChannel(7);
+            /* BATERIA AP       -----> ADC Channel 4 - GPIO 32 */
+            // bateriaAdcAp = adc.OpenChannel(4);
 
             ConfigurarSensorTemperatura();
         }
@@ -71,9 +71,9 @@ namespace NodoAP
 
         public override void Loop(ref bool activo)
         {
-            MedirTemperatura();
+            //MedirTemperatura();
             MedirHumedad();
-            MedirBateriaSensor();
+            //MedirBateriaSensor();
 
             Thread.Sleep(1000);
         }
@@ -97,18 +97,15 @@ namespace NodoAP
         {
             /*
             * La matematica del sensor es la siguiente
-            * Vsensor = (analogread/1023)*5
-            * y = -5,9732x^3 + 63,948x^2 - 232,8x + 308,98 
+            * f(x) = 757.17 - 910.85x + 368.01x² - 48.95x³ 
             */
             int analogValue = humedadAdc.ReadValue();
 
             float vSensor = (analogValue / 4095f * 3.3f);
-            double humidityPercentage = (-5.9732 * vSensor * vSensor * vSensor) + (63.948 * vSensor * vSensor) - 232.8 * vSensor + 308.98;
+            double humidityPercentage = (-48.95 * vSensor * vSensor * vSensor) + (368.10 * vSensor * vSensor) - 910.85 * vSensor + 757.17;
 
-            //Ver la funcion Pow
-            //double humidityPercentage = (-5.9732*Pow(vSensor,3)) + (63.948*Pow(vSensor,2)) - 232.8*vSensor + 308.98;
-
-            Console.WriteLine($"Humedad: {humidityPercentage}");
+            Console.WriteLine($"Analog Humedad: {analogValue}");
+            Console.WriteLine($" tension: {vSensor}");
             return analogValue;
 
         }
