@@ -106,7 +106,10 @@ namespace NodoAP
 
             Console.WriteLine($"Analog Humedad: {analogValue}");
             Console.WriteLine($" tension: {vSensor}");
-            return analogValue;
+            if(humidityPercentage>100) humidityPercentage=100;
+            if(humidityPercentage<0) humidityPercentage=0;
+
+            return humidityPercentage;
 
         }
 
@@ -120,7 +123,7 @@ namespace NodoAP
             // 0 = a * 2.52 V + b
             // 100 = a * 3.3 V + b
             // y = 128.21 * x − 323.06
-            double bateriaPorcentaje = 128.21 * vSensor - 323.06;
+            double bateriaPorcentaje = 138.89 * vSensor - 358.33;
             if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
@@ -133,11 +136,17 @@ namespace NodoAP
         {
             int analogValue = bateriaAdcAp.ReadValue();
             float vSensor = analogValue / 4095f * 3.3f;
-            double bateriaPorcentaje = 100 * vSensor - 400;
-
+            // Cuenta de la bateria, mapeando las cotas con el ADC
+            // y = a x + b
+            // 0 = a * 2.58 V + b
+            // 100 = a * 3.3 V + b
+            // y = 151.52 * x − 400
+            double bateriaPorcentaje = 151.52 * vSensor - 400;
+            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
             /*definir la matematica para devilver porcentaje*/
-            Console.WriteLine($"Bateria: {analogValue}");
+            Console.WriteLine($"Bateria: {bateriaPorcentaje}");
             return analogValue;
         }
 
