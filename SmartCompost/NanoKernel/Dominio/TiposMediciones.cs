@@ -4,7 +4,12 @@
     {
         Humedad,
         Bateria,
-        Temperatura
+        Temperatura,
+        MensajesTirados,
+        MensajesEnviados,
+        TamanioCola,
+        Errores,
+        Startup
     }
 
     public static class ayTiposMediciones
@@ -19,6 +24,16 @@
                     return "bat";
                 case TiposMediciones.Temperatura:
                     return "temp";
+                case TiposMediciones.MensajesTirados:
+                    return "tir";
+                case TiposMediciones.MensajesEnviados:
+                    return "env";
+                case TiposMediciones.TamanioCola:
+                    return "cola";
+                case TiposMediciones.Errores:
+                    return "err";
+                case TiposMediciones.Startup:
+                    return "start";
                 default:
                     return "gen";
             }

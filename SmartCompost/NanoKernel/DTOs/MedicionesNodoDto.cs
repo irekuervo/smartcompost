@@ -23,19 +23,33 @@ namespace NanoKernel.DTOs
         {
             using (MemoryStream ms = new MemoryStream(buffer))
             {
-                BinaryWriter bw = new BinaryWriter(ms);
-                bw.Write((byte)TipoPaqueteEnum.MedicionNodo);
-                bw.Write(serial_number);
-                bw.Write(last_updated.Ticks);
-                bw.Write((ushort)measurements.Count);
-                foreach (MedicionDto item in measurements)
-                {
-                    bw.Write(item.value);
-                    bw.Write(item.timestamp.Ticks);
-                    bw.Write(item.type);
-                }
-                return ms.Position;
+                return Serialize(ms);
             }
+        }
+
+        public byte[] ToBytes()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Serialize(ms);
+                return ms.ToArray();
+            }
+        }
+
+        private long Serialize(MemoryStream ms)
+        {
+            BinaryWriter bw = new BinaryWriter(ms);
+            bw.Write((byte)TipoPaqueteEnum.MedicionNodo);
+            bw.Write(serial_number);
+            bw.Write(last_updated.Ticks);
+            bw.Write((ushort)measurements.Count);
+            foreach (MedicionDto item in measurements)
+            {
+                bw.Write(item.value);
+                bw.Write(item.timestamp.Ticks);
+                bw.Write(item.type);
+            }
+            return ms.Position;
         }
 
         public static MedicionesNodoDto FromBytes(byte[] data)
@@ -84,5 +98,11 @@ namespace NanoKernel.DTOs
         public float value { get; set; }
         public DateTime timestamp { get; set; }
         public string type { get; set; }
+
+        public void Medir(float value)
+        {
+            this.value = value;
+            this.timestamp = DateTime.UtcNow;
+        }
     }
 }

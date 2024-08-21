@@ -54,13 +54,8 @@ namespace NodoMedidor
         //private const int PIN_VCC_SENSORES = 22; // Pin digial, para alimentar sensores
         // -----VARS--------------------------------------------------------
         private MedicionesNodoDto dto;
-        private Random random = new Random();
 
         private readonly byte[] bufferLora = new byte[LoRaDevice.MAX_LORA_PAYLOAD_BYTES];
-        private readonly string[] codigosMock = new string[]{
-            "b2c40a98-5534-11ef-92ae-0242ac140004",
-            "282a2047-5668-11ef-92ae-0242ac140004",
-            "2cbf5e3f-5668-11ef-92ae-0242ac140004" };
 
         public override void Setup()
         {
@@ -104,7 +99,7 @@ namespace NodoMedidor
 
             // -----DTO---------------------------------------------------------
             // TODO: terminar
-            Config.NumeroSerie = codigosMock[random.Next(3)];
+            Config.NumeroSerie = "b2c40a98-5534-11ef-92ae-0242ac140004";
             dto = new MedicionesNodoDto() { serial_number = Config.NumeroSerie };
 
             led.Write(PinValue.Low);  // Avisamos que terminamos de configurar

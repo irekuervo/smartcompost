@@ -90,7 +90,7 @@ namespace NanoKernel.Herramientas.Medidores
 
         public void Contar(string clave, int cantidad = 1) => Contar(clave, (ulong)cantidad);
 
-        public void Contar(string clave, ulong cantidad = 1)
+        public void Contar(string clave, ulong cantidad)
         {
             lock (lockObj)
             {
