@@ -9,7 +9,8 @@
         MensajesEnviados,
         TamanioCola,
         Errores,
-        Startup
+        Startup,
+        MensajesRecibidos
     }
 
     public static class ayTiposMediciones
@@ -26,6 +27,8 @@
                     return "temp";
                 case TiposMediciones.MensajesTirados:
                     return "tir";
+                case TiposMediciones.MensajesRecibidos:
+                    return "rec";
                 case TiposMediciones.MensajesEnviados:
                     return "env";
                 case TiposMediciones.TamanioCola:

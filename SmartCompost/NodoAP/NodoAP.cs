@@ -48,6 +48,7 @@ namespace NodoAP
         private MedicionesNodoDto medicionNodo;
         private Medidor medidor;
         private const string MED_TIRADOS = "tirados";
+        private const string MED_RECIBIDOS = "encolados";
         private const string MED_ENVIADOS = "enviados";
         private const string MED_ERRORES = "errores";
 
@@ -123,44 +124,7 @@ namespace NodoAP
             led.Write(PinValue.Low);
         }
 
-        private void Medidor_OnMedicionesEnPeriodoCallback(InstanteMedicion resultado)
-        {
-            try
-            {
-                medicionNodo.AgregarMedicion(colaMedicionesNodo.Count(), TiposMediciones.TamanioCola);
-
-                var tirados = resultado.ContadoEnPeriodo(MED_TIRADOS);
-                if (tirados > 0)
-                    medicionNodo.AgregarMedicion(tirados, TiposMediciones.MensajesTirados);
-
-                var errores = resultado.ContadoEnPeriodo(MED_ERRORES);
-                if (errores > 0)
-                    medicionNodo.AgregarMedicion(errores, TiposMediciones.Errores);
-
-                var enviados = resultado.ContadoEnPeriodo(MED_ENVIADOS);
-                if (enviados > 0)
-                    medicionNodo.AgregarMedicion(enviados, TiposMediciones.MensajesEnviados);
-
-                var bateria = 0; // TODO MEDIR BATERIA
-                if (bateria > 0)
-                    medicionNodo.AgregarMedicion(bateria, TiposMediciones.Bateria);
-
-                medicionNodo.last_updated = DateTime.UtcNow;
-
-                colaMedicionesNodo.Enqueue(medicionNodo.ToBytes());
-                Logger.Debug("Encolando mediciones del AP");
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-            }
-            finally
-            {
-                medicionNodo.measurements.Clear();
-            }
-        }
-
-        // ------- ENCOLAMIENTO ----------
+        // -------------- MENSAJES LORA -----------------
         private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
             try
@@ -176,6 +140,7 @@ namespace NodoAP
                 {
                     // Si lo encolo, le pongo la fecha de ahora a las mediciones
                     SetearTimestampMedicion(e.Data);
+                    medidor.Contar(MED_RECIBIDOS);
                 }
                 else
                 {
@@ -207,7 +172,7 @@ namespace NodoAP
             }
         }
 
-        // ------- DESENCOLAMIENTO ----------
+        // -------------- ENVIO MENSAJES -----------------
         public override void Loop(ref bool activo)
         {
             /// Si no hay mensajes encolados no hacemos nada
@@ -279,6 +244,49 @@ namespace NodoAP
                 Logger.Log($"Enviados: {medidor.ContadoTotal(MED_ENVIADOS)} | Tirados: {medidor.ContadoTotal(MED_TIRADOS)} | Encolados: {colaMedicionesNodo.Count()}");
 #endif
 
+            }
+        }
+
+        // -------------- MENSAJES DEBUG AP -----------------
+        private void Medidor_OnMedicionesEnPeriodoCallback(InstanteMedicion resultado)
+        {
+            try
+            {
+                medicionNodo.AgregarMedicion(colaMedicionesNodo.Count(), TiposMediciones.TamanioCola);
+
+                var recibidos = resultado.ContadoEnPeriodo(MED_RECIBIDOS);
+                if (recibidos > 0)
+                    medicionNodo.AgregarMedicion(recibidos, TiposMediciones.MensajesRecibidos);
+
+                var tirados = resultado.ContadoEnPeriodo(MED_TIRADOS);
+                if (tirados > 0)
+                    medicionNodo.AgregarMedicion(tirados, TiposMediciones.MensajesTirados);
+
+                var errores = resultado.ContadoEnPeriodo(MED_ERRORES);
+                if (errores > 0)
+                    medicionNodo.AgregarMedicion(errores, TiposMediciones.Errores);
+
+                var enviados = resultado.ContadoEnPeriodo(MED_ENVIADOS);
+                if (enviados > 0)
+                    medicionNodo.AgregarMedicion(enviados, TiposMediciones.MensajesEnviados);
+
+                var bateria = 0; // TODO MEDIR BATERIA
+                if (bateria > 0)
+                    medicionNodo.AgregarMedicion(bateria, TiposMediciones.Bateria);
+
+                medicionNodo.last_updated = DateTime.UtcNow;
+
+                colaMedicionesNodo.Enqueue(medicionNodo.ToBytes());
+                Logger.Debug("Encolando mediciones del AP");
+            }
+            catch (Exception ex)
+            {
+                medidor.Contar(MED_ERRORES);
+                Logger.Log(ex);
+            }
+            finally
+            {
+                medicionNodo.measurements.Clear();
             }
         }
 
