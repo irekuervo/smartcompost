@@ -163,7 +163,7 @@ namespace NanoKernel.Herramientas.Medidores
                     res.MedicionTiempoMilis = MedicionTiempoMilis.Clonar();
                     res.Contadores = ClonarContadores();
                     res.Mediciones = ClonarMediciones();
-                    OnMedicionesEnPeriodoCallback(res);
+                    new Thread(() => OnMedicionesEnPeriodoCallback(res)).Start();
                 }
 
                 // limapiamos todo lo repectivo al periodo

@@ -34,7 +34,7 @@ namespace NanoKernel.Herramientas.Comunicacion
 
         public void AddNodeMeasurments(string apSerialNumber, MedicionesNodoDto medicionesApDto)
         {
-            DoPost(POST_addMeasurmentsAP, medicionesApDto.ToJson(), apSerialNumber);
+            DoPost(POST_addMeasurments, medicionesApDto.ToJson(), apSerialNumber);
         }
 
         public void AddApMeasurments(string apSerialNumber, MedicionesApDto medicionesApDto)

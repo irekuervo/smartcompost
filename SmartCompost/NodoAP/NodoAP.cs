@@ -112,7 +112,7 @@ namespace NodoAP
 
             // Avisamos que nos despertamos
             medicionNodo.AgregarMedicion(1, TiposMediciones.Startup);
-            colaMedicionesNodo.Enqueue(medicionNodo.ToBytes());
+            Hilo.Intentar(() => cliente.AddNodeMeasurments(Config.NumeroSerie, medicionNodo), intentos: 3);
             medicionNodo.measurements.Clear();
 
             // Inicializamos el medidor
@@ -208,7 +208,7 @@ namespace NodoAP
                 {
                     Blink(100);
 
-                    medidor.Contar(MED_ENVIADOS, desencolados.Count);
+                    medidor.Contar(MED_ENVIADOS, desencolados.Count - mensajesAP);
                     Logger.Log($"Se enviaron {desencolados.Count} medicionesNodo");
                 }
                 else
@@ -236,6 +236,7 @@ namespace NodoAP
             finally
             {
                 // Limpiamos todo
+                mensajesAP = 0;
                 medicionesAp.nodes_measurements.Clear();
                 desencolados.Clear();
                 LimpiarMemoria();
@@ -248,6 +249,7 @@ namespace NodoAP
         }
 
         // -------------- MENSAJES DEBUG AP -----------------
+        private int mensajesAP = 0; // Sino contamos las mediciones AP como mediciones Nodos
         private void Medidor_OnMedicionesEnPeriodoCallback(InstanteMedicion resultado)
         {
             try
@@ -277,6 +279,7 @@ namespace NodoAP
                 medicionNodo.last_updated = DateTime.UtcNow;
 
                 colaMedicionesNodo.Enqueue(medicionNodo.ToBytes());
+                mensajesAP++;
                 Logger.Debug("Encolando mediciones del AP");
             }
             catch (Exception ex)
