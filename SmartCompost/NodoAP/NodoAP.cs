@@ -34,7 +34,7 @@ namespace NodoAP
         private const int clientTimeoutSeconds = 20;
         private const int intentosEnvioMediciones = 1; // Creo que no lo vamos a usar > 1
         private const int milisIntentoEnvioMediciones = 100;
-        private const int segundosMedicionNodoAp = 10;
+        private const int segundosMedicionNodoAp = 60 * 5;
         /// ---------------------------------------------------------------
         private SmartCompostClient cliente;
         private GpioPin led;
@@ -55,8 +55,8 @@ namespace NodoAP
         public override void Setup()
         {
             // ES: BORRAR!!!!!! Estoy probando en mi casa
-            Config.RouterSSID = "Bondiola 2.4"; // "SmartCompost"; //
-            Config.RouterPassword = "conpapafritas";  //"Quericocompost"; //
+            Config.RouterSSID = "SmartCompost"; //"Bondiola 2.4"; // 
+            Config.RouterPassword = "Quericocompost"; //"conpapafritas";  //
             Config.SmartCompostHost = "smartcompost.net"; //"181.88.245.34"; //"192.168.1.6";
             Config.SmartCompostPort = "8080";
             Config.NumeroSerie = "7e0674f0-5451-11ef-92ae-0242ac140004";

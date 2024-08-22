@@ -19,7 +19,7 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const double segundosSleep = 0.5;
+        private const int segundosSleep = 60;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
@@ -130,9 +130,9 @@ namespace NodoMedidor
 
                 LimpiarMemoria();
 
-                //aySleep.DeepSleepSegundos(segundosSleep);
+                aySleep.DeepSleepSegundos(segundosSleep);
 
-                Thread.Sleep((int)(segundosSleep * 1000));
+                //Thread.Sleep((int)(segundosSleep * 1000));
             }
         }
 
