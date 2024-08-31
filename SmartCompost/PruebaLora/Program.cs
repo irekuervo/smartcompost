@@ -1,6 +1,7 @@
 using nanoFramework.Hardware.Esp32;
 using System.Device.Gpio;
 using System.Device.Spi;
+using System.Text;
 using System.Threading;
 
 namespace PruebaLora
@@ -16,7 +17,6 @@ namespace PruebaLora
 
         public static void Main()
         {
-
             Configuration.SetPinFunction(PIN_MISO, DeviceFunction.SPI1_MISO);
             Configuration.SetPinFunction(PIN_MOSI, DeviceFunction.SPI1_MOSI);
             Configuration.SetPinFunction(PIN_CLK, DeviceFunction.SPI1_CLOCK);
@@ -32,19 +32,21 @@ namespace PruebaLora
 
             LoraDevice lora = new LoraDevice(spi, gpio);
 
-            lora.Restart();
 
-            var modo = lora.ModoOperacion;
+            int step = 100_000;
+            int i = 0;
 
-            lora.ModoOperacion = ModoMedicion.Sleep;
+            while (true)
+            {
+                if (i > 4)
+                    i = 0;
 
-            modo = lora.ModoOperacion;
+                lora.Iniciar(927_000_000 );
+                lora.Enviar(Encoding.UTF8.GetBytes("hola"));
+                Thread.Sleep(1000);
+                i++;
+            }
 
-            lora.ModoOperacion = ModoMedicion.Standby;
-
-            modo = lora.ModoOperacion;
-
-            Thread.Sleep(Timeout.Infinite);
         }
     }
 }

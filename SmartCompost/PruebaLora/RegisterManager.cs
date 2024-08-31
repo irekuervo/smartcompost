@@ -37,7 +37,7 @@ namespace PruebaLora
             return (byte)(ReadBytes(registerAddress, 1)[0] & mask);
         }
 
-        public void WriteAddress(byte address, byte value, byte mask = byte.MaxValue, bool validate = true)
+        public void Write(byte address, byte value, byte mask = byte.MaxValue, bool validate = true)
         {
             lock (byteLock)
             {

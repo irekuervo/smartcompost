@@ -39,7 +39,7 @@ namespace NodoAP
         private SmartCompostClient cliente;
         private GpioPin led;
         private LoRaDevice lora;
-        private const double FREQ_LORA = 433e6; //920_000_00;
+        private const double FREQ_LORA = 433e6; //920_000_000;
         /// ---------------------------------------------------------------
         private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
         private ArrayList desencolados = new ArrayList();
