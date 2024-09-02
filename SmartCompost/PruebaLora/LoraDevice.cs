@@ -47,9 +47,12 @@ namespace PruebaLora
 
             registers.Write((byte)Address.RegOpMode, 1, (byte)Mascaras.LongRangeMode); // seteamos modo lora
 
-            registers.Write((byte)Address.RegSyncWord, 0x12); // config sync word
+            // config sync word
+            registers.Write((byte)Address.RegSyncWord, 0x12);
 
-            registers.Write((byte)Address.RegPaDac, 0x87); // configuramos la potencia
+            // configuramos la potencia
+            // 3.4.3. High Power +20 dBm Operation
+            registers.Write((byte)Address.RegPaDac, 0x87);
 
             ModoOperacion = ModoOperacion.Standby;
         }
