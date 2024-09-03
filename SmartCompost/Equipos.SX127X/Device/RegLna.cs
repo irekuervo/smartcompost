@@ -22,13 +22,13 @@ namespace Equipos.SX127X
 	[Flags]
 	public enum RegLnaLnaGain : byte
 	{
-		G1 = 0b00100000,
+		G1 = 0b00100000, // Maximum
 		Default = G1,
 		G2 = 0b01000000,
 		G3 = 0b01100000,
 		G4 = 0b10000000,
 		G5 = 0b10100000,
-		G6 = 0b11000000
+		G6 = 0b11000000 // Minimum
 	}
 	// TODO : Fix lnaBoost default as there must be a better way of doing this
 	// public const bool LnaBoostDefault = false; 

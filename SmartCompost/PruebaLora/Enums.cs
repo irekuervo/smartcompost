@@ -68,7 +68,7 @@
         Maximum = RegPaDac,
     }
 
-    public enum ModoOperacion
+    public enum ModoOperacion : byte
     {
         Sleep = 0x00,
         Standby = 0x01,
@@ -80,11 +80,17 @@
         ChannelActivityDetection = 0x07,
     }
 
-    public enum Mascaras
+    public enum Mascaras : byte
     {
         ModoOperacion = 0b00000111,
         LongRangeMode = 0b10000000,
         ModulationType = 0b01100000,
         LowFrequencyModeOn = 0b00010000,
+        AGC_AutoOn = 0b00000100,
+        SpreadingFactor = 0b11110000,
+        RxPayloadCrcOn = 0b00000110,
+        Bw = 0b11110000,
+        CodingRate = 0b00001110,
+        RxDoneMask = 0b01000000,
     }
 }

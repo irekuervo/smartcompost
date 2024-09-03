@@ -17,7 +17,7 @@ namespace PruebaMedidor
 
         private GpioController gpio;
         private GpioPin led;
-        private LoRaDevice lora;
+        private EquipoLora lora;
         private uint paquete = 1;
         public override void Setup()
         {
@@ -31,7 +31,7 @@ namespace PruebaMedidor
             led.Write(PinValue.High);
 
             // Configuramos el Lora
-            lora = new LoRaDevice();
+            lora = new EquipoLora();
             lora.OnReceive += Device_OnReceive;
             lora.OnTransmit += Device_OnTransmit;
             // Intentamos conectarnos al lora

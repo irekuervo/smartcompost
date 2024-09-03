@@ -32,7 +32,7 @@ namespace PruebaLora
         }
 
 
-        public byte ReadAddress(byte registerAddress, byte mask = byte.MaxValue)
+        public byte Read(byte registerAddress, byte mask = byte.MaxValue)
         {
             return (byte)(ReadBytes(registerAddress, 1)[0] & mask);
         }
@@ -42,7 +42,7 @@ namespace PruebaLora
             lock (byteLock)
             {
                 // Leemos todo el address
-                byte addressValue = ReadAddress(address);
+                byte addressValue = Read(address);
                 // Nos quedamos con los valores fuera de la mascara para preservarlos
                 byte outOfMaskValue = (byte)(addressValue & ~mask);
                 // Juntamos todo
@@ -53,7 +53,7 @@ namespace PruebaLora
                 if (validate)
                 {
                     Thread.Sleep(1);
-                    var realVal = ReadAddress(address, mask);
+                    var realVal = Read(address, mask);
                     if ((realVal & mask) != (value & mask))
                         throw new Exception($"Valor recibido {realVal} distinto al escrito {value} en {address}");
                 }
