@@ -12,7 +12,7 @@ namespace Lora_Reciever
     public class Program
     {
         const int SPI_BUS_ID = 1;
-        const double Frequency = 915_000_000;//433e6;
+        const double Frequency = 433e6;//915_000_000.0;
 
         static SX127XDevice reciever;
         static GpioController gpio;
@@ -52,18 +52,14 @@ namespace Lora_Reciever
             {
                 try
                 {
-                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI00);
+                    reciever = new SX127XDevice(spi, gpio, dio0Pin: recieverDI00, resetPin: recieverReset);
                     reciever.Initialize(
                         Frequency,
-                        outputPower: SX127XDevice.OutputPowerPABoostMax,
                         lnaGain: RegLnaLnaGain.Default,
                         lnaBoost: true,
                         powerAmplifier: RegPAConfigPASelect.PABoost,
                         rxPayloadCrcOn: true,
-                        rxDoneignoreIfCrcMissing: false,
-                        bandwidth: RegModemConfig1Bandwidth._62_5KHz,
-                        lowDataRateOptimize: RegModemConfig3LowDataRateOptimise.Enabled,
-                        agcAutoOn: RegModemConfig3AgcAutoOn.AgcLoop
+                        rxDoneignoreIfCrcMissing: false
                         );
 
                     Debug.WriteLine("reciever OK!");
@@ -95,14 +91,6 @@ namespace Lora_Reciever
         {
             try
             {
-                // Remove unprintable characters from messages
-                for (int index = 0; index < e.Data.Length; index++)
-                {
-                    if ((e.Data[index] < 0x20) || (e.Data[index] > 0x7E))
-                    {
-                        e.Data[index] = 0x7C;
-                    }
-                }
                 string messageText = UTF8Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
 
                 led.Write(PinValue.High);

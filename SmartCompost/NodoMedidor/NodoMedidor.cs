@@ -19,7 +19,7 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 5;
+        private const int segundosSleep = 1;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
