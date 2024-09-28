@@ -40,6 +40,12 @@ namespace NodoAP
         private SmartCompostClient cliente;
         private GpioPin led;
         private LoRaDevice lora;
+        private const int PIN_MISO = 19;
+        private const int PIN_MOSI = 23;
+        private const int PIN_CLK = 18;
+        private const int PIN_NSS = 5;
+        private const int PIN_DIO0 = 25;
+        private const int PIN_RESET = 14;
         private const double FREQ_LORA = 433e6; //920_000_000;
         /// ---------------------------------------------------------------
         private const int ADC_BATERIA = 3;  //pin 39        // ADC Channel 6 - GPIO 34
@@ -100,7 +106,13 @@ namespace NodoAP
             /// Configuramos el Lora
             Hilo.Intentar(() =>
                 {
-                    lora = new LoRaDevice();
+                    lora = new LoRaDevice(
+                        pinMISO: PIN_MISO,
+                        pinMOSI: PIN_MOSI,
+                        pinSCK: PIN_CLK,
+                        pinNSS: PIN_NSS,
+                        pinDIO0: PIN_DIO0,
+                        pinReset: PIN_RESET);
                     lora.Iniciar();
                     lora.ModoRecibir();
                 },

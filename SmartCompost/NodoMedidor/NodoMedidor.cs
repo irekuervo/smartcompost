@@ -29,8 +29,8 @@ namespace NodoMedidor
         private const int PIN_MOSI = 23;
         private const int PIN_CLK = 18;
         private const int PIN_NSS = 5;
-        private const int PIN_DIO0 = 22;
-        private const int PIN_RESET = 21;
+        private const int PIN_DIO0 = 25;
+        private const int PIN_RESET = 14;
         // -----LED---------------------------------------------------------
         private GpioController gpio;
         private GpioPin led;
