@@ -113,7 +113,7 @@ namespace NodoAP
                         pinNSS: PIN_NSS,
                         pinDIO0: PIN_DIO0,
                         pinReset: PIN_RESET);
-                    lora.Iniciar();
+                    lora.Iniciar(FREQ_LORA);
                     lora.ModoRecibir();
                 },
                 "Lora",
