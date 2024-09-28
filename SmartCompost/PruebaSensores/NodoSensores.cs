@@ -93,7 +93,7 @@ namespace NodoAP
         }
 
         // FUNCIONES
-        private int MedirHumedad()
+        private double MedirHumedad()
         {
             /*
             * La matematica del sensor es la siguiente

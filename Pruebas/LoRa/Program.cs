@@ -13,12 +13,12 @@ namespace LoRa
     public class Program
     {
         const int SPI_BUS_ID = 1;
-        const double Frequency = 915_000_000;//433e6;//915_000_000.0;
+        const double Frequency = 916_000_000;//433e6;//915_000_000.0;
 
         static SX127XDevice sender;
         const int sender_NSS = Gpio.IO05; // Selector de slave, es cualquier pin
-        const int senderDI00 = 22; // Gpio.IO25; // Pin para obtener interrupcion de envio/recepcion
-        const int senderReset = 21;// Gpio.IO14;
+        const int senderDI00 = Gpio.IO25; // 22;  Pin para obtener interrupcion de envio/recepcion
+        const int senderReset = Gpio.IO14; // 21; 
 
         public static void Main()
         {

@@ -22,7 +22,7 @@ namespace NodoMedidor
         private const int segundosSleep = 60;
 
         // -----LORA--------------------------------------------------------
-        private EquipoLora lora;
+        private LoRaDevice lora;
         private const double FRECUENCIA = 433e6; //920_000_000; //Banda libre (915 – 928) MHz Resolución N° 4653/19:
 
         private const int PIN_MISO = 19;
@@ -55,7 +55,7 @@ namespace NodoMedidor
         // -----VARS--------------------------------------------------------
         private MedicionesNodoDto dto;
 
-        private readonly byte[] bufferLora = new byte[EquipoLora.MAX_LORA_PAYLOAD_BYTES];
+        private readonly byte[] bufferLora = new byte[LoRaDevice.MAX_LORA_PAYLOAD_BYTES];
 
         public override void Setup()
         {
@@ -67,7 +67,7 @@ namespace NodoMedidor
             // -----LORA--------------------------------------------------------
             Hilo.Intentar(() =>
             {
-                lora = new EquipoLora(
+                lora = new LoRaDevice(
                     pinMISO: PIN_MISO,
                     pinMOSI: PIN_MOSI,
                     pinSCK: PIN_CLK,

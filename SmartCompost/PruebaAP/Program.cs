@@ -23,7 +23,7 @@ namespace PruebaAP
         private static ConfigNodo Config = ConfigNodo.Default();
 
         private static GpioPin led;
-        private static EquipoLora lora;
+        private static LoRaDevice lora;
         private static SmartCompostClient cliente;
 
         private static ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
@@ -97,7 +97,7 @@ namespace PruebaAP
             /// Configuramos el Lora
             Intentar(() =>
             {
-                lora = new EquipoLora();
+                lora = new LoRaDevice();
                 lora.Iniciar();
             }, "Lora");
             lora.OnReceive += Device_OnReceive;
