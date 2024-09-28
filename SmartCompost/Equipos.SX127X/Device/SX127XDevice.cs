@@ -277,7 +277,7 @@ namespace Equipos.SX127X
             }
 
             // Put the device into sleep mode so registers can be changed
-            SetMode(RegOpModeMode.Sleep);
+            Sleep();
 
             // Configure RF Carrier frequency 
             if (_frequency != FrequencyDefault)
@@ -706,6 +706,11 @@ namespace Equipos.SX127X
             _registerManager.WriteByte((byte)Registers.RegDioMapping1, (byte)RegDioMapping1.Dio0RxDone);
 
             SetMode(RegOpModeMode.ReceiveContinuous);
+        }
+
+        public void Sleep()
+        {
+            SetMode(RegOpModeMode.Sleep);
         }
 
         public void Send(byte[] messageBytes) => Send(messageBytes, 0, messageBytes.Length);

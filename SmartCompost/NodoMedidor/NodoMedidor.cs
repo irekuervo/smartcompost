@@ -19,7 +19,7 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 60;
+        private const int segundosSleep = 30;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
@@ -59,6 +59,9 @@ namespace NodoMedidor
 
         public override void Setup()
         {
+            // TODO: Esto deberia hacerse con el deploy, no hardcodearse
+            Config.NumeroSerie = "1a352781-7dc2-11ef-abe5-0242ac160002";
+
             // -----LED---------------------------------------------------------
             gpio = new GpioController();
             led = gpio.OpenPin(PIN_LED_ONBOARD, PinMode.Output);
@@ -74,7 +77,7 @@ namespace NodoMedidor
                     pinNSS: PIN_NSS,
                     pinDIO0: PIN_DIO0,
                     pinReset: PIN_RESET);
-                lora.Iniciar();
+                lora.Iniciar(FRECUENCIA);
             }, "Lora", accionException: () => { lora?.Dispose(); });
 
             // -----SENSORES----------------------------------------------------
@@ -98,8 +101,6 @@ namespace NodoMedidor
             }, intentos: 3);
 
             // -----DTO---------------------------------------------------------
-            // TODO: terminar
-            Config.NumeroSerie = "b2c40a98-5534-11ef-92ae-0242ac140004";
             dto = new MedicionesNodoDto() { serial_number = Config.NumeroSerie };
 
             led.Write(PinValue.Low);  // Avisamos que terminamos de configurar
@@ -130,9 +131,11 @@ namespace NodoMedidor
 
                 LimpiarMemoria();
 
-                aySleep.DeepSleepSegundos(segundosSleep);
+                lora.ModoSleep();
 
-                //Thread.Sleep((int)(segundosSleep * 1000));
+                //aySleep.DeepSleepSegundos(segundosSleep);
+
+                Thread.Sleep((int)(segundosSleep * 1000));
             }
         }
 

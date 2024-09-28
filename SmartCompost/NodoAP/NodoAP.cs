@@ -10,6 +10,7 @@ using NanoKernel.Logging;
 using NanoKernel.Nodos;
 using System;
 using System.Collections;
+using System.Device.Adc;
 using System.Device.Gpio;
 using System.IO;
 using System.Threading;
@@ -34,12 +35,16 @@ namespace NodoAP
         private const int clientTimeoutSeconds = 20;
         private const int intentosEnvioMediciones = 1; // Creo que no lo vamos a usar > 1
         private const int milisIntentoEnvioMediciones = 100;
-        private const int segundosMedicionNodoAp = 60 * 5;
+        private const int segundosMedicionNodoAp = 60 * 1;
         /// ---------------------------------------------------------------
         private SmartCompostClient cliente;
         private GpioPin led;
         private LoRaDevice lora;
         private const double FREQ_LORA = 433e6; //920_000_000;
+        /// ---------------------------------------------------------------
+        private const int ADC_BATERIA = 3;  //pin 39        // ADC Channel 6 - GPIO 34
+        private AdcController adc;
+        private AdcChannel bateriaAdcSensor;
         /// ---------------------------------------------------------------
         private ConcurrentQueue colaMedicionesNodo = new ConcurrentQueue(tamanioCola);
         private ArrayList desencolados = new ArrayList();
@@ -54,12 +59,12 @@ namespace NodoAP
 
         public override void Setup()
         {
-            // ES: BORRAR!!!!!! Estoy probando en mi casa
+            // TODO: Esto deberia hacerse con el deploy, no hardcodearse
             Config.RouterSSID = "SmartCompost"; //"Bondiola 2.4"; // 
             Config.RouterPassword = "Quericocompost"; //"conpapafritas";  //
             Config.SmartCompostHost = "smartcompost.net"; //"181.88.245.34"; //"192.168.1.6";
             Config.SmartCompostPort = "8080";
-            Config.NumeroSerie = "7e0674f0-5451-11ef-92ae-0242ac140004";
+            Config.NumeroSerie = "58670345-7dc4-11ef-919e-0242ac160004";
 
             /// Configuramos el LED
             var gpio = new GpioController();
@@ -97,6 +102,7 @@ namespace NodoAP
                 {
                     lora = new LoRaDevice();
                     lora.Iniciar();
+                    lora.ModoRecibir();
                 },
                 "Lora",
                 accionException: () =>
@@ -115,7 +121,9 @@ namespace NodoAP
             Hilo.Intentar(() => cliente.AddNodeMeasurments(Config.NumeroSerie, medicionNodo), intentos: 3);
             medicionNodo.measurements.Clear();
 
-            // Inicializamos el medidor
+            // Inicializamos el medidor del ap
+            adc = new AdcController();
+            bateriaAdcSensor = adc.OpenChannel(ADC_BATERIA);
             medidor = new Medidor(segundosMedicionNodoAp * 1000);
             medidor.OnMedicionesEnPeriodoCallback += Medidor_OnMedicionesEnPeriodoCallback;
             medidor.Iniciar();
@@ -272,7 +280,7 @@ namespace NodoAP
                 if (enviados > 0)
                     medicionNodo.AgregarMedicion(enviados, TiposMediciones.MensajesEnviados);
 
-                var bateria = 0; // TODO MEDIR BATERIA
+                var bateria = MedirBateria();
                 if (bateria > 0)
                     medicionNodo.AgregarMedicion(bateria, TiposMediciones.Bateria);
 
@@ -291,6 +299,23 @@ namespace NodoAP
             {
                 medicionNodo.measurements.Clear();
             }
+        }
+
+        private float MedirBateria()
+        {
+            int analogValue = bateriaAdcSensor.ReadValue();
+            float vSensor = analogValue / 4095f * 3.3f;
+
+            // Cuenta de la bateria, mapeando las cotas con el ADC
+            // y = a x + b
+            // 0 = a * 2.52 V + b
+            // 100 = a * 3.3 V + b
+            // y = 128.21 * x − 323.06
+            double bateriaPorcentaje = 128.21 * vSensor - 323.06;
+            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
+
+            return analogValue;
         }
 
         private void Blink(int time)

@@ -59,10 +59,11 @@ namespace Equipos.SX127X
                 rxDoneignoreIfCrcMissing: false
                 );
 
-            device.Receive();
-
             iniciado = true;
         }
+
+        public void ModoRecibir() => device.Receive();
+        public void ModoSleep() => device.Sleep();
 
         public void Enviar(byte[] data) => Enviar(data, 0, data.Length);
 
@@ -72,9 +73,6 @@ namespace Equipos.SX127X
                 throw new Exception("El device no esta iniciado");
 
             device.Send(data, index, length);
-
-            // Me parece que esto jode
-            //device.Receive();
         }
 
         public void Dispose()
