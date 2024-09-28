@@ -67,7 +67,8 @@ namespace Equipos.SX127X
             }
         }
 
-        public void WriteByte(byte address, byte value, bool validate = false)
+        // Esto asume que el valor ya esta enmascarado correctamente
+        public void WriteByte(byte address, byte value)
         {
             lock (byteLock)
             {
@@ -75,13 +76,8 @@ namespace Equipos.SX127X
 
                 WriteBytes(address, byteBuffer);
 
-                if (validate)
-                {
-                    // TODO: aveces falla, ver si es problema de uso, o de implementacion (faltara esperar dsp de escribir?)
-                    var realVal = ReadByte(address);
-                    if (realVal != value)
-                        throw new Exception($"Valor recibido {realVal} distinto al escrito {value} en {address}");
-                }
+                // Nota para erik: el validate lo saque porque no tiene que dar igual al valor.
+                // Hay que comprar contra una mascara para poder validar realmente el registro
             }
         }
 

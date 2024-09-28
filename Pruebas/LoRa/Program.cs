@@ -13,12 +13,12 @@ namespace LoRa
     public class Program
     {
         const int SPI_BUS_ID = 1;
-        const double Frequency = 916_000_000;//433e6;//915_000_000.0;
+        const double Frequency = 433e6;//915_000_000.0;
 
         static SX127XDevice sender;
         const int sender_NSS = Gpio.IO05; // Selector de slave, es cualquier pin
-        const int senderDI00 = Gpio.IO25; // 22;  Pin para obtener interrupcion de envio/recepcion
-        const int senderReset = Gpio.IO14; // 21; 
+        const int senderDI00 = Gpio.IO25; // Pin para obtener interrupcion de envio/recepcion
+        const int senderReset = Gpio.IO14;
 
         public static void Main()
         {
@@ -47,15 +47,11 @@ namespace LoRa
                     sender = new SX127XDevice(spi, gpio, dio0Pin: senderDI00);
                     sender.Initialize(
                         Frequency,
-                        outputPower: SX127XDevice.OutputPowerPABoostMax,
                         lnaGain: RegLnaLnaGain.Default,
                         lnaBoost: true,
                         powerAmplifier: RegPAConfigPASelect.PABoost,
                         rxPayloadCrcOn: true,
-                        rxDoneignoreIfCrcMissing: false,
-                        bandwidth: RegModemConfig1Bandwidth._62_5KHz,
-                        lowDataRateOptimize: RegModemConfig3LowDataRateOptimise.Enabled,
-                        agcAutoOn: RegModemConfig3AgcAutoOn.AgcLoop
+                        rxDoneignoreIfCrcMissing: false
                         );
 
                     Debug.WriteLine("sender OK!");
@@ -83,7 +79,7 @@ namespace LoRa
                 string messageText = $"Sender envia {sendCount += 1}!";
                 byte[] messageBytes = UTF8Encoding.UTF8.GetBytes(messageText);
                 sender.Send(messageBytes);
-                Thread.Sleep(5000);
+                Thread.Sleep(1000);
             }
 
             //Thread.Sleep(Timeout.Infinite);

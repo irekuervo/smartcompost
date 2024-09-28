@@ -48,7 +48,7 @@ namespace Equipos.SX127X
             device.OnTransmit += (object sender, OnDataTransmitedEventArgs e) => OnTransmit?.Invoke(sender, e);
         }
 
-        public void Iniciar(double frequency = SX127XDevice.FrequencyDefault)
+        public void Iniciar(double frequency)
         {
             device.Initialize(
                 frequency,

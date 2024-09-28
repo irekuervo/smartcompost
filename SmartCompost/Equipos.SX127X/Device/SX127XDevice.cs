@@ -28,7 +28,7 @@ namespace Equipos.SX127X
         private const double SX127X_FXOSC = 32000000.0;
         private const double SX127X_FSTEP = SX127X_FXOSC / 524288.0;
 
-        public const double FrequencyDefault = 433e6;
+        public const double FrequencyDefault = 434000000.0;
 
         public const byte MessageLengthMinimum = 0;
         public const byte MessageLengthMaximum = 128;
@@ -39,8 +39,8 @@ namespace Equipos.SX127X
         // RegPAConfig constants for outputpower param validation and RFO to PABoost tipping point.
         public const sbyte OutputPowerDefault = 13;
 
-        private const sbyte OutputPowerPABoostMin = 2;
-        private const sbyte OutputPowerPABoostMax = 20;
+        public const sbyte OutputPowerPABoostMin = 2;
+        public const sbyte OutputPowerPABoostMax = 20;
         private const sbyte OutputPowerPABoostPaDacThreshhold = 17;
 
         private const sbyte OutputPowerRfoMin = -4;
@@ -54,8 +54,8 @@ namespace Equipos.SX127X
 
         // RegModemConfig2 for MSb RegSymbTimeoutLsb for LSB
         public const ushort SymbolTimeoutDefault = 0x64;
-        private const ushort SymbolTimeoutMin = 0x0;
-        private const ushort SymbolTimeoutMax = 0x1023;
+        public const ushort SymbolTimeoutMin = 0x0;
+        public const ushort SymbolTimeoutMax = 0x1023;
         private const byte SymbolTimeoutMsbMask = 0b0011;
 
         // RegReambleMsb & RegReambleLsb
@@ -164,7 +164,7 @@ namespace Equipos.SX127X
                 Thread.Sleep(50);
             }
 
-            _registerManager = new RegisterManager(spiDevice, MessageLengthMaximum);
+            _registerManager = new RegisterManager(spiDevice);
 
             // Once the pins setup check that SX127X chip is present
             Byte regVersionValue = _registerManager.ReadByte((byte)Registers.RegVersion);
@@ -277,12 +277,12 @@ namespace Equipos.SX127X
             }
 
             // Put the device into sleep mode so registers can be changed
-            Sleep();
+            SetMode(RegOpModeMode.Sleep);
 
             // Configure RF Carrier frequency 
-            if (_frequency != FrequencyDefault)
+            if (frequency != FrequencyDefault)
             {
-                byte[] bytes = BitConverter.GetBytes((long)(_frequency / SX127X_FSTEP));
+                byte[] bytes = BitConverter.GetBytes((long)(frequency / SX127X_FSTEP));
                 _registerManager.WriteByte((byte)Registers.RegFrMsb, bytes[2]);
                 _registerManager.WriteByte((byte)Registers.RegFrMid, bytes[1]);
                 _registerManager.WriteByte((byte)Registers.RegFrLsb, bytes[0]);
@@ -378,8 +378,7 @@ namespace Equipos.SX127X
                         regLnaValue |= (byte)RegLnaLnaBoost.LfOn;
                     }
                 }
-                //TODO: REVISAR!! EN EL LORA ORIGINAL TAMPOCO TE VUELVE EL MISMO VALOR
-                _registerManager.WriteByte((byte)Registers.RegLna, regLnaValue, validate: false);
+                _registerManager.WriteByte((byte)Registers.RegLna, regLnaValue);
             }
 
             // Set regModemConfig1 if any of the settings not defaults
@@ -580,7 +579,7 @@ namespace Equipos.SX127X
                 ProcessChannelActivityDetected(irqFlags);
             }
 
-            _registerManager.WriteByte((byte)Registers.RegIrqFlags, regIrqFlagsToClear, validate: false);
+            _registerManager.WriteByte((byte)Registers.RegIrqFlags, regIrqFlagsToClear);
         }
 
         private void ProcessRxTimeout(byte irqFlags)
@@ -708,11 +707,6 @@ namespace Equipos.SX127X
             SetMode(RegOpModeMode.ReceiveContinuous);
         }
 
-        public void Sleep()
-        {
-            SetMode(RegOpModeMode.Sleep);
-        }
-
         public void Send(byte[] messageBytes) => Send(messageBytes, 0, messageBytes.Length);
 
         public void Send(byte[] messageBytes, int index, int length)
@@ -761,6 +755,11 @@ namespace Equipos.SX127X
             }
 
             Debug.WriteLine("");
+        }
+
+        internal void Sleep()
+        {
+            SetMode(RegOpModeMode.Sleep);
         }
     }
 }

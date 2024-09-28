@@ -98,7 +98,7 @@ namespace PruebaAP
             Intentar(() =>
             {
                 lora = new LoRaDevice();
-                lora.Iniciar();
+                lora.Iniciar(433e6);
             }, "Lora");
             lora.OnReceive += Device_OnReceive;
 
