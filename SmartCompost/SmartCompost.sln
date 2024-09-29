@@ -57,9 +57,11 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaBlink", "PruebaBlink\
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaLora", "PruebaLora\PruebaLora.nfproj", "{7E723357-D6E6-4885-8FCA-21F18045E046}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EquipoLora", "EquipoLora", "{AB4A969D-4C23-4D58-93C7-9373E7017E00}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LoraNew", "LoraNew", "{AB4A969D-4C23-4D58-93C7-9373E7017E00}"
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaLoraSender", "PruebaLoraSender\PruebaLoraSender.nfproj", "{F3809FF3-0574-4AE7-A828-14C185EA8278}"
+EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaLoraReciever", "PruebaLoraReciever\PruebaLoraReciever.nfproj", "{F1337681-DEBD-4F4C-B9F0-2C969686D98C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -189,6 +191,12 @@ Global
 		{F3809FF3-0574-4AE7-A828-14C185EA8278}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3809FF3-0574-4AE7-A828-14C185EA8278}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F3809FF3-0574-4AE7-A828-14C185EA8278}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -212,6 +220,7 @@ Global
 		{7E723357-D6E6-4885-8FCA-21F18045E046} = {900C3832-19E4-44D0-965A-61357F2B5EA6}
 		{AB4A969D-4C23-4D58-93C7-9373E7017E00} = {1BD88219-7E30-4747-ADD2-C6961AA547E4}
 		{F3809FF3-0574-4AE7-A828-14C185EA8278} = {AB4A969D-4C23-4D58-93C7-9373E7017E00}
+		{F1337681-DEBD-4F4C-B9F0-2C969686D98C} = {AB4A969D-4C23-4D58-93C7-9373E7017E00}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {76F05DF7-0BCF-4EC3-82E4-020FFABA6BBC}
