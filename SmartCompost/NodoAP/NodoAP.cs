@@ -136,7 +136,7 @@ namespace NodoAP
             bateriaAdcSensor = adc.OpenChannel(ADC_BATERIA);
             medidor = new Medidor(segundosMedicionNodoAp * 1000);
             medidor.OnMedicionesEnPeriodoCallback += Medidor_OnMedicionesEnPeriodoCallback;
-            //medidor.Iniciar();
+            medidor.Iniciar();
 
             // Escuchamos cuando terminamos de configurar
             lora.OnReceive += Device_OnReceive;
@@ -221,6 +221,7 @@ namespace NodoAP
                 }
 
                 if (desencolados.Count == 0) {
+                    medidor.Contar(MED_ERRORES);
                     Logger.Error("No se puede enviar nada");
                     return;
                 }

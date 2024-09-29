@@ -19,7 +19,7 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 1;
+        private const int segundosSleep = 10;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
@@ -60,7 +60,8 @@ namespace NodoMedidor
         public override void Setup()
         {
             // TODO: Esto deberia hacerse con el deploy, no hardcodearse
-            Config.NumeroSerie = "1a352781-7dc2-11ef-abe5-0242ac160002";
+            //Config.NumeroSerie = "1a352781-7dc2-11ef-abe5-0242ac160002"; // nodo 1
+            Config.NumeroSerie = "1a56a612-7dc2-11ef-abe5-0242ac160002"; // nodo 2
 
             // -----LED---------------------------------------------------------
             gpio = new GpioController();
