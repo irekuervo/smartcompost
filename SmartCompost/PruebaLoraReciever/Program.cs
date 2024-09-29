@@ -1,4 +1,6 @@
 using Equipos.SX127X;
+using System;
+using System.Text;
 using System.Threading;
 
 namespace PruebaLoraReciever
@@ -32,7 +34,15 @@ namespace PruebaLoraReciever
 
         private static void Lora_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
-           var pepito = e.Data;
+            try
+            {
+                string messageText = UTF8Encoding.UTF8.GetString(e.Data, 0, e.Data.Length);
+                Console.WriteLine($"RECIEVER: PacketSNR: {e.PacketSnr:0.0}, Packet RSSI: {e.PacketRssi}dBm, RSSI: {e.Rssi}dBm, Length: {e.Data.Length}bytes \r\n{messageText}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
