@@ -2,6 +2,7 @@ using nanoFramework.Hardware.Esp32;
 using System;
 using System.Device.Gpio;
 using System.Device.Spi;
+using System.Threading;
 using static Equipos.SX127X.SX127XDevice;
 
 namespace Equipos.SX127X
@@ -60,17 +61,23 @@ namespace Equipos.SX127X
                 );
 
             iniciado = true;
+
+            Thread.Sleep(100);
         }
 
         public void ModoRecibir() => device.Receive();
-        public void ModoSleep() => device.Sleep();
+
+        /// <summary>
+        /// OJO!! Se desconfigura todo, por eso iniciado = false
+        /// </summary>
+        public void ModoSleep() { iniciado = false; device.Sleep(); }
 
         public void Enviar(byte[] data) => Enviar(data, 0, data.Length);
 
         public void Enviar(byte[] data, int index, int length)
         {
             if (!iniciado)
-                throw new Exception("El device no esta iniciado");
+                Iniciar(this.device.Frequency);
 
             device.Send(data, index, length);
         }

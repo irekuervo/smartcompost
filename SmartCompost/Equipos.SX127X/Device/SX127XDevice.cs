@@ -131,6 +131,8 @@ namespace Equipos.SX127X
         public delegate void onChannelActivityDetectedEventHandler(Object sender, OnChannelActivityDetectedEventArgs e);
         public event onChannelActivityDetectedEventHandler OnChannelActivityDetected;
 
+        public double Frequency => _frequency;
+
         // Hardware configuration support
         private readonly int _resetPin;
         private readonly GpioController _gpioController = null;

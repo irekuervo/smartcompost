@@ -19,7 +19,6 @@ namespace NodoAP
 {
     /// <summary>
     /// 
-    ///  TODO: Agregar medicion bateria
     ///  TODO: Arreglar frecuencia a una permitida por ENACOM
     ///  
     /// </summary>
