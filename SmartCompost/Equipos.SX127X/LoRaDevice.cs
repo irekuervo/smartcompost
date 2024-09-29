@@ -62,7 +62,7 @@ namespace Equipos.SX127X
 
             iniciado = true;
 
-            Thread.Sleep(100);
+            Thread.Sleep(500);
         }
 
         public void ModoRecibir() => device.Receive();
