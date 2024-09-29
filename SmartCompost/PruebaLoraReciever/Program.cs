@@ -1,10 +1,7 @@
 using Equipos.SX127X;
-using System;
-using System.Diagnostics;
-using System.Text;
 using System.Threading;
 
-namespace PruebaLoraSender
+namespace PruebaLoraReciever
 {
     public class Program
     {
@@ -26,15 +23,16 @@ namespace PruebaLoraSender
                 pinDIO0: PIN_DIO0,
                 pinReset: PIN_RESET);
             lora.Iniciar(FRECUENCIA);
-            Thread.Sleep(500);
-            int sendCount = 0;
-            while (true)
-            {
-                string messageText = $"Sender envia {sendCount += 1}!";
-                byte[] messageBytes = UTF8Encoding.UTF8.GetBytes(messageText);
-                lora.Enviar(messageBytes);
-                Thread.Sleep(1000);
-            }
+            lora.ModoRecibir();
+
+            lora.OnReceive += Lora_OnReceive;
+
+            Thread.Sleep(Timeout.Infinite);
+        }
+
+        private static void Lora_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
+        {
+           var pepito = e.Data;
         }
     }
 }

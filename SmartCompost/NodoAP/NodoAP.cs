@@ -83,7 +83,7 @@ namespace NodoAP
             {
                 if (ayInternet.ConectarsePorWifi(Config.RouterSSID, Config.RouterPassword) == false)
                 {
-                    throw new Exception("No hay internet");
+                    throw new Exception("Fallo la conexion al router");
                 }
 
                 string ip = ayInternet.ObtenerIp();
@@ -121,8 +121,7 @@ namespace NodoAP
                 {
                     lora?.Dispose();
                 });
-            lora.OnReceive += Device_OnReceive;
-
+            
             /// Mediciones del AP
             medicionNodo = new MedicionesNodoDto();
             medicionNodo.serial_number = Config.NumeroSerie;
@@ -138,7 +137,10 @@ namespace NodoAP
             bateriaAdcSensor = adc.OpenChannel(ADC_BATERIA);
             medidor = new Medidor(segundosMedicionNodoAp * 1000);
             medidor.OnMedicionesEnPeriodoCallback += Medidor_OnMedicionesEnPeriodoCallback;
-            medidor.Iniciar();
+            //medidor.Iniciar();
+
+            // Escuchamos cuando terminamos de configurar
+            lora.OnReceive += Device_OnReceive;
 
             /// Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
@@ -207,17 +209,27 @@ namespace NodoAP
                 int tamanioCola = colaMedicionesNodo.Count();
                 for (int i = 0; i < ventanaDesencolamiento && !colaMedicionesNodo.IsEmpty(); i++)
                 {
-                    desencolados.Add((byte[])colaMedicionesNodo.Dequeue());
+                    var item = (byte[])colaMedicionesNodo.Dequeue();
+                    try
+                    {
+                        desencolados.Add(item);
+                        medicionesAp.AgregarMediciones(MedicionesNodoDto.FromBytes(item));
+                    }
+                    catch (Exception ex) {
+                        desencolados.Remove(item);
+                        Logger.Log(ex);
+                    }
+                }
+
+                if (desencolados.Count == 0) {
+                    Logger.Error("No se puede enviar nada");
+                    return;
                 }
 
                 Logger.Debug($"Desencolando {desencolados.Count}/{tamanioCola} medicionesNodo");
 
-                /// Armamos el mensaje
-                foreach (byte[] item in desencolados)
-                    medicionesAp.AgregarMediciones(MedicionesNodoDto.FromBytes(item));
-
+                // Enviamos el mensaje
                 medicionesAp.last_updated = DateTime.UtcNow;
-
                 bool enviado = Hilo.Intentar(
                     () => cliente.AddApMeasurments(Config.NumeroSerie, medicionesAp),
                     nombreIntento: "Envio mediciones Nodos",
