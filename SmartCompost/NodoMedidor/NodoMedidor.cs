@@ -19,7 +19,7 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 10;
+        private const int segundosSleep = 60*15;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
@@ -134,9 +134,11 @@ namespace NodoMedidor
 
                 lora.ModoSleep();
 
-                //aySleep.DeepSleepSegundos(segundosSleep);
+                Logger.Debug($"Sleep por {segundosSleep}seg");
 
-                Thread.Sleep((int)(segundosSleep * 1000));
+                aySleep.DeepSleepSegundos(segundosSleep);
+
+                //Thread.Sleep((int)(segundosSleep * 1000));
             }
         }
 
@@ -163,12 +165,12 @@ namespace NodoMedidor
         {
             if (!ds18b20.TryReadTemperature(out var currentTemperature))
             {
-                Logger.Error("Error de lectura!");
+                Logger.Error("Temperatura: Error de lectura!");
                 return ERROR_TEMP;
             }
             else
             {
-                Logger.Debug($"Temperature: {currentTemperature.DegreesCelsius.ToString("F")}\u00B0C");
+                Logger.Debug($"Temperatura: {currentTemperature.DegreesCelsius.ToString("F")}\u00B0C");
                 return (float)currentTemperature.DegreesCelsius;
             }
         }

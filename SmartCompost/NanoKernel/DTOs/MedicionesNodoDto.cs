@@ -72,7 +72,8 @@ namespace NanoKernel.DTOs
                 {
                     MedicionDto m = new MedicionDto();
                     m.value = br.ReadSingle();
-                    m.timestamp = new DateTime(br.ReadInt64());
+                    br.ReadInt64(); // Hay que leer, pero no lo usamos
+                    m.timestamp = medicionesNodoDto.last_updated;
                     m.type = br.ReadString();
                     medicionesNodoDto.measurements.Add(m);
                 }
@@ -83,7 +84,9 @@ namespace NanoKernel.DTOs
 
         public static void SetearTimestamp(byte[] data, MemoryStream ms, BinaryReader br)
         {
+            // leemos el serial_number
             br.ReadString();
+            // seteamos el last_updated, y lo usamos como unica fecha
             Array.Copy(BitConverter.GetBytes(DateTime.UtcNow.Ticks), 0, data, (int)ms.Position, sizeof(long));
         }
     }
