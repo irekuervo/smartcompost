@@ -28,6 +28,11 @@ namespace NanoKernel.Ayudantes
             }
         }
 
+        /// <summary>
+        /// Encola un objeto
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns>Devuelve null si la cola no desborda, sino devuelve el objeto desbordado</returns>
         public object Enqueue(object item)
         {
             lock (lockObject)

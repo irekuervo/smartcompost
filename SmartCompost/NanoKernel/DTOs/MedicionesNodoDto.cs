@@ -73,14 +73,18 @@ namespace NanoKernel.DTOs
                     MedicionDto m = new MedicionDto();
                     m.value = br.ReadSingle();
                     m.timestamp = new DateTime(br.ReadInt64());
-                    // TODO: usamos la misma fecha para las mediciones ya que los nodos no tienen RTC
-                    m.timestamp = medicionesNodoDto.last_updated;
                     m.type = br.ReadString();
                     medicionesNodoDto.measurements.Add(m);
                 }
 
                 return medicionesNodoDto;
             }
+        }
+
+        public static void SetearTimestamp(byte[] data, MemoryStream ms, BinaryReader br)
+        {
+            br.ReadString();
+            Array.Copy(BitConverter.GetBytes(DateTime.UtcNow.Ticks), 0, data, (int)ms.Position, sizeof(long));
         }
     }
 
