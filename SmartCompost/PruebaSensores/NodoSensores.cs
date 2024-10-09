@@ -39,9 +39,6 @@ namespace NodoAP
             /* BATERIA SENSOR   -----> ADC Channel 6 - GPIO 34 */
             bateriaAdcSensor = adc.OpenChannel(6);
 
-            /* BATERIA AP       -----> ADC Channel 4 - GPIO 32 */
-            // bateriaAdcAp = adc.OpenChannel(4);
-
             ConfigurarSensorTemperatura();
         }
 
@@ -71,9 +68,9 @@ namespace NodoAP
 
         public override void Loop(ref bool activo)
         {
-            //MedirTemperatura();
+            MedirTemperatura();
             MedirHumedad();
-            //MedirBateriaSensor();
+            MedirBateriaSensor();
 
             Thread.Sleep(1000);
         }
@@ -93,7 +90,7 @@ namespace NodoAP
         }
 
         // FUNCIONES
-        private int MedirHumedad()
+        private double MedirHumedad()
         {
             /*
             * La matematica del sensor es la siguiente
@@ -122,10 +119,25 @@ namespace NodoAP
             // y = a x + b
             // 0 = a * 2.52 V + b
             // 100 = a * 3.3 V + b
-            // y = 128.21 * x − 323.06
+            // y = 138,9 * x − 358.33
             double bateriaPorcentaje = 138.89 * vSensor - 358.33;
-            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            
+            if (bateriaPorcentaje >= 90)
+                bateriaPorcentaje = 100;
+
+            else if (bateriaPorcentaje >= 70)
+                bateriaPorcentaje = 80;
+
+            else if (bateriaPorcentaje >= 50)
+                bateriaPorcentaje = 60;
+
+            else if (bateriaPorcentaje >= 30)
+                bateriaPorcentaje = 40;
+            else
+                bateriaPorcentaje = 20;
+
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
+
 
             /*definir la matematica para devilver porcentaje*/
             Console.WriteLine($"Bateria: {bateriaPorcentaje}");
@@ -142,7 +154,21 @@ namespace NodoAP
             // 100 = a * 3.3 V + b
             // y = 151.52 * x − 400
             double bateriaPorcentaje = 151.52 * vSensor - 400;
-            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            
+            if (bateriaPorcentaje >= 90)
+                bateriaPorcentaje = 100;
+
+            else if (bateriaPorcentaje >= 70)
+                bateriaPorcentaje = 80;
+
+            else if (bateriaPorcentaje >= 50)
+                bateriaPorcentaje = 60;
+
+            else if (bateriaPorcentaje >= 30)
+                bateriaPorcentaje = 40;
+            else
+                bateriaPorcentaje = 20;
+
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
             /*definir la matematica para devilver porcentaje*/
