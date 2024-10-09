@@ -19,7 +19,7 @@ namespace NodoMedidor
     {
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const double segundosSleep = 0.5;
+        private const int segundosSleep = 60*15;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
@@ -29,8 +29,8 @@ namespace NodoMedidor
         private const int PIN_MOSI = 23;
         private const int PIN_CLK = 18;
         private const int PIN_NSS = 5;
-        private const int PIN_DIO0 = 22;
-        private const int PIN_RESET = 21;
+        private const int PIN_DIO0 = 25;
+        private const int PIN_RESET = 14;
         // -----LED---------------------------------------------------------
         private GpioController gpio;
         private GpioPin led;
@@ -54,16 +54,15 @@ namespace NodoMedidor
         //private const int PIN_VCC_SENSORES = 22; // Pin digial, para alimentar sensores
         // -----VARS--------------------------------------------------------
         private MedicionesNodoDto dto;
-        private Random random = new Random();
 
         private readonly byte[] bufferLora = new byte[LoRaDevice.MAX_LORA_PAYLOAD_BYTES];
-        private readonly string[] codigosMock = new string[]{
-            "b2c40a98-5534-11ef-92ae-0242ac140004",
-            "282a2047-5668-11ef-92ae-0242ac140004",
-            "2cbf5e3f-5668-11ef-92ae-0242ac140004" };
 
         public override void Setup()
         {
+            // TODO: Esto deberia hacerse con el deploy, no hardcodearse
+            //Config.NumeroSerie = "1a352781-7dc2-11ef-abe5-0242ac160002"; // nodo 1
+            Config.NumeroSerie = "1a56a612-7dc2-11ef-abe5-0242ac160002"; // nodo 2
+
             // -----LED---------------------------------------------------------
             gpio = new GpioController();
             led = gpio.OpenPin(PIN_LED_ONBOARD, PinMode.Output);
@@ -79,7 +78,7 @@ namespace NodoMedidor
                     pinNSS: PIN_NSS,
                     pinDIO0: PIN_DIO0,
                     pinReset: PIN_RESET);
-                lora.Iniciar();
+                lora.Iniciar(FRECUENCIA);
             }, "Lora", accionException: () => { lora?.Dispose(); });
 
             // -----SENSORES----------------------------------------------------
@@ -103,8 +102,6 @@ namespace NodoMedidor
             }, intentos: 3);
 
             // -----DTO---------------------------------------------------------
-            // TODO: terminar
-            Config.NumeroSerie = codigosMock[random.Next(3)];
             dto = new MedicionesNodoDto() { serial_number = Config.NumeroSerie };
 
             led.Write(PinValue.Low);  // Avisamos que terminamos de configurar
@@ -135,9 +132,13 @@ namespace NodoMedidor
 
                 LimpiarMemoria();
 
-                //aySleep.DeepSleepSegundos(segundosSleep);
+                lora.ModoSleep();
 
-                Thread.Sleep((int)(segundosSleep * 1000));
+                Logger.Debug($"Sleep por {segundosSleep}seg");
+
+                aySleep.DeepSleepSegundos(segundosSleep);
+
+                //Thread.Sleep((int)(segundosSleep * 1000));
             }
         }
 
@@ -164,12 +165,12 @@ namespace NodoMedidor
         {
             if (!ds18b20.TryReadTemperature(out var currentTemperature))
             {
-                Logger.Error("Error de lectura!");
+                Logger.Error("Temperatura: Error de lectura!");
                 return ERROR_TEMP;
             }
             else
             {
-                Logger.Debug($"Temperature: {currentTemperature.DegreesCelsius.ToString("F")}\u00B0C");
+                Logger.Debug($"Temperatura: {currentTemperature.DegreesCelsius.ToString("F")}\u00B0C");
                 return (float)currentTemperature.DegreesCelsius;
             }
         }

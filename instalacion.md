@@ -36,6 +36,9 @@ Abrir un proyecto Blank Application (nanoFramework), y actualizar todos los paqu
 Comprobar que en el explorador aparezca el device, y que se le puedan pedir sus "Device Capabilities"
 Darle run si quiero debuggear, o deploy si solo quiero deployar
 
+*** WIFI ***
+- Configurar el network configuration del board: Options=Auto Connect, Security/Encryption=WPA2
+
 *** ERRORES COMUNES ***
 
 - Tengo los paquetes de Nuget raros -> Visual Studio -> Tools -> Nuget Package Manager -> Package Manager Console 

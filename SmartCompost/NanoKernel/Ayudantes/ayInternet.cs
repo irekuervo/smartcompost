@@ -61,7 +61,6 @@ namespace NanoKernel.Ayudantes
                 return false;
             }
 
-            Logger.Debug("Wifi Conectado");
             return ayInternet.HayInternet();
         }
 
@@ -77,7 +76,6 @@ namespace NanoKernel.Ayudantes
         public static string DoPost(string endpointURL, object payload = null)
         {
             string jsonPayload = payload == null ? "{}" : aySerializacion.ToJson(payload);
-            Logger.Debug("Request a: " + endpointURL + jsonPayload);
             using (HttpClient client = new HttpClient())
             using (StringContent content = new StringContent(jsonPayload, Encoding.UTF8, "application/json"))
             using (HttpResponseMessage response = client.Post(endpointURL, content))
@@ -89,7 +87,6 @@ namespace NanoKernel.Ayudantes
                 else
                 {
                     string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                    Logger.Error(error);
                     return error;
                 }
             }
@@ -107,7 +104,6 @@ namespace NanoKernel.Ayudantes
                 else
                 {
                     string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                    Logger.Error(error);
                     return error;
                 }
             }

@@ -1,7 +1,6 @@
 ﻿using NanoKernel.Ayudantes;
 using NanoKernel.Comunicacion;
 using NanoKernel.Dominio;
-using NanoKernel.Logging;
 using System;
 using System.Collections;
 using System.IO;
@@ -23,59 +22,72 @@ namespace NanoKernel.DTOs
         {
             using (MemoryStream ms = new MemoryStream(buffer))
             {
-                BinaryWriter bw = new BinaryWriter(ms);
-                bw.Write((byte)TipoPaqueteEnum.MedicionNodo);
-                bw.Write(serial_number);
-                bw.Write(last_updated.Ticks);
-                bw.Write((ushort)measurements.Count);
-                foreach (MedicionDto item in measurements)
-                {
-                    bw.Write(item.value);
-                    bw.Write(item.timestamp.Ticks);
-                    bw.Write(item.type);
-                }
-                return ms.Position;
+                return Serialize(ms);
             }
+        }
+
+        public byte[] ToBytes()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                Serialize(ms);
+                return ms.ToArray();
+            }
+        }
+
+        private long Serialize(MemoryStream ms)
+        {
+            BinaryWriter bw = new BinaryWriter(ms);
+            bw.Write((byte)TipoPaqueteEnum.MedicionNodo);
+            bw.Write(serial_number);
+            bw.Write(last_updated.Ticks);
+            bw.Write((ushort)measurements.Count);
+            foreach (MedicionDto item in measurements)
+            {
+                bw.Write(item.value);
+                bw.Write(item.timestamp.Ticks);
+                bw.Write(item.type);
+            }
+            return ms.Position;
         }
 
         public static MedicionesNodoDto FromBytes(byte[] data)
         {
-            if (data == null) return null;
+            if (data == null) throw new Exception("Data es null");
 
-            try
+            var medicionesNodoDto = new MedicionesNodoDto();
+
+            using (MemoryStream ms = new MemoryStream(data))
+            using (BinaryReader br = new BinaryReader(ms))
             {
-                var medicionesNodoDto = new MedicionesNodoDto();
+                var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
+                if (tipoPaquete != TipoPaqueteEnum.MedicionNodo)
+                    throw new Exception("Paquete no es medicion nodo");
 
-                using (MemoryStream ms = new MemoryStream(data))
-                using (BinaryReader br = new BinaryReader(ms))
+                medicionesNodoDto.serial_number = br.ReadString();
+                medicionesNodoDto.last_updated = new DateTime(br.ReadInt64());
+
+                var mediciones = br.ReadUInt16();
+                for (int i = 0; i < mediciones; i++)
                 {
-                    var tipoPaquete = (TipoPaqueteEnum)br.ReadByte();
-                    if (tipoPaquete != TipoPaqueteEnum.MedicionNodo)
-                        return null;
-
-                    medicionesNodoDto.serial_number = br.ReadString();
-                    medicionesNodoDto.last_updated = new DateTime(br.ReadInt64());
-
-                    var mediciones = br.ReadUInt16();
-                    for (int i = 0; i < mediciones; i++)
-                    {
-                        MedicionDto m = new MedicionDto();
-                        m.value = br.ReadSingle();
-                        m.timestamp = new DateTime(br.ReadInt64());
-                        // TODO: usamos la misma fecha para las mediciones ya que los nodos no tienen RTC
-                        m.timestamp = medicionesNodoDto.last_updated;
-                        m.type = br.ReadString();
-                        medicionesNodoDto.measurements.Add(m);
-                    }
-
-                    return medicionesNodoDto;
+                    MedicionDto m = new MedicionDto();
+                    m.value = br.ReadSingle();
+                    br.ReadInt64(); // Hay que leer, pero no lo usamos
+                    m.timestamp = medicionesNodoDto.last_updated;
+                    m.type = br.ReadString();
+                    medicionesNodoDto.measurements.Add(m);
                 }
+
+                return medicionesNodoDto;
             }
-            catch (Exception ex)
-            {
-                Logger.Log(ex);
-                return null;
-            }
+        }
+
+        public static void SetearTimestamp(byte[] data, MemoryStream ms, BinaryReader br)
+        {
+            // leemos el serial_number
+            br.ReadString();
+            // seteamos el last_updated, y lo usamos como unica fecha
+            Array.Copy(BitConverter.GetBytes(DateTime.UtcNow.Ticks), 0, data, (int)ms.Position, sizeof(long));
         }
     }
 
@@ -84,5 +96,11 @@ namespace NanoKernel.DTOs
         public float value { get; set; }
         public DateTime timestamp { get; set; }
         public string type { get; set; }
+
+        public void Medir(float value)
+        {
+            this.value = value;
+            this.timestamp = DateTime.UtcNow;
+        }
     }
 }

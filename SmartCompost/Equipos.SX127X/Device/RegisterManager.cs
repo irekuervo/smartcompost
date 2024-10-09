@@ -7,7 +7,7 @@ namespace Equipos.SX127X
 
     public sealed class RegisterManager
     {
-        private const byte _registerAddressReadMask = 0X7f;
+        private const byte _registerAddressReadMask = 0x7f;
         private const byte _registerAddressWriteMask = 0x80;
 
         private readonly SpiDevice _spiDevice = null;
@@ -51,7 +51,7 @@ namespace Equipos.SX127X
                     var write = new SpanByte(writeBuffer, 0, 2);
 
                     var data = new SpanByte(readBuffer, 0, length + 1);
-
+                    
                     TransferData(write, data);
 
                     byte[] replyBuffer = new byte[length];
@@ -67,7 +67,8 @@ namespace Equipos.SX127X
             }
         }
 
-        public void WriteByte(byte address, byte value, bool validate = false)
+        // Esto asume que el valor ya esta enmascarado correctamente
+        public void WriteByte(byte address, byte value)
         {
             lock (byteLock)
             {
@@ -75,13 +76,8 @@ namespace Equipos.SX127X
 
                 WriteBytes(address, byteBuffer);
 
-                if (validate)
-                {
-                    // TODO: aveces falla, ver si es problema de uso, o de implementacion (faltara esperar dsp de escribir?)
-                    var realVal = ReadByte(address);
-                    if (realVal != value)
-                        throw new Exception($"Valor recibido {realVal} distinto al escrito {value} en {address}");
-                }
+                // Nota para erik: el validate lo saque porque no tiene que dar igual al valor.
+                // Hay que comprar contra una mascara para poder validar realmente el registro
             }
         }
 
@@ -113,9 +109,9 @@ namespace Equipos.SX127X
             WriteBytes(address, bytesMsbLsb);
         }
 
-        private void TransferData(SpanByte writebuffer, SpanByte readBuffer)
+        private void TransferData(SpanByte writeSpan, SpanByte readSpan)
         {
-            _spiDevice.TransferFullDuplex(writebuffer, readBuffer);
+            _spiDevice.TransferFullDuplex(writeSpan, readSpan);
         }
     }
 }

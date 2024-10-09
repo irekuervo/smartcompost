@@ -35,7 +35,7 @@ namespace PruebaMedidor
             lora.OnReceive += Device_OnReceive;
             lora.OnTransmit += Device_OnTransmit;
             // Intentamos conectarnos al lora
-            Hilo.Intentar(() => lora.Iniciar(), "Lora");
+            Hilo.Intentar(() => lora.Iniciar(433e6), "Lora");
 
             // Avisamos que terminamos de configurar
             led.Write(PinValue.Low);

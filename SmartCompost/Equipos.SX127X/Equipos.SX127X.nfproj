@@ -18,21 +18,21 @@
   </PropertyGroup>
   <Import Project="$(NanoFrameworkProjectSystemPath)NFProjectSystem.props" Condition="Exists('$(NanoFrameworkProjectSystemPath)NFProjectSystem.props')" />
   <ItemGroup>
-    <Compile Include="Device\RegDetectionThreshold.cs" />
-    <Compile Include="Device\RegDetectOptimise.cs" />
-    <Compile Include="Device\RegDioMapping.cs" />
-    <Compile Include="Device\RegHopChannel.cs" />
-    <Compile Include="Device\RegInvertIq.cs" />
-    <Compile Include="Device\RegIrqFlags.cs" />
+    <Compile Include="Device\Registers\RegDetectionThreshold.cs" />
+    <Compile Include="Device\Registers\RegDetectOptimise.cs" />
+    <Compile Include="Device\Registers\RegDioMapping.cs" />
+    <Compile Include="Device\Registers\RegHopChannel.cs" />
+    <Compile Include="Device\Registers\RegInvertIq.cs" />
+    <Compile Include="Device\Registers\RegIrqFlags.cs" />
     <Compile Include="Device\RegisterManager.cs" />
-    <Compile Include="Device\Registers.cs" />
-    <Compile Include="Device\RegLna.cs" />
-    <Compile Include="Device\RegModemConfig1.cs" />
-    <Compile Include="Device\RegModemConfig2.cs" />
-    <Compile Include="Device\RegModemConfig3.cs" />
-    <Compile Include="Device\RegOcp.cs" />
-    <Compile Include="Device\RegOpMode.cs" />
-    <Compile Include="Device\RegPaConfig.cs" />
+    <Compile Include="Device\Registers\Registers.cs" />
+    <Compile Include="Device\Registers\RegLna.cs" />
+    <Compile Include="Device\Registers\RegModemConfig1.cs" />
+    <Compile Include="Device\Registers\RegModemConfig2.cs" />
+    <Compile Include="Device\Registers\RegModemConfig3.cs" />
+    <Compile Include="Device\Registers\RegOcp.cs" />
+    <Compile Include="Device\Registers\RegOpMode.cs" />
+    <Compile Include="Device\Registers\RegPaConfig.cs" />
     <Compile Include="Device\SX127XDevice.cs" />
     <Compile Include="LoRaDevice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

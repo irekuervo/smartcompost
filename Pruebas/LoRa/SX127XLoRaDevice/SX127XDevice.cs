@@ -40,8 +40,8 @@ namespace devMobile.IoT.SX127xLoRaDevice
 		// RegPAConfig constants for outputpower param validation and RFO to PABoost tipping point.
 		public const sbyte OutputPowerDefault = 13;
 
-		private const sbyte OutputPowerPABoostMin = 2;
-		private const sbyte OutputPowerPABoostMax = 20;
+		public const sbyte OutputPowerPABoostMin = 2;
+		public const sbyte OutputPowerPABoostMax = 20;
 		private const sbyte OutputPowerPABoostPaDacThreshhold = 17;
 
 		private const sbyte OutputPowerRfoMin = -4;
@@ -55,9 +55,9 @@ namespace devMobile.IoT.SX127xLoRaDevice
 
 		// RegModemConfig2 for MSb RegSymbTimeoutLsb for LSB
 		public const ushort SymbolTimeoutDefault = 0x64;
-		private const ushort SymbolTimeoutMin = 0x0;
-		private const ushort SymbolTimeoutMax = 0x1023;
-		private const byte SymbolTimeoutMsbMask = 0b0011;
+		public const ushort SymbolTimeoutMin = 0x0;
+		public const ushort SymbolTimeoutMax = 0x1023;
+        private const byte SymbolTimeoutMsbMask = 0b0011;
 
 		// RegReambleMsb & RegReambleLsb
 		public const ushort PreambleLengthDefault = 0x08;

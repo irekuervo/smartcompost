@@ -1,4 +1,6 @@
-﻿using NanoKernel.Logging;
+﻿using NanoKernel.Ayudantes;
+using NanoKernel.DTOs;
+using NanoKernel.Logging;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -10,13 +12,12 @@ namespace NanoKernel.Herramientas.Comunicacion
         public DateTime UltimoRequest => ultimoRequest;
 
         // API CONTROLLERS
-        private const string NodesApi = "nodes/";
         private const string AP_Api = "ap/";
+        private const string NodesApi = "nodes/";
 
         // POST METHODS
-        private const string POST_addMeasurments = AP_Api + "{0}/measurements";
-        private const string POST_keepAlive = NodesApi + "{0}/alive";
-        private const string POST_startup = NodesApi + "{0}/startup";
+        private const string POST_addMeasurmentsAP = AP_Api + "{0}/measurements";
+        private const string POST_addMeasurments = NodesApi + "{0}/measurements";
 
         // Readonly Variables
         private readonly string baseUrl;
@@ -31,19 +32,14 @@ namespace NanoKernel.Herramientas.Comunicacion
             this.baseUrl = string.Format("http://{0}:{1}/api/", host, port);
         }
 
-        public void AddApMeasurments(string apSerialNumber, string medicionesApDto)
+        public void AddNodeMeasurments(string apSerialNumber, MedicionesNodoDto medicionesApDto)
         {
-            DoPost(POST_addMeasurments, medicionesApDto, apSerialNumber);
+            DoPost(POST_addMeasurments, medicionesApDto.ToJson(), apSerialNumber);
         }
 
-        public void NodeAlive(string nodeSerialNumber)
+        public void AddApMeasurments(string apSerialNumber, MedicionesApDto medicionesApDto)
         {
-            DoPost(POST_keepAlive, null, nodeSerialNumber);
-        }
-
-        public void NodeStartup(string nodeSerialNumber)
-        {
-            DoPost(POST_startup, null, nodeSerialNumber);
+            DoPost(POST_addMeasurmentsAP, medicionesApDto.ToJson(), apSerialNumber);
         }
 
         private void DoPost(string method, string jsonBody, params string[] methodParams)
@@ -54,15 +50,22 @@ namespace NanoKernel.Herramientas.Comunicacion
 
             Logger.Debug($"Post: {url} [{jsonBody.Length}]bytes\r\n \t{jsonBody}");
 
-            using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
-            using (HttpResponseMessage response = client.Post(url, content))
+            try
             {
-                ultimoRequest = DateTime.UtcNow;
-                if (response.IsSuccessStatusCode == false)
+                using (StringContent content = new StringContent(jsonBody, Encoding.UTF8, "application/json"))
+                using (HttpResponseMessage response = client.Post(url, content))
                 {
-                    string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
-                    Logger.Error(error);
+                    ultimoRequest = DateTime.UtcNow;
+                    if (response.IsSuccessStatusCode == false)
+                    {
+                        string error = $"Error al enviar la solicitud. Código de estado: {response.StatusCode}";
+                        Logger.Error(error);
+                    }
                 }
+            }
+            finally
+            {
+                jsonBody = null;
             }
         }
     }
