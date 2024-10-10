@@ -1,7 +1,10 @@
 using nanoFramework.Hardware.Esp32;
 using NanoKernel.Ayudantes;
+using NanoKernel.DTOs;
+using NanoKernel.Herramientas.Comunicacion;
 using NanoKernel.Herramientas.Medidores;
 using NanoKernel.Hilos;
+using NanoKernel.Logging;
 using System;
 using System.Net.Http;
 using System.Text;
@@ -16,20 +19,22 @@ namespace PruebaWifi
     {
         static bool redLan = true;
 
-        static string RouterSSID = "SmartCompost"; //"Bondiola 2.4";
-        static string RouterPassword = "Quericocompost"; //"conpapafritas";
+        static string RouterSSID = "iplan - Mansilla -2.4Ghz"; // "SmartCompost"; //"Bondiola 2.4";
+        static string RouterPassword = "Marmat192293."; //"conpapafritas";
         static string SmartCompostHost = "smartcompost.net"; //"192.168.1.6";
         static string SmartCompostPort = "8080";
 
         static string jsonPayload;
 
-        static HttpClient _httpClient;
+        private static SmartCompostClient cliente;
 
-        static ConcurrentQueue cola;
+        private static HttpClient _httpClient;
 
-        const int sleepTime = 5000;
+        private static ConcurrentQueue cola;
 
-        static Medidor medidor = new Medidor(sleepTime);
+        private const int sleepTime = 5000;
+
+        private static Medidor medidor = new Medidor(sleepTime);
 
         public static void Main()
         {
@@ -44,9 +49,11 @@ namespace PruebaWifi
 
             Hilo.Intentar(() => ayInternet.ConectarsePorWifi(ssid: RouterSSID, password: RouterPassword));
 
-            string idAp = "b2c40a98-5534-11ef-92ae-0242ac140004";
-            string url = $"http://{SmartCompostHost}:{SmartCompostPort}/api/ap/{idAp}/measurements";
-            _httpClient = new HttpClient();
+            Logger.Debug("CONECTADO A INTERNET");
+
+            cliente = new SmartCompostClient(SmartCompostHost,SmartCompostPort);
+
+            string idAp = "58670345-7dc4-11ef-919e-0242ac160004";
 
             cola = new ConcurrentQueue(100);
 
@@ -66,28 +73,30 @@ namespace PruebaWifi
             {
                 try
                 {
-                    MedicionesApDto dto = MedicionesApDto.Demo(nodos: 1, mediciones: 1);
-                    jsonPayload = dto.ToJson();
+                    //MedicionesApDto dto = MedicionesApDto.Demo(nodos: 1, mediciones: 1);
+                    //jsonPayload = dto.ToJson();
 
-                    Console.WriteLine(jsonPayload);
+                    //Console.WriteLine(jsonPayload);
 
-                    GetMemory("before");
+                    //GetMemory("before");
 
-                    medidor.Medir("tasa-bytes", jsonPayload.Length);
+                    //medidor.Medir("tasa-bytes", jsonPayload.Length);
 
-                    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                    try
-                    {
-                        var result = _httpClient.Post(url, content);
-                        Console.WriteLine($"Result {result.IsSuccessStatusCode}");
-                        Console.WriteLine(result.Content.ReadAsString());
-                        result.EnsureSuccessStatusCode();
-                        result.Dispose();
-                    }
-                    catch (HttpRequestException ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    //var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+                    //try
+                    //{
+                    //    cliente.AddApMeasurments(idAp, dto);
+
+                    //    var result = _httpClient.Post(url, content);
+                    //    Console.WriteLine($"Result {result.IsSuccessStatusCode}");
+                    //    Console.WriteLine(result.Content.ReadAsString());
+                    //    result.EnsureSuccessStatusCode();
+                    //    result.Dispose();
+                    //}
+                    //catch (HttpRequestException ex)
+                    //{
+                    //    Console.WriteLine(ex.Message);
+                    //}
                 }
                 catch (Exception ex)
                 {

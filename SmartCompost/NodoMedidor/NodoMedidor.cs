@@ -17,24 +17,23 @@ namespace NodoMedidor
 {
     public class NodoMedidor : NodoBase
     {
+        public bool DEBUG = false; // En false deep sleep, en true thread.sleep
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 60*15;
+        private const int segundosSleep = 10;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
-        private const double FRECUENCIA = 433e6; //920_000_000; //Banda libre (915 – 928) MHz Resolución N° 4653/19:
-
-        private const int PIN_MISO = 19;
-        private const int PIN_MOSI = 23;
-        private const int PIN_CLK = 18;
-        private const int PIN_NSS = 5;
-        private const int PIN_DIO0 = 25;
-        private const int PIN_RESET = 14;
+        private const double LORA_FREQ = 433e6; //920_000_000; //Banda libre (915 – 928) MHz Resolución N° 4653/19:
+        private const int LORA_PIN_MISO = 19;
+        private const int LORA_PIN_MOSI = 23;
+        private const int LORA_PIN_CLK = 18;
+        private const int LORA_PIN_NSS = 5;
+        private const int LORA_PIN_DIO0 = 25;
+        private const int LORA_PIN_RESET = 14;
         // -----LED---------------------------------------------------------
         private GpioController gpio;
         private GpioPin led;
-
         private const int PIN_LED_ONBOARD = 2;
         // -----SENSORES----------------------------------------------------
         private OneWireHost oneWire;
@@ -48,8 +47,8 @@ namespace NodoMedidor
         private const int ONE_WIRE_RX = 16;     // importante puentear RX y TX
         private const int ONE_WIRE_TX = 17;
         // https://docs.nanoframework.net/content/esp32/esp32_pin_out.html
-        private const int ADC_HUMEDAD = 0;  //pin 36        // ADC Channel 4 - GPIO 32
-        private const int ADC_BATERIA = 3;  //pin 39        // ADC Channel 6 - GPIO 34
+        private const int ADC_HUMEDAD = 7;  //pin 36        // ADC Channel 4 - GPIO 32
+        private const int ADC_BATERIA = 6;  //pin 39        // ADC Channel 6 - GPIO 34
         private const float ERROR_TEMP = -100;
         //private const int PIN_VCC_SENSORES = 22; // Pin digial, para alimentar sensores
         // -----VARS--------------------------------------------------------
@@ -72,13 +71,13 @@ namespace NodoMedidor
             Hilo.Intentar(() =>
             {
                 lora = new LoRaDevice(
-                    pinMISO: PIN_MISO,
-                    pinMOSI: PIN_MOSI,
-                    pinSCK: PIN_CLK,
-                    pinNSS: PIN_NSS,
-                    pinDIO0: PIN_DIO0,
-                    pinReset: PIN_RESET);
-                lora.Iniciar(FRECUENCIA);
+                    pinMISO: LORA_PIN_MISO,
+                    pinMOSI: LORA_PIN_MOSI,
+                    pinSCK: LORA_PIN_CLK,
+                    pinNSS: LORA_PIN_NSS,
+                    pinDIO0: LORA_PIN_DIO0,
+                    pinReset: LORA_PIN_RESET);
+                lora.Iniciar(LORA_FREQ);
             }, "Lora", accionException: () => { lora?.Dispose(); });
 
             // -----SENSORES----------------------------------------------------
@@ -134,31 +133,36 @@ namespace NodoMedidor
 
                 lora.ModoSleep();
 
-                Logger.Debug($"Sleep por {segundosSleep}seg");
-
-                aySleep.DeepSleepSegundos(segundosSleep);
-
-                //Thread.Sleep((int)(segundosSleep * 1000));
+                if (DEBUG)
+                {
+                    Logger.Debug($"Sleep por {segundosSleep}seg");
+                    Thread.Sleep((int)(segundosSleep * 1000));
+                }
+                else
+                {
+                    aySleep.DeepSleepSegundos(segundosSleep);
+                }
             }
         }
 
         private float MedirHumedad()
         {
             /*
-           * La matematica del sensor es la siguiente
-           * Vsensor = (analogread/1023)*5
-           * y = -5,9732x^3 + 63,948x^2 - 232,8x + 308,98 
-           */
+             * La matematica del sensor es la siguiente
+             * f(x) = 757.17 - 910.85x + 368.01x² - 48.95x³ 
+             */
             int analogValue = humedadAdc.ReadValue();
 
-            float vSensor = (analogValue / 4095f * 3.3f);
-            double humidityPercentage = (-5.9732 * vSensor * vSensor * vSensor) + (63.948 * vSensor * vSensor) - 232.8 * vSensor + 308.98;
+            double vSensor = (analogValue / 4095f * 3.3f);
+            double humidityPercentage = (-48.95 * vSensor * vSensor * vSensor) + (368.10 * vSensor * vSensor) - 910.85 * vSensor + 757.17;
 
-            //Ver la funcion Pow
-            //double humidityPercentage = (-5.9732*Pow(vSensor,3)) + (63.948*Pow(vSensor,2)) - 232.8*vSensor + 308.98;
+            if (humidityPercentage > 100) humidityPercentage = 100;
+            if (humidityPercentage < 0) humidityPercentage = 0;
 
+            Logger.Debug($"Humedad analog: {analogValue}");
             Logger.Debug($"Humedad: {humidityPercentage}");
-            return analogValue;
+
+            return (float)humidityPercentage;
         }
 
         private float MedirTemperatura()
@@ -190,18 +194,16 @@ namespace NodoMedidor
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
             /*definir la matematica para devilver porcentaje*/
-            Logger.Debug($"Bateria: {bateriaPorcentaje}");
+            Logger.Debug($"Tension Bateria: {analogValue}");
+            Logger.Debug($"-----Bateria: {bateriaPorcentaje}");
             return analogValue;
         }
 
-        // En modo release no quiero gastar bateria ni en el blink
         private void Blink(int milis = 100)
         {
-#if DEBUG
             led.Write(PinValue.High);
             Thread.Sleep(milis);
             led.Write(PinValue.Low);
-#endif
         }
     }
 }
