@@ -336,11 +336,26 @@ namespace NodoAP
             // 0 = a * 2.52 V + b
             // 100 = a * 3.3 V + b
             // y = 128.21 * x − 323.06
-            double bateriaPorcentaje = 128.21 * vSensor - 323.06;
-            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            float bateriaPorcentaje = 128.21f * vSensor - 323.06f;
+
+            if (bateriaPorcentaje >= 90)
+                bateriaPorcentaje = 100;
+
+            else if (bateriaPorcentaje >= 70)
+                bateriaPorcentaje = 80;
+
+            else if (bateriaPorcentaje >= 50)
+                bateriaPorcentaje = 60;
+
+            else if (bateriaPorcentaje >= 30)
+                bateriaPorcentaje = 40;
+            else
+                bateriaPorcentaje = 20;
+
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
-            return analogValue;
+
+            return bateriaPorcentaje;
         }
 
         #endregion
