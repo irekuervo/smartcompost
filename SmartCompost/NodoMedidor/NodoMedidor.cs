@@ -188,15 +188,29 @@ namespace NodoMedidor
             // y = a x + b
             // 0 = a * 2.52 V + b
             // 100 = a * 3.3 V + b
-            // y = 128.21 * x − 323.06
-            double bateriaPorcentaje = 128.21 * vSensor - 323.06;
-            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            // y = 138,9 * x − 358.33
+            float bateriaPorcentaje = 138.89f * vSensor - 358.33f;
+
+            if (bateriaPorcentaje >= 90)
+                bateriaPorcentaje = 100;
+
+            else if (bateriaPorcentaje >= 70)
+                bateriaPorcentaje = 80;
+
+            else if (bateriaPorcentaje >= 50)
+                bateriaPorcentaje = 60;
+
+            else if (bateriaPorcentaje >= 30)
+                bateriaPorcentaje = 40;
+            else
+                bateriaPorcentaje = 20;
+
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
             /*definir la matematica para devilver porcentaje*/
             Logger.Debug($"Tension Bateria: {analogValue}");
             Logger.Debug($"-----Bateria: {bateriaPorcentaje}");
-            return analogValue;
+            return bateriaPorcentaje;
         }
 
         private void Blink(int milis = 100)
