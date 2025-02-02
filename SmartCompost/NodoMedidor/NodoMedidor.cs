@@ -54,7 +54,6 @@ namespace NodoMedidor
         // -----VARS--------------------------------------------------------
         private MedicionesNodoDto dto;
         private readonly byte[] bufferLora = new byte[LoRaDevice.MAX_LORA_PAYLOAD_BYTES];
-        private const int MIN_HUMIDITY_THRESH = 20;
 
         public override void Setup()
         {
@@ -153,14 +152,10 @@ namespace NodoMedidor
              */
             int analogValue = humedadAdc.ReadValue();
 
-            double vSensor = (analogValue / 4095f * 3.3f);
-            double humidityPercentage = (-48.95 * vSensor * vSensor * vSensor) + (368.10 * vSensor * vSensor) - 910.85 * vSensor + 757.17;
+            float vSensor = (analogValue / 4095f * 3.3f);
+            float humidityPercentage = (-48.95f * vSensor * vSensor * vSensor) + (368.10f * vSensor * vSensor) - 910.85f * vSensor + 757.17f;
 
-            humidityPercentage = humidityPercentage < MIN_HUMIDITY_THRESH
-                ? MIN_HUMIDITY_THRESH
-                : (humidityPercentage > 100 ? 100 : humidityPercentage);
-
-            humidityPercentage = (humidityPercentage / 10) * 10;
+            humidityPercentage = humidityPercentage.ToPorcentaje();
 
             Logger.Debug($"Humedad: {analogValue}/{humidityPercentage}%");
 
@@ -192,22 +187,7 @@ namespace NodoMedidor
             // 100 = a * 3.3 V + b
             // y = 138,9 * x − 358.33
             float bateriaPorcentaje = 138.89f * vSensor - 358.33f;
-
-            if (bateriaPorcentaje >= 90)
-                bateriaPorcentaje = 100;
-
-            else if (bateriaPorcentaje >= 70)
-                bateriaPorcentaje = 80;
-
-            else if (bateriaPorcentaje >= 50)
-                bateriaPorcentaje = 60;
-
-            else if (bateriaPorcentaje >= 30)
-                bateriaPorcentaje = 40;
-            else
-                bateriaPorcentaje = 20;
-
-            if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
+            bateriaPorcentaje = bateriaPorcentaje.ToPorcentaje();
 
             /*definir la matematica para devilver porcentaje*/
             Logger.Debug($"Tension Bateria: {analogValue}");

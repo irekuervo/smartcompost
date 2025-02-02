@@ -14,5 +14,14 @@
 
             return false;
         }
+
+        public static float ToPorcentaje(this float porcentaje, int minTresh = 20)
+        {
+            porcentaje = porcentaje < minTresh
+                  ? minTresh
+                  : (porcentaje > 100 ? 100 : porcentaje);
+
+            return (porcentaje / 10 * 10);
+        }
     }
 }
