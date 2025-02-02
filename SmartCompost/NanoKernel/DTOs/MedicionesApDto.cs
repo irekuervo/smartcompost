@@ -8,7 +8,6 @@ namespace NanoKernel.DTOs
         public DateTime last_updated { get; set; }
         public ArrayList nodes_measurements { get; set; } = new ArrayList();
 
-
         public void AgregarMedicion(string numeroSerie, MedicionDto medicion)
         {
             var nodo = BuscarMedicion(numeroSerie);

@@ -30,18 +30,17 @@ namespace NodoAP
         private const int milisIntentoEnvioMediciones = 100;
         private const int segundosMedicionNodoAp = 60 * 1;
         /// ---------------------------------------------------------------
-        private SmartCompostClient cliente;
-        private GpioPin led;
+        
         private LoRaDevice lora;
-        private const int PIN_MISO = 19;
-        private const int PIN_MOSI = 23;
-        private const int PIN_CLK = 18;
-        private const int PIN_NSS = 5;
-        private const int PIN_DIO0 = 25;
-        private const int PIN_RESET = 14;
-        private const double FREQ_LORA = 433e6;
+        private const int LORA_PIN_MISO = 19;
+        private const int LORA_PIN_MOSI = 23;
+        private const int LORA_PIN_CLK = 18;
+        private const int LORA_PIN_NSS = 5;
+        private const int LORA_PIN_DIO0 = 25;
+        private const int LORA_PIN_RESET = 14;
+        private const double LORA_FREQ = 433e6;
         /// ---------------------------------------------------------------
-        private const int ADC_CHANNEL_BATERIA = 3;  //pin 39        // ADC Channel 6 - GPIO 34
+        private const int ADC_CHANNEL_BATERIA = 6;  //pin 39        // ADC Channel 6 - GPIO 34
         private AdcController adcController;
         private AdcChannel adcBateria;
         /// ---------------------------------------------------------------
@@ -49,6 +48,8 @@ namespace NodoAP
         private ArrayList mensajesDesencolados = new ArrayList();
         private MedicionesApDto payloadEnvioMediciones = new MedicionesApDto();
         /// ---------------------------------------------------------------
+        private SmartCompostClient cliente;
+        private GpioPin led;
         private MedicionesNodoDto medicionNodo;
         private Medidor medidor;
         private int mensajesMedicionAP = 0;
@@ -90,9 +91,9 @@ namespace NodoAP
             }, $"Wifi");
 
             /// Vemos si podemos pingear la api
-            bool ping = ayInternet.Ping(Config.SmartCompostHost);
-            if (ping == false)
-                Logger.Log("NO HAY PING AL SERVIDOR");
+            //bool ping = ayInternet.Ping(Config.SmartCompostHost);
+            //if (ping == false)
+            //    Logger.Log("NO HAY PING AL SERVIDOR");
 
             /// Cliente
             cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort, clientTimeoutSeconds);
@@ -101,13 +102,13 @@ namespace NodoAP
             Hilo.Intentar(() =>
                 {
                     lora = new LoRaDevice(
-                        pinMISO: PIN_MISO,
-                        pinMOSI: PIN_MOSI,
-                        pinSCK: PIN_CLK,
-                        pinNSS: PIN_NSS,
-                        pinDIO0: PIN_DIO0,
-                        pinReset: PIN_RESET);
-                    lora.Iniciar(FREQ_LORA);
+                        pinMISO: LORA_PIN_MISO,
+                        pinMOSI: LORA_PIN_MOSI,
+                        pinSCK: LORA_PIN_CLK,
+                        pinNSS: LORA_PIN_NSS,
+                        pinDIO0: LORA_PIN_DIO0,
+                        pinReset: LORA_PIN_RESET);
+                    lora.Iniciar(LORA_FREQ);
                     lora.ModoRecibir();
                 },
                 "Lora",
@@ -148,7 +149,7 @@ namespace NodoAP
                 if (e.Data == null)
                     throw new Exception("Mensaje null recibido");
 
-                Logger.Debug($"{e.Data.Length} bytes recibidos");
+                Logger.Log($"{e.Data.Length} bytes recibidos");
 
                 byte[] mensaje = ValidarYProcesarMensaje(e.Data);
                 if (mensaje == null)
@@ -335,11 +336,26 @@ namespace NodoAP
             // 0 = a * 2.52 V + b
             // 100 = a * 3.3 V + b
             // y = 128.21 * x − 323.06
-            double bateriaPorcentaje = 128.21 * vSensor - 323.06;
-            if (bateriaPorcentaje > 100) bateriaPorcentaje = 100;
+            float bateriaPorcentaje = 128.21f * vSensor - 323.06f;
+
+            if (bateriaPorcentaje >= 90)
+                bateriaPorcentaje = 100;
+
+            else if (bateriaPorcentaje >= 70)
+                bateriaPorcentaje = 80;
+
+            else if (bateriaPorcentaje >= 50)
+                bateriaPorcentaje = 60;
+
+            else if (bateriaPorcentaje >= 30)
+                bateriaPorcentaje = 40;
+            else
+                bateriaPorcentaje = 20;
+
             if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
 
-            return analogValue;
+
+            return bateriaPorcentaje;
         }
 
         #endregion
