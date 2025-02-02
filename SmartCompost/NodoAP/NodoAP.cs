@@ -60,7 +60,7 @@ namespace NodoAP
         public override void Setup()
         {
             // TODO: Esto deberia hacerse con el deploy, no hardcodearse
-            Config.RouterSSID ="Bondiola 2.4"; //  "SmartCompost"; //
+            Config.RouterSSID = "Bondiola 2.4"; //  "SmartCompost"; //
             Config.RouterPassword = "conpapafritas";  //"Quericocompost"; //
             Config.SmartCompostHost = "smartcompost.net"; //"181.88.245.34"; //"192.168.1.6";
             Config.SmartCompostPort = "8080";
