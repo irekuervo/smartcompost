@@ -53,8 +53,8 @@ namespace NodoMedidor
         //private const int PIN_VCC_SENSORES = 22; // Pin digial, para alimentar sensores
         // -----VARS--------------------------------------------------------
         private MedicionesNodoDto dto;
-
         private readonly byte[] bufferLora = new byte[LoRaDevice.MAX_LORA_PAYLOAD_BYTES];
+        private const int MIN_HUMIDITY_THRESH = 20;
 
         public override void Setup()
         {
@@ -156,31 +156,13 @@ namespace NodoMedidor
             double vSensor = (analogValue / 4095f * 3.3f);
             double humidityPercentage = (-48.95 * vSensor * vSensor * vSensor) + (368.10 * vSensor * vSensor) - 910.85 * vSensor + 757.17;
 
+            humidityPercentage = humidityPercentage < MIN_HUMIDITY_THRESH
+                ? MIN_HUMIDITY_THRESH
+                : (humidityPercentage > 100 ? 100 : humidityPercentage);
 
-            if (humidityPercentage >= 90)
-                humidityPercentage = 100;
+            humidityPercentage = (humidityPercentage / 10) * 10;
 
-            else if (humidityPercentage >= 60)
-                humidityPercentage = 70;
-
-            else if (humidityPercentage >= 50)
-                humidityPercentage = 60;
-
-            else if (humidityPercentage >= 40)
-                humidityPercentage = 50;
-
-            else if (humidityPercentage >= 30)
-                humidityPercentage = 40;
-
-            else if (humidityPercentage >= 20)
-                humidityPercentage = 30;
-            else
-                humidityPercentage = 20;
-
-            if (humidityPercentage < 0) humidityPercentage = 0;
-
-            Logger.Debug($"Humedad analog: {analogValue}");
-            Logger.Debug($"Humedad: {humidityPercentage}");
+            Logger.Debug($"Humedad: {analogValue}/{humidityPercentage}%");
 
             return (float)humidityPercentage;
         }
