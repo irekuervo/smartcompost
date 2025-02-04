@@ -17,10 +17,9 @@ namespace NodoMedidor
 {
     public class NodoMedidor : NodoBase
     {
-        public bool DEBUG = false; // En false deep sleep, en true thread.sleep
         public override TiposNodo tipoNodo => TiposNodo.MedidorLora;
 
-        private const int segundosSleep = 5;
+        private const int segundosSleep = 1;
 
         // -----LORA--------------------------------------------------------
         private LoRaDevice lora;
@@ -132,15 +131,13 @@ namespace NodoMedidor
 
                 lora.ModoSleep();
 
-                if (DEBUG)
-                {
-                    Logger.Debug($"Sleep por {segundosSleep}seg");
-                    Thread.Sleep((int)(segundosSleep * 1000));
-                }
-                else
-                {
-                    aySleep.DeepSleepSegundos(segundosSleep);
-                }
+#if DEBUG
+                Logger.Debug($"Sleep por {segundosSleep}seg");
+                Thread.Sleep((int)(segundosSleep * 1000));
+#else
+                aySleep.DeepSleepSegundos(segundosSleep);
+#endif
+
             }
         }
 

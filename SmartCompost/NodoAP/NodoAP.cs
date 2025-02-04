@@ -28,9 +28,9 @@ namespace NodoAP
         private const int clientTimeoutSeconds = 20;
         private const int intentosEnvioMediciones = 1; // Por alguna razon anda mejor en 1
         private const int milisIntentoEnvioMediciones = 100;
-        private const int segundosMedicionNodoAp = 60 * 1;
+        private const int segundosMedicionNodoAp = 10 * 1;
         /// ---------------------------------------------------------------
-        
+
         private LoRaDevice lora;
         private const int LORA_PIN_MISO = 19;
         private const int LORA_PIN_MOSI = 23;
@@ -244,7 +244,7 @@ namespace NodoAP
                 {
                     Blink(100);
 
-                    medidor.Contar(M_ENVIADOS, mensajesDesencolados.Count - mensajesMedicionAP);
+                    medidor.Contar(M_ENVIADOS, mensajesDesencolados.Count - Interlocked.Exchange(ref mensajesMedicionAP, mensajesMedicionAP));
                     Logger.Log($"{mensajesDesencolados.Count} mensajes enviados");
                 }
                 else
@@ -272,7 +272,7 @@ namespace NodoAP
             finally
             {
                 // Limpiamos toda la memoria posible
-                mensajesMedicionAP = 0;
+                Interlocked.Exchange(ref mensajesMedicionAP, 0);
                 payloadEnvioMediciones.nodes_measurements.Clear();
                 mensajesDesencolados.Clear();
                 LimpiarMemoria();
@@ -312,7 +312,9 @@ namespace NodoAP
                 medicionNodo.last_updated = DateTime.UtcNow;
 
                 colaMedicionesNodo.Enqueue(medicionNodo.ToBytes());
-                mensajesMedicionAP++;
+
+                Interlocked.Increment(ref mensajesMedicionAP);
+
                 Logger.Debug("Encolando mediciones del AP");
             }
             catch (Exception ex)
@@ -338,24 +340,7 @@ namespace NodoAP
             // y = 128.21 * x − 323.06
             float bateriaPorcentaje = 128.21f * vSensor - 323.06f;
 
-            if (bateriaPorcentaje >= 90)
-                bateriaPorcentaje = 100;
-
-            else if (bateriaPorcentaje >= 70)
-                bateriaPorcentaje = 80;
-
-            else if (bateriaPorcentaje >= 50)
-                bateriaPorcentaje = 60;
-
-            else if (bateriaPorcentaje >= 30)
-                bateriaPorcentaje = 40;
-            else
-                bateriaPorcentaje = 20;
-
-            if (bateriaPorcentaje < 0) bateriaPorcentaje = 0;
-
-
-            return bateriaPorcentaje;
+            return bateriaPorcentaje.ToPorcentaje();
         }
 
         #endregion

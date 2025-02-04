@@ -9,7 +9,7 @@ namespace NanoKernel.Herramientas.Medidores
         public Hashtable Contadores = new Hashtable();
         public Hashtable Mediciones = new Hashtable();
 
-        public ulong ContadoEnPeriodo(string nombreContador)
+        public int ContadoEnPeriodo(string nombreContador)
         {
             if (Contadores.Contains(nombreContador))
                 return ((Contador)Contadores[nombreContador]).ContadorEnPeriodo;
@@ -17,7 +17,7 @@ namespace NanoKernel.Herramientas.Medidores
             return 0;
         }
 
-        public ulong ContadoTotal(string nombreContador)
+        public int ContadoTotal(string nombreContador)
         {
             if (Contadores.Contains(nombreContador))
                 return ((Contador)Contadores[nombreContador]).ContadorTotal;
@@ -32,6 +32,5 @@ namespace NanoKernel.Herramientas.Medidores
 
             return null;
         }
-
     }
 }

@@ -12,29 +12,28 @@ namespace NanoKernel.Herramientas.Medidores
         public event MedicionEnPeriodoCallback OnMedicionesEnPeriodoCallback;
 
         public bool Activo { get; private set; }
-        public Medicion MedicionTiempoMilis { get; set; }
-        public Hashtable Contadores = new Hashtable();
-        public Hashtable Mediciones = new Hashtable();
+        public Medicion MedicionTiempoMilis { get; private set; }
+        public Hashtable Contadores { get; } = new Hashtable();
+        public Hashtable Mediciones { get; } = new Hashtable();
 
         private Timer timer;
         private Stopwatch stopwatch;
         private int milisPeriodoTimer;
-        private object lockObj = new object();
 
-        /// <summary>
-        /// La idea de esta clase es tener intervalos iguales de tiempo para el cual se hacen mediciones
-        /// y se registran resultados. Actualmente se miden tiempo de ejecucion y cantidad de un contador,
-        /// </summary>
-        /// <param name="milisPeriodoTimer"></param>
+        private InstanteMedicion bufferPendiente = null;
+        private InstanteMedicion bufferProcesado = null;
+        private Thread workerThread;
+        private AutoResetEvent procesamientoDisponible = new AutoResetEvent(false); // Notifica cuando hay trabajo pendiente
+
+        private object lockGlobal = new object();
+
         public Medidor(int milisPeriodoTimer = 1000)
         {
-            if (milisPeriodoTimer < 0)
+            if (milisPeriodoTimer < 1)
                 milisPeriodoTimer = 1;
 
             this.milisPeriodoTimer = milisPeriodoTimer;
-
             MedicionTiempoMilis = new Medicion();
-
             stopwatch = new Stopwatch();
         }
 
@@ -44,8 +43,12 @@ namespace NanoKernel.Herramientas.Medidores
                 return;
 
             Activo = true;
+            stopwatch.Start();
+            timer = new Timer(OnTimerPeriodo, null, milisPeriodoTimer, milisPeriodoTimer);
 
-            timer = new Timer(TimerCallback, null, milisPeriodoTimer, milisPeriodoTimer);
+            // Iniciar hilo de procesamiento con AutoResetEvent
+            workerThread = new Thread(ProcesarMediciones);
+            workerThread.Start();
         }
 
         public void Detener()
@@ -53,48 +56,26 @@ namespace NanoKernel.Herramientas.Medidores
             if (!Activo)
                 return;
 
-            if (timer != null)
-                timer.Dispose();
-
+            Activo = false;
+            timer?.Dispose();
             stopwatch.Stop();
 
-            TimerCallback(null);
-
-            Activo = false;
+            OnTimerPeriodo(null); // Captura la última medición antes de detener
+            procesamientoDisponible.Set(); // Despierta el workerThread para que termine
+            workerThread.Join();
         }
 
-        public void IniciarMedicionDeTiempo()
+        public void Contar(string clave, int cantidad = 1)
         {
-            lock (lockObj)
+            if(cantidad <= 0) return;
+
+            // BORRAR
+            if (cantidad > 1000) 
+                return;
+
+            lock (lockGlobal)
             {
-                if (timer == null)
-                    Iniciar();
-
-                stopwatch.Start();
-            }
-        }
-
-        float medicionDeTiempoMilis = 0;
-        public double FinalizarMedicionDeTiempo()
-        {
-            lock (lockObj)
-            {
-                stopwatch.Stop();
-                medicionDeTiempoMilis = (float)stopwatch.Elapsed.TotalMilliseconds;
-                MedicionTiempoMilis.AgregarMuestra(medicionDeTiempoMilis);
-                stopwatch.Reset();
-
-                return medicionDeTiempoMilis;
-            }
-        }
-
-        public void Contar(string clave, int cantidad = 1) => Contar(clave, (ulong)cantidad);
-
-        public void Contar(string clave, ulong cantidad)
-        {
-            lock (lockObj)
-            {
-                if (Contadores.Contains(clave) == false)
+                if (!Contadores.Contains(clave))
                     Contadores.Add(clave, new Contador());
 
                 ((Contador)Contadores[clave]).Contar(cantidad);
@@ -103,86 +84,101 @@ namespace NanoKernel.Herramientas.Medidores
 
         public void Medir(string clave, float muestra)
         {
-            lock (lockObj)
+            lock (lockGlobal)
             {
-                if (Mediciones.Contains(clave) == false)
+                if (!Mediciones.Contains(clave))
                     Mediciones.Add(clave, new Medicion());
 
                 ((Medicion)Mediciones[clave]).AgregarMuestra(muestra);
             }
         }
 
-        public Medicion Medicion(string nombreMedicion)
+        public Medicion ObtenerMedicion(string nombreMedicion)
         {
-            if (Mediciones.Contains(nombreMedicion))
-                return (Medicion)Mediciones[nombreMedicion];
-
-            return null;
-        }
-
-        public ulong ContadoEnPeriodo(string nombreContador)
-        {
-            if (Contadores.Contains(nombreContador))
-                return ((Contador)Contadores[nombreContador]).ContadorEnPeriodo;
-
-            return 0;
-        }
-
-        public ulong ContadoTotal(string nombreContador)
-        {
-            if (Contadores.Contains(nombreContador))
-                return ((Contador)Contadores[nombreContador]).ContadorTotal;
-
-            return 0;
-        }
-
-        public void Limpiar()
-        {
-            lock (lockObj)
+            lock (lockGlobal)
             {
-                foreach (var item in Mediciones.Values)
-                {
-                    ((Medicion)item).Limpiar();
-                }
+                if (Mediciones.Contains(nombreMedicion))
+                    return (Medicion)Mediciones[nombreMedicion];
+
+                return null;
             }
         }
 
-        // Clock del timer en un periodo
-        private void TimerCallback(object state)
+        public int ContadoEnPeriodo(string nombreContador)
         {
-            lock (lockObj)
+            lock (lockGlobal)
             {
-                if (stopwatch.IsRunning)
-                {
-                    FinalizarMedicionDeTiempo();
-                }
+                if (Contadores.Contains(nombreContador))
+                    return ((Contador)Contadores[nombreContador]).ContadorEnPeriodo;
 
-                if (OnMedicionesEnPeriodoCallback != null)
-                {
-                    InstanteMedicion res = new InstanteMedicion();
-                    res.MedicionTiempoMilis = MedicionTiempoMilis.Clonar();
-                    res.Contadores = ClonarContadores();
-                    res.Mediciones = ClonarMediciones();
-                    new Thread(() => OnMedicionesEnPeriodoCallback(res)).Start();
-                }
+                return 0;
+            }
+        }
 
-                // limapiamos todo lo repectivo al periodo
-                // Medicion de tiempos
+        public int ContadoTotal(string nombreContador)
+        {
+            lock (lockGlobal)
+            {
+                if (Contadores.Contains(nombreContador))
+                    return ((Contador)Contadores[nombreContador]).ContadorTotal;
+
+                return 0;
+            }
+        }
+
+        private void OnTimerPeriodo(object state)
+        {
+            lock (lockGlobal)
+            {
+                stopwatch.Stop();
+                float tiempoMedido = (float)stopwatch.Elapsed.TotalMilliseconds;
+                MedicionTiempoMilis.AgregarMuestra(tiempoMedido);
+                stopwatch.Reset();
+
+                InstanteMedicion nuevaMedicion = new InstanteMedicion
+                {
+                    MedicionTiempoMilis = MedicionTiempoMilis.Clonar(),
+                    Contadores = ClonarContadores(),
+                    Mediciones = ClonarMediciones()
+                };
+
+                bufferPendiente = nuevaMedicion;
+
+                procesamientoDisponible.Set(); // Notifica al workerThread que hay datos listos
+
+                // Limpiar datos del periodo anterior
                 MedicionTiempoMilis.MedicionEnPeriodo.Limpiar();
 
-                // Contadores
                 foreach (var item in Contadores.Values)
-                {
-                    ((Contador)item).ContadorEnPeriodo = 0;
-                }
+                    ((Contador)item).LimpiarEnPeriodo();
 
-                // Mediciones
                 foreach (var item in Mediciones.Values)
-                {
                     ((Medicion)item).MedicionEnPeriodo.Limpiar();
+
+                stopwatch.Start(); // Se inicia después de limpiar, sin perder eventos
+            }
+        }
+
+        private void ProcesarMediciones()
+        {
+            while (Activo)
+            {
+                procesamientoDisponible.WaitOne(); // Espera hasta que haya datos listos
+
+                lock (lockGlobal)
+                {
+                    if (bufferPendiente != null)
+                    {
+                        bufferProcesado = bufferPendiente;
+                        bufferPendiente = null;
+                    }
                 }
 
-                IniciarMedicionDeTiempo();
+                if (bufferProcesado != null && OnMedicionesEnPeriodoCallback != null)
+                {
+                    OnMedicionesEnPeriodoCallback(bufferProcesado);
+                    bufferProcesado = null;
+                }
             }
         }
 

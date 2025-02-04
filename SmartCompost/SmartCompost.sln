@@ -63,6 +63,8 @@ Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaLoraSender", "PruebaL
 EndProject
 Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "PruebaLoraReciever", "PruebaLoraReciever\PruebaLoraReciever.nfproj", "{F1337681-DEBD-4F4C-B9F0-2C969686D98C}"
 EndProject
+Project("{11A8DD76-328B-46DF-9F39-F559912D0360}") = "Tests.Unitarios", "Tests.Unitarios\Tests.Unitarios.nfproj", "{9A4ED47B-3017-440F-8BCA-BCB679477895}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -197,6 +199,12 @@ Global
 		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F1337681-DEBD-4F4C-B9F0-2C969686D98C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{9A4ED47B-3017-440F-8BCA-BCB679477895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A4ED47B-3017-440F-8BCA-BCB679477895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A4ED47B-3017-440F-8BCA-BCB679477895}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{9A4ED47B-3017-440F-8BCA-BCB679477895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A4ED47B-3017-440F-8BCA-BCB679477895}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A4ED47B-3017-440F-8BCA-BCB679477895}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
