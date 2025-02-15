@@ -69,10 +69,6 @@ namespace NanoKernel.Herramientas.Medidores
         {
             if(cantidad <= 0) return;
 
-            // BORRAR
-            if (cantidad > 1000) 
-                return;
-
             lock (lockGlobal)
             {
                 if (!Contadores.Contains(clave))
