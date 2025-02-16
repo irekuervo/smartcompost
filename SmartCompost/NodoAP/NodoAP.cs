@@ -28,7 +28,7 @@ namespace NodoAP
         private const int clientTimeoutSeconds = 20;
         private const int intentosEnvioMediciones = 1; // Por alguna razon anda mejor en 1
         private const int milisIntentoEnvioMediciones = 100;
-        private const int segundosMedicionNodoAp = 10 * 1;
+        private const int segundosTelemetriaNodoAp = 10 * 1;
         /// ---------------------------------------------------------------
 
         private LoRaDevice lora;
@@ -130,8 +130,8 @@ namespace NodoAP
             // Inicializamos el medidor del ap
             adcController = new AdcController();
             adcBateria = adcController.OpenChannel(ADC_CHANNEL_BATERIA);
-            medidor = new Medidor(segundosMedicionNodoAp * 1000);
-            medidor.OnMedicionesEnPeriodoCallback += Medidor_OnMedicionesEnPeriodoCallback;
+            medidor = new Medidor(segundosTelemetriaNodoAp * 1000);
+            medidor.OnMedicionesEnPeriodoCallback += Medidor_OnTelemetriaEnPeriodoCallback;
             medidor.Iniciar();
 
             // Escuchamos cuando terminamos de configurar
@@ -283,7 +283,7 @@ namespace NodoAP
         #endregion
 
         #region MEDICIONES AP
-        private void Medidor_OnMedicionesEnPeriodoCallback(InstanteMedicion resultado)
+        private void Medidor_OnTelemetriaEnPeriodoCallback(InstanteMedicion resultado)
         {
             try
             {
