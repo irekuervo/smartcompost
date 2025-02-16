@@ -61,9 +61,9 @@ namespace NodoAP
         public override void Setup()
         {
             // TODO: Esto deberia hacerse con el deploy, no hardcodearse
-            Config.RouterSSID = "Bondiola 2.4"; //  "SmartCompost"; //
-            Config.RouterPassword = "conpapafritas";  //"Quericocompost"; //
-            Config.SmartCompostHost = "smartcompost.net"; //"181.88.245.34"; //"192.168.1.6";
+            Config.RouterSSID = "SmartCompost";
+            Config.RouterPassword = "Quericocompost";
+            Config.SmartCompostHost = "smartcompost.net";
             Config.SmartCompostPort = "8080";
             Config.NumeroSerie = "58670345-7dc4-11ef-919e-0242ac160004";
 
@@ -91,9 +91,9 @@ namespace NodoAP
             }, $"Wifi");
 
             /// Vemos si podemos pingear la api
-            //bool ping = ayInternet.Ping(Config.SmartCompostHost);
-            //if (ping == false)
-            //    Logger.Log("NO HAY PING AL SERVIDOR");
+            bool ping = ayInternet.Ping(Config.SmartCompostHost);
+            if (ping == false)
+                Logger.Log("NO HAY PING AL SERVIDOR");
 
             /// Cliente
             cliente = new SmartCompostClient(Config.SmartCompostHost, Config.SmartCompostPort, clientTimeoutSeconds);
@@ -306,8 +306,7 @@ namespace NodoAP
                     medicionNodo.AgregarMedicion(enviados, TiposMediciones.MensajesEnviados);
 
                 var bateria = MedirBateria();
-                if (bateria > 0)
-                    medicionNodo.AgregarMedicion(bateria, TiposMediciones.Bateria);
+                medicionNodo.AgregarMedicion(bateria, TiposMediciones.Bateria);
 
                 medicionNodo.last_updated = DateTime.UtcNow;
 
