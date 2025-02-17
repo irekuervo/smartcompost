@@ -28,7 +28,7 @@ namespace NodoAP
         private const int clientTimeoutSeconds = 20;
         private const int intentosEnvioMediciones = 1; // Por alguna razon anda mejor en 1
         private const int milisIntentoEnvioMediciones = 100;
-        private const int segundosTelemetriaNodoAp = 10 * 1;
+        private const int segundosTelemetriaNodoAp = 60 * 1;
         /// ---------------------------------------------------------------
 
         private LoRaDevice lora;
@@ -50,9 +50,8 @@ namespace NodoAP
         /// ---------------------------------------------------------------
         private SmartCompostClient cliente;
         private GpioPin led;
-        private MedicionesNodoDto medicionNodo;
+        private MedicionesNodoDto telemetriaAP;
         private Medidor medidor;
-        private int mensajesMedicionAP = 0;
         private const string M_TIRADOS = "tirados";
         private const string M_RECIBIDOS = "encolados";
         private const string M_ENVIADOS = "enviados";
@@ -118,14 +117,14 @@ namespace NodoAP
                 });
 
             /// Mediciones del AP
-            medicionNodo = new MedicionesNodoDto();
-            medicionNodo.serial_number = Config.NumeroSerie;
-            medicionNodo.last_updated = DateTime.UtcNow;
+            telemetriaAP = new MedicionesNodoDto();
+            telemetriaAP.serial_number = Config.NumeroSerie;
+            telemetriaAP.last_updated = DateTime.UtcNow;
 
             // Avisamos que nos despertamos
-            medicionNodo.AgregarMedicion(1, TiposMediciones.Startup);
-            Hilo.Intentar(() => cliente.AddNodeMeasurments(Config.NumeroSerie, medicionNodo), intentos: 3);
-            medicionNodo.measurements.Clear();
+            telemetriaAP.AgregarMedicion(1, TiposMediciones.Startup);
+            Hilo.Intentar(() => cliente.AddNodeMeasurments(Config.NumeroSerie, telemetriaAP), intentos: 3);
+            telemetriaAP.measurements.Clear();
 
             // Inicializamos el medidor del ap
             adcController = new AdcController();
@@ -208,15 +207,19 @@ namespace NodoAP
             try
             {
                 int tamanioCola = colaMedicionesNodo.Count();
-                int desencolados = 0;
+                int desencolados = 0, enviados = 0;
                 for (int i = 0; i < ventanaDesencolamiento && !colaMedicionesNodo.IsEmpty(); i++)
                 {
                     var item = (byte[])colaMedicionesNodo.Dequeue();
                     try
                     {
-                        payloadEnvioMediciones.AgregarMediciones(MedicionesNodoDto.FromBytes(item));
+                        var medicionNodo = MedicionesNodoDto.FromBytes(item);
+                        payloadEnvioMediciones.AgregarMediciones(medicionNodo);
                         mensajesDesencolados.Add(item);
                         desencolados++;
+                        // No sumamos si es una medicion de AP
+                        if (medicionNodo.serial_number != Config.NumeroSerie)
+                            enviados++;
                     }
                     catch (Exception ex)
                     {
@@ -245,8 +248,8 @@ namespace NodoAP
                 {
                     Blink(100);
 
-                    medidor.Contar(M_ENVIADOS, desencolados - Interlocked.Exchange(ref mensajesMedicionAP, mensajesMedicionAP));
-                    Logger.Log($"{desencolados} mensajes enviados");
+                    medidor.Contar(M_ENVIADOS, enviados);
+                    Logger.Log($"{enviados} mensajes enviados");
                 }
                 else
                 {
@@ -273,7 +276,6 @@ namespace NodoAP
             finally
             {
                 // Limpiamos toda la memoria posible
-                Interlocked.Exchange(ref mensajesMedicionAP, 0);
                 payloadEnvioMediciones.nodes_measurements.Clear();
                 mensajesDesencolados.Clear();
                 LimpiarMemoria();
@@ -288,32 +290,29 @@ namespace NodoAP
         {
             try
             {
-                medicionNodo.AgregarMedicion(colaMedicionesNodo.Count(), TiposMediciones.TamanioCola);
+                telemetriaAP.AgregarMedicion(colaMedicionesNodo.Count(), TiposMediciones.TamanioCola);
 
                 var recibidos = resultado.ContadoEnPeriodo(M_RECIBIDOS);
                 if (recibidos > 0)
-                    medicionNodo.AgregarMedicion(recibidos, TiposMediciones.MensajesRecibidos);
+                    telemetriaAP.AgregarMedicion(recibidos, TiposMediciones.MensajesRecibidos);
 
                 var tirados = resultado.ContadoEnPeriodo(M_TIRADOS);
                 if (tirados > 0)
-                    medicionNodo.AgregarMedicion(tirados, TiposMediciones.MensajesTirados);
+                    telemetriaAP.AgregarMedicion(tirados, TiposMediciones.MensajesTirados);
 
                 var errores = resultado.ContadoEnPeriodo(ERRORES);
                 if (errores > 0)
-                    medicionNodo.AgregarMedicion(errores, TiposMediciones.Errores);
+                    telemetriaAP.AgregarMedicion(errores, TiposMediciones.Errores);
 
                 var enviados = resultado.ContadoEnPeriodo(M_ENVIADOS);
                 if (enviados > 0)
-                    medicionNodo.AgregarMedicion(enviados, TiposMediciones.MensajesEnviados);
+                    telemetriaAP.AgregarMedicion(enviados, TiposMediciones.MensajesEnviados);
 
                 var bateria = MedirBateria();
-                medicionNodo.AgregarMedicion(bateria, TiposMediciones.Bateria);
+                telemetriaAP.AgregarMedicion(bateria, TiposMediciones.Bateria);
 
-                medicionNodo.last_updated = DateTime.UtcNow;
-
-                colaMedicionesNodo.Enqueue(medicionNodo.ToBytes());
-
-                Interlocked.Increment(ref mensajesMedicionAP);
+                telemetriaAP.last_updated = DateTime.UtcNow;
+                colaMedicionesNodo.Enqueue(telemetriaAP.ToBytes());
 
                 Logger.Debug("Encolando mediciones del AP");
             }
@@ -324,7 +323,7 @@ namespace NodoAP
             }
             finally
             {
-                medicionNodo.measurements.Clear();
+                telemetriaAP.measurements.Clear();
             }
         }
 
