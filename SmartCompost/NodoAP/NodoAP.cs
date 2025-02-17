@@ -135,14 +135,14 @@ namespace NodoAP
             medidor.Iniciar();
 
             // Escuchamos cuando terminamos de configurar
-            lora.OnReceive += Device_OnReceive;
+            lora.OnReceive += Lora_OnReceive;
 
             /// Avisamos que terminamos de configurar
             led.Write(PinValue.Low);
         }
 
         #region RECEPCION DE MENSAJES
-        private void Device_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
+        private void Lora_OnReceive(object sender, SX127XDevice.OnDataReceivedEventArgs e)
         {
             try
             {
@@ -150,16 +150,15 @@ namespace NodoAP
                     throw new Exception("Mensaje null recibido");
 
                 Logger.Log($"{e.Data.Length} bytes recibidos");
+                medidor.Contar(M_RECIBIDOS);
 
                 byte[] mensaje = ValidarYProcesarMensaje(e.Data);
                 if (mensaje == null)
                 {
                     e.Data = null;
-                    medidor.Contar(M_TIRADOS);
+                    medidor.Contar(ERRORES);
                     return;
                 }
-
-                medidor.Contar(M_RECIBIDOS);
 
                 byte[] mensajeDesbordado = (byte[])colaMedicionesNodo.Enqueue(mensaje);
                 if (mensajeDesbordado != null)
@@ -197,7 +196,7 @@ namespace NodoAP
         #endregion
 
         #region ENVIO DE MENSAJES
-        public override void Loop(ref bool activo)
+        public override void ColaLoop(ref bool activo)
         {
             if (colaMedicionesNodo.IsEmpty())
             {
@@ -209,6 +208,7 @@ namespace NodoAP
             try
             {
                 int tamanioCola = colaMedicionesNodo.Count();
+                int desencolados = 0;
                 for (int i = 0; i < ventanaDesencolamiento && !colaMedicionesNodo.IsEmpty(); i++)
                 {
                     var item = (byte[])colaMedicionesNodo.Dequeue();
@@ -216,6 +216,7 @@ namespace NodoAP
                     {
                         payloadEnvioMediciones.AgregarMediciones(MedicionesNodoDto.FromBytes(item));
                         mensajesDesencolados.Add(item);
+                        desencolados++;
                     }
                     catch (Exception ex)
                     {
@@ -223,14 +224,14 @@ namespace NodoAP
                     }
                 }
 
-                if (mensajesDesencolados.Count == 0)
+                if (desencolados == 0)
                 {
                     medidor.Contar(ERRORES);
                     Logger.Error("No se pudo deserealizar nada");
                     return;
                 }
 
-                Logger.Debug($"{mensajesDesencolados.Count}/{tamanioCola} mensajes desencolados");
+                Logger.Debug($"{desencolados}/{tamanioCola} mensajes desencolados");
 
                 // Envio del payload
                 payloadEnvioMediciones.last_updated = DateTime.UtcNow;
@@ -244,8 +245,8 @@ namespace NodoAP
                 {
                     Blink(100);
 
-                    medidor.Contar(M_ENVIADOS, mensajesDesencolados.Count - Interlocked.Exchange(ref mensajesMedicionAP, mensajesMedicionAP));
-                    Logger.Log($"{mensajesDesencolados.Count} mensajes enviados");
+                    medidor.Contar(M_ENVIADOS, desencolados - Interlocked.Exchange(ref mensajesMedicionAP, mensajesMedicionAP));
+                    Logger.Log($"{desencolados} mensajes enviados");
                 }
                 else
                 {
@@ -258,9 +259,9 @@ namespace NodoAP
                     {
                         obj = colaMedicionesNodo.Enqueue(mensajesDesencolados[indiceReencolado++]);
                     }
-                    while (obj == null && indiceReencolado < mensajesDesencolados.Count);
+                    while (obj == null && indiceReencolado < desencolados);
 
-                    medidor.Contar(M_TIRADOS, mensajesDesencolados.Count - indiceReencolado + 1);
+                    medidor.Contar(M_TIRADOS, desencolados - indiceReencolado + 1);
                     Logger.Debug($"{indiceReencolado + 1} mensajes reencolados");
                 }
             }

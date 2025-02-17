@@ -66,7 +66,7 @@ namespace NodoAP
             }
         }
 
-        public override void Loop(ref bool activo)
+        public override void ColaLoop(ref bool activo)
         {
             MedirTemperatura();
             MedirHumedad();

@@ -47,7 +47,7 @@ namespace PruebaMedidor
             aySleep.DeepSleepSegundos(15, "pinto loco");
         }
 
-        public override void Loop(ref bool activo)
+        public override void ColaLoop(ref bool activo)
         {
             //lora.Enviar(Encoding.UTF8.GetBytes($"[{paquete++}] Este mensaje es largo para probar cuantos bytes puedo mandar y que parezca que mando mucha info importante"));
             //Blink(100);

@@ -18,7 +18,7 @@ namespace NanoKernel.Nodos
 
         private bool activo = false;
 
-        public abstract void Loop(ref bool activo);
+        public abstract void ColaLoop(ref bool activo);
         public abstract void Setup();
 
         public void Iniciar()
@@ -52,7 +52,7 @@ namespace NanoKernel.Nodos
 
             while (activo)
             {
-                Loop(ref activo);
+                ColaLoop(ref activo);
             }
         }
 

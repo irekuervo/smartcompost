@@ -104,7 +104,7 @@ namespace NodoMedidor
             led.Write(PinValue.Low);  // Avisamos que terminamos de configurar
         }
 
-        public override void Loop(ref bool activo)
+        public override void ColaLoop(ref bool activo)
         {
             try
             {
