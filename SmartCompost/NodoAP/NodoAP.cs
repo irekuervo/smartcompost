@@ -28,7 +28,7 @@ namespace NodoAP
         private const int clientTimeoutSeconds = 20;
         private const int intentosEnvioMediciones = 1; // Por alguna razon anda mejor en 1
         private const int milisIntentoEnvioMediciones = 100;
-        private const int segundosTelemetriaNodoAp = 60 * 1;
+        private const int segundosTelemetriaNodoAp = 30 * 1;
         /// ---------------------------------------------------------------
 
         private LoRaDevice lora;
